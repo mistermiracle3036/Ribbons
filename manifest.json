@@ -1,12 +1,12 @@
 {
   "id": "kanto_ribbons",
   "name": "Kanto Ribbons",
-  "version": "0.10.0",
+  "version": "0.10.2",
   "api": 2,
   "entry": "main.lua",
   "profile": "content",
   "category": "MECHANIC",
-  "game_version": ">=0.0.0-dev <2.0.0",
+  "game_version": ">=0.1.38 <2.0.0",
   "priority": 100,
   "affects_link": false,
   "permissions": [

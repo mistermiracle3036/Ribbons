@@ -31,8 +31,9 @@ so you only reveal what you want.
   collections page with A, three to a page.
 - **One self-contained package.** No engine files to replace, no
   companion downloads.
-- **A shop.** The Celadon Mansion has a very stylish resident selling
-  three absurdly priced ribbons.
+- **A shop.** The Meowth in Celadon Mansion, 1F, sells three ribbons at
+  escalating, deliberately absurd prices — for whichever Pokémon is at
+  the **front of your party** when you buy.
 
 ## The ribbons
 
@@ -47,13 +48,19 @@ so you only reveal what you want.
 | Best Friends | Yellow only — your lab Pikachu at maximum happiness | Yes |
 | Winning | In the party for a 10-battle win streak | No |
 | Victory | In the party for a 25-battle win streak | No |
-| Gorgeous | Bought for ₽10,000 | — |
-| Royal | Bought for ₽100,000 (needs Gorgeous) | — |
-| Gorgeous Royal | Bought for ₽999,999 (needs Royal) | — |
+| Gorgeous | Bought from the Meowth, Celadon Mansion 1F — ₽10,000† | — |
+| Royal | Same Meowth — ₽100,000, needs Gorgeous first† | — |
+| Gorgeous Royal | Same Meowth — ₽999,999, needs Royal first† | — |
 
 \* Snag syncs retroactively for Pokémon snagged with **Pokemon Snag 0.7.4 or
 newer**, which marks them permanently. Older snags are still awarded live
 at the moment of capture, but can't be recovered after the fact.
+
+† All three go to whichever Pokémon is at the **front of your party**
+(slot 1) at the moment of purchase — not a Pokémon you pick from a menu.
+Rearrange your party first if you want a specific one decorated. The
+three are strictly sequential: you can't skip ahead to Royal without
+Gorgeous already on that Pokémon.
 
 Win streaks are counted from the moment you install the mod — a streak you
 were already on doesn't count, because the save doesn't record which
@@ -61,22 +68,27 @@ Pokémon were with you for it.
 
 ## Installation
 
-<!-- TODO/CONFIRM: exact install wording for gen1recomp (folder path vs
-     mod manager import). Fill in the same steps you follow yourself. -->
-
-1. Download `kanto_ribbons.zip` from the
+1. Download `kanto_ribbons-<version>.zip` from the
    [latest release](../../releases/latest).
-2. Install it like any other gen1recomp mod.
-3. Requires **mod API 2**. No other mod or engine change is required.
+2. In the launcher: **MODS → Import mod .zip**. On iOS, delete any older
+   downloaded copy of the zip from Files first.
+3. Fully quit and relaunch.
+4. Requires gen1recomp **0.1.38 or newer**. No other mod and no engine
+   change is required.
+
+**Updating:** once installed, the launcher checks this repo for new
+releases. The mod's entry shows "vX.Y.Z available" → tap → **Update** →
+fully quit and relaunch. No manual re-download.
+
+After installing an update, **fully quit and relaunch** the game. The
+load log prints the running version so you can confirm what's live.
 
 ## Compatibility
 
-- **[Pokemon Snag](https://github.com/mistermiracle3036/pokemon-snag)** —
+- **[Pokemon Snag](https://github.com/mistermiracle3036/Pokemon-Snag)** —
   optional. Reads the permanent `mon.snagged` marker it sets on snagged
   Pokémon (0.7.4+) so the Snag Ribbon applies retroactively; older
   versions still award it live.
-  <!-- TODO/CONFIRM: exact repo slug -- guessed pokemon-snag from the
-       "Pokemon Snag" name; fix if the URL differs -->
 - **Kanto Achievements** — optional. Reserved for future ribbons that
   reuse its tracked stats rather than re-counting them.
 - **gen1_modern_ui** — works. The ribbons screen opens the same way

@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.10.2
+
+- Adopted Pokemon Snag's real install/update steps and repo pattern in
+  the README (mod-manager import, the iOS stale-zip caveat, "fully quit
+  and relaunch" after updating, launcher auto-update via the repo's
+  releases).
+- Fixed the Pokemon Snag cross-link: the real repo is
+  `mistermiracle3036/Pokemon-Snag` (capitalized), not the guessed
+  `pokemon-snag`.
+- Restored `game_version` to `>=0.1.38 <2.0.0`, matching what the
+  README now states and what Pokemon Snag itself requires. This had
+  been loosened to `>=0.0.0-dev` to satisfy this repo's own unstamped
+  working tree during testing -- correct for that purpose, wrong to
+  ship, since real players run a packaged build with a real stamped
+  engine version. The test suites now patch `Version.engine` for their
+  own headless run instead of the manifest carrying the workaround.
+
+## 0.10.1
+
+- Starter Ribbon icon is now a classic award rosette (round medallion
+  with two tails) instead of the leaf. The leaf read as an unclear blob
+  once the engine's four-shade palette flattened its shading, and the
+  rosette is unambiguous at 16px. Checked against the two nearest
+  existing shapes -- Gorgeous's gem and Royal's ring -- and it doesn't
+  collide with either.
+
 All notable changes to Kanto Ribbons are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com); the top heading always
 matches the version in `manifest.json`.
