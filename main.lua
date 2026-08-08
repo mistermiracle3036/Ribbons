@@ -443,7 +443,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.10.2"
+  mod.exports.version = "0.10.3"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -494,11 +494,11 @@ return function(mod)
   local function sheet()
     if ribbonSheet == nil then
       local ok, img = pcall(function()
-        return mod.assets:image("assets/ribbons.png")
+        return mod.assets:image("ribbons.png")
       end)
       ribbonSheet = ok and img or false -- false = tried and failed
       if not ok then
-        mod.log:warn("assets/ribbons.png failed to load (%s) -- drawing " ..
+        mod.log:warn("ribbons.png failed to load (%s) -- drawing " ..
           "ribbon rows without icons", tostring(img))
       elseif img then
         ribbonQuads = {}

@@ -13,7 +13,7 @@
   read its exported stats.
 - The ribbon system reimagined here is inspired by the Generation III–IX
   ribbons of the official games; no assets or data from those games are
-  included. All icon art in `assets/` is original to this mod.
+  included. All icon art (`ribbons.png`) is original to this mod.
 - Pokémon and all related names are trademarks of Nintendo / Creatures
   Inc. / GAME FREAK inc. This mod contains no ROM data or copyrighted
   assets; it is a fan-made script mod and requires the user's own game

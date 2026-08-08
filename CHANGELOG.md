@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.10.3
+
+- Moved the icon sheet from `assets/ribbons.png` to just `ribbons.png`
+  at the mod's top level. The `assets/` folder was only a convention,
+  never a requirement -- nothing in the engine or the packaging tool
+  enforces it -- and it was causing real upload friction on iOS/GitHub
+  mobile web (creating a subfolder via the web uploader is fragile).
+  Now there's exactly one file to drop in, at the same level as
+  `main.lua`.
+
 ## 0.10.2
 
 - Adopted Pokemon Snag's real install/update steps and repo pattern in

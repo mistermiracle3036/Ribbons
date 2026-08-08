@@ -1,7 +1,7 @@
 {
   "id": "kanto_ribbons",
   "name": "Kanto Ribbons",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "api": 2,
   "entry": "main.lua",
   "profile": "content",
