@@ -1,0 +1,30 @@
+return {
+  summary = "Permanent per-Pokemon ribbons for Gen1 achievements, awarded automatically and shown on the Pokemon's own party menu.",
+  author  = "YOUR_HANDLE_HERE",
+
+  tags = { "mechanic", "collection", "ui" },
+
+  differences = {
+    changed = {
+      "the party submenu (where STATS lives) gains a RIBBONS row, one under STATS; every vanilla row is untouched",
+      "the START menu gains a RIBBONS row before SAVE, for a whole-party overview",
+    },
+    added = {
+      "Pokemon now carry ribbons (mon.ribbons), stored on the mon itself so they persist through boxes, evolution and trades",
+      "Starter Ribbon: awarded to the Pokemon you chose in Oak's lab (or Yellow's lab Pikachu)",
+      "retroactive sync -- an existing save gets the Starter Ribbon on the correct Pokemon at load, with no player intervention",
+    },
+    known = {
+      "a starter that was released or traded away cannot be tagged -- there is no Pokemon left to tag; logged rather than guessed at",
+      "a Yellow save holding both the lab Pikachu and a wild-caught one is genuinely ambiguous (Gen1 stores nothing to separate them); resolved party-before-boxes with a warning in the log",
+      "ribbons appear in the party submenu, not on the status/stat screen itself -- src/ui/SummaryMenu.lua exposes no hook, so no mod can currently draw there without an engine change (Route B)",
+    },
+  },
+
+  credits = {
+    { who = "Kanto Achievements", for_ = "the optional stat/counter exports later ribbons will read instead of re-tracking, and the catalog-plus-resolver shape this mod follows" },
+    { who = "DexNav example", for_ = "the screens registry + ui hook decoration pattern used for both ribbon screens" },
+  },
+
+  compat = { engine = ">=0.0.0-dev <2.0.0", modApi = 2 },
+}
