@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.15.4
+
+- Republish so the ribbon icons actually load. In v0.15.3 the icon sheet
+  reached the repo named "ribbons" instead of "ribbons.png" -- an upload
+  step had silently dropped the extension. The file itself was intact
+  (the correct 272x16 PNG), but `mod.assets:image("ribbons.png")` found
+  nothing, so every row fell back to text with no error shown. Fixed by
+  renaming the file in the repo; this release carries the corrected name.
+- Added a pre-build guard to the release workflow so this cannot ship
+  silently again: it now fails the release if a required file is missing,
+  if ribbons.png is not actually a PNG (checked by magic bytes, not by
+  name), or if main.lua loads an image the repo does not contain.
+  Verified against a reconstruction of the v0.15.3 state -- the guard
+  blocks it with two explicit errors.
+
 ## 0.15.3
 
 - Fixed the scroll indicator running off the right edge. It was drawn at
