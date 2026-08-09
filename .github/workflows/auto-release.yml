@@ -1,0 +1,109 @@
+name: Auto release on version bump
+
+# Push your changed files to main and this does the rest: it notices the
+# version in manifest.json is new, builds the installable zip, and
+# publishes the release with the matching CHANGELOG entry as the notes.
+#
+# You never create a tag or attach a zip by hand. If the version has NOT
+# changed, this exits quietly -- so ordinary pushes (docs, fixes) do
+# nothing until you actually bump the version.
+on:
+  push:
+    branches: [main]
+  # manual re-run, e.g. if a release needs rebuilding
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # needed so existing tags are visible
+
+      - name: Read the version and mod id from the manifest
+        id: info
+        run: |
+          VERSION=$(python3 -c "import json;print(json.load(open('manifest.json'))['version'])")
+          MOD_ID=$(python3 -c "import json;print(json.load(open('manifest.json'))['id'])")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "mod_id=$MOD_ID"   >> "$GITHUB_OUTPUT"
+          echo "manifest says: $MOD_ID $VERSION"
+
+      - name: Skip if this version was already released
+        id: check
+        run: |
+          TAG="v${{ steps.info.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TAG already exists -- nothing to release."
+          else
+            echo "already=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TAG is new -- building a release."
+          fi
+
+      # The check that matters most. Shipping two different builds under
+      # one version number is the bug that wastes the most time later,
+      # because the load log then lies about what is actually running.
+      - name: Verify manifest, mod.exports.version and CHANGELOG agree
+        if: steps.check.outputs.already == 'false'
+        run: |
+          set -e
+          VERSION="${{ steps.info.outputs.version }}"
+          EXPORTS=$(grep -oP 'mod\.exports\.version\s*=\s*"\K[^"]+' main.lua || true)
+          CHANGELOG=$(grep -m1 -oP '^##\s+\K[0-9][^\s]*' CHANGELOG.md || true)
+          echo "manifest=$VERSION exports=$EXPORTS changelog=$CHANGELOG"
+          fail=0
+          [ "$EXPORTS"   = "$VERSION" ] || { echo "::error::main.lua mod.exports.version is '$EXPORTS', expected '$VERSION'"; fail=1; }
+          [ "$CHANGELOG" = "$VERSION" ] || { echo "::error::CHANGELOG.md top heading is '$CHANGELOG', expected '$VERSION'"; fail=1; }
+          exit $fail
+
+      - name: Extract this version's CHANGELOG entry for the release notes
+        if: steps.check.outputs.already == 'false'
+        run: |
+          python3 - <<'EOF' > RELEASE_BODY.md
+          import re
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          # everything from this version's heading up to the next "## "
+          m = re.search(r"^##\s+\S+.*?$(.*?)(?=^##\s+\S+|\Z)", text, re.S | re.M)
+          print((m.group(1).strip() if m else "See CHANGELOG.md."))
+          EOF
+          echo "--- release notes ---"; cat RELEASE_BODY.md
+
+      - name: Build the installable mod zip
+        if: steps.check.outputs.already == 'false'
+        run: |
+          set -e
+          MOD_ID="${{ steps.info.outputs.mod_id }}"
+          VERSION="${{ steps.info.outputs.version }}"
+          rm -rf build && mkdir -p "build/$MOD_ID"
+          # Copy everything except repo-meta and build artefacts: the zip
+          # must be exactly what a player drops into their mods folder.
+          # Uses plain shell rather than rsync so it depends only on
+          # coreutils and can't break if a runner image changes.
+          for entry in * .[!.]*; do
+            case "$entry" in
+              .git|.github|.gitignore|tests|build|RELEASE_BODY.md|*.zip) continue ;;
+            esac
+            [ -e "$entry" ] || continue
+            cp -r "$entry" "build/$MOD_ID/"
+          done
+          cd build
+          # the launcher's updater prefers "<id>-<version>.zip"
+          zip -qr "../${MOD_ID}-${VERSION}.zip" "$MOD_ID"
+          cd ..
+          echo "--- zip contents ---"; unzip -l "${MOD_ID}-${VERSION}.zip"
+
+      - name: Publish the release with the zip attached
+        if: steps.check.outputs.already == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MOD_ID="${{ steps.info.outputs.mod_id }}"
+          VERSION="${{ steps.info.outputs.version }}"
+          gh release create "v${VERSION}" "${MOD_ID}-${VERSION}.zip" \
+            --title "v${VERSION}" \
+            --notes-file RELEASE_BODY.md
