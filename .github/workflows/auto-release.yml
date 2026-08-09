@@ -29,5 +29,108 @@ jobs:
         run: |
           VERSION=$(python3 -c "import json;print(json.load(open('manifest.json'))['version'])")
           MOD_ID=$(python3 -c "import json;print(json.load(open('manifest.json'))['id'])")
-          echo "version
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "mod_id=$MOD_ID"   >> "$GITHUB_OUTPUT"
+          echo "manifest says: $MOD_ID $VERSION"
 
+      - name: Skip if this version was already released
+        id: check
+        run: |
+          TAG="v${{ steps.info.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TAG already exists -- nothing to release."
+          else
+            echo "already=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TAG is new -- building a release."
+          fi
+
+      # The check that matters most. Shipping two different builds under
+      # one version number is the bug that wastes the most time later,
+      # because the load log then lies about what is actually running.
+      - name: Verify manifest, mod.exports.version and CHANGELOG agree
+        if: steps.check.outputs.already == 'false'
+        run: |
+          set -e
+          VERSION="${{ steps.info.outputs.version }}"
+          EXPORTS=$(grep -oP 'mod\.exports\.version\s*=\s*"\K[^"]+' main.lua || true)
+          CHANGELOG=$(grep -m1 -oP '^##\s+\K[0-9][^\s]*' CHANGELOG.md || true)
+          echo "manifest=$VERSION exports=$EXPORTS changelog=$CHANGELOG"
+          fail=0
+          [ "$EXPORTS"   = "$VERSION" ] || { echo "::error::main.lua mod.exports.version is '$EXPORTS', expected '$VERSION'"; fail=1; }
+          [ "$CHANGELOG" = "$VERSION" ] || { echo "::error::CHANGELOG.md top heading is '$CHANGELOG', expected '$VERSION'"; fail=1; }
+          exit $fail
+
+      - name: Extract this version's CHANGELOG entry for the release notes
+        if: steps.check.outputs.already == 'false'
+        run: |
+          python3 - <<'EOF' > RELEASE_BODY.md
+          import re
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          # everything from this version's heading up to the next "## "
+          m = re.search(r"^##\s+\S+.*?$(.*?)(?=^##\s+\S+|\Z)", text, re.S | re.M)
+          print((m.group(1).strip() if m else "See CHANGELOG.md."))
+          EOF
+          echo "--- release notes ---"; cat RELEASE_BODY.md
+
+      # v0.15.3 shipped with the icon sheet named "ribbons" instead of
+      # "ribbons.png" -- the upload had silently dropped the extension, so
+      # mod.assets:image("ribbons.png") found nothing and every icon fell
+      # back to text with no error. The zip was built correctly from a
+      # repo that was already wrong, so nothing downstream could catch it.
+      # This checks the repo itself before building.
+      - name: Verify required files exist and are what they claim
+        if: steps.check.outputs.already == 'false'
+        run: |
+          set -e
+          fail=0
+          for f in manifest.json main.lua ribbons.lua ribbons.png mod.card; do
+            [ -f "$f" ] || { echo "::error::missing required file: $f"; fail=1; }
+          done
+          # a PNG whose name survived but whose contents did not is just as
+          # broken, so check the magic bytes rather than trusting the name
+          if [ -f ribbons.png ]; then
+            file ribbons.png | grep -q "PNG image data" \
+              || { echo "::error::ribbons.png is not a PNG"; fail=1; }
+          fi
+          # every image main.lua asks for must actually be present
+          for want in $(grep -oP 'assets:image\("\K[^"]+' main.lua | sort -u); do
+            [ -f "$want" ] || { echo "::error::main.lua loads '$want' but it is not in the repo"; fail=1; }
+          done
+          [ $fail -eq 0 ] && echo "all required files present and valid"
+          exit $fail
+
+      - name: Build the installable mod zip
+        if: steps.check.outputs.already == 'false'
+        run: |
+          set -e
+          MOD_ID="${{ steps.info.outputs.mod_id }}"
+          VERSION="${{ steps.info.outputs.version }}"
+          rm -rf build && mkdir -p "build/$MOD_ID"
+          # Copy everything except repo-meta and build artefacts: the zip
+          # must be exactly what a player drops into their mods folder.
+          # Uses plain shell rather than rsync so it depends only on
+          # coreutils and can't break if a runner image changes.
+          for entry in * .[!.]*; do
+            case "$entry" in
+              .git|.github|.gitignore|tests|build|RELEASE_BODY.md|*.zip) continue ;;
+            esac
+            [ -e "$entry" ] || continue
+            cp -r "$entry" "build/$MOD_ID/"
+          done
+          cd build
+          # the launcher's updater prefers "<id>-<version>.zip"
+          zip -qr "../${MOD_ID}-${VERSION}.zip" "$MOD_ID"
+          cd ..
+          echo "--- zip contents ---"; unzip -l "${MOD_ID}-${VERSION}.zip"
+
+      - name: Publish the release with the zip attached
+        if: steps.check.outputs.already == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MOD_ID="${{ steps.info.outputs.mod_id }}"
+          VERSION="${{ steps.info.outputs.version }}"
+          gh release create "v${VERSION}" "${MOD_ID}-${VERSION}.zip" \
+            --title "v${VERSION}" \
+            --notes-file RELEASE_BODY.md
