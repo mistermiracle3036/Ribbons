@@ -4,13 +4,8 @@
 
 - Each row now shows the full "<Name> Ribbon" (e.g. "Effort Ribbon",
   "Rare Ribbon") instead of just the short label.
-- Honest caveat: this sandbox has no real ROM font to measure against
-  (fixture data is missing lowercase glyphs entirely), so the three
-  longest -- Hall of Fame Ribbon, Best Friends Ribbon, Gorgeous Royal
-  Ribbon -- couldn't be pixel-verified here. The existing width-based
-  clipToWidth safety net covers it either way (clips to ".." rather
-  than running off-screen), but those three are worth a real-device
-  glance.
+- Hall of Fame Ribbon, Best Friends Ribbon, Gorgeous Royal Ribbon are most likely to error but haven’t on my device, let me know if you come across anything. clipToWidth safety net covers it either way (clips to ".." rather
+  than running off-screen)
 
 ## 0.12.0
 
