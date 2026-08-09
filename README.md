@@ -17,8 +17,8 @@ so you only reveal what you want.
 
 ## Features
 
-- **Twelve ribbons**, earned three ways: story milestones, hard training,
-  and one very expensive shop.
+- **Seventeen ribbons**, earned several ways: story milestones, hard
+  training, flawless battles, lucky DVs, and one very expensive shop.
 - **Awarded automatically.** Nothing to toggle or claim. If a Pokémon
   qualifies, it already has the ribbon by the time you look.
 - **Retroactive on existing saves.** Most ribbons are recomputed from
@@ -45,6 +45,11 @@ so you only reveal what you want.
 | Rare | Flawless DVs in every stat | Yes |
 | Traveler | Arrived from another trainer in a trade | Yes |
 | Effort | Every Stat Exp value maxed out | Yes |
+| Legend | Beat the Champion with zero party faints | No |
+| Earth | One Pokémon wins 100 battles in the active slot | No |
+| Warrior | One Pokémon wins 250 battles in the active slot | No |
+| Shiny | Born with the rare "virtual shiny" DV spread | Yes |
+| Fossil | A fossil Pokémon revived by you | Yes |
 | Best Friends | Yellow only — your lab Pikachu at maximum happiness | Yes |
 | Winning | In the party for a 10-battle win streak | No |
 | Victory | In the party for a 25-battle win streak | No |
@@ -107,7 +112,20 @@ declared via the `engine_internals` permission, the same mechanism Snag
 Quest uses for its battle changes. No file on disk is modified, and
 removing the mod removes the patch.
 
+## Dev toggle
+
+The mod's own options screen has **[DEV] Give lead all ribbons**
+(off by default). Turn it on to keep party slot 1 fully decorated for
+testing the display -- turning it back off leaves whatever was granted
+in place, same as any other ribbon here.
+
 ## Credits
+
+- **Miss Default Bunny** — suggested the Shiny Ribbon, in the gen1recomp
+  Discord.
+- **WizzStar** — [G1R HoldToScrollUI](https://github.com/WizzStar/PKMN-G1R-HoldToScrollUI-Mod)
+  inspired the scrolling ribbons screen (not a dependency; see
+  THIRD_PARTY_NOTICES).
 
 Built for [gen1recomp](https://github.com/bryanthaboi/gen1recomp).
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

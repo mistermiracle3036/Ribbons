@@ -143,6 +143,38 @@ so trading it away or releasing it loses the count.
 </details>
 
 <details>
+<summary>Shiny Ribbon — Gen 1 doesn't have shinies, does it?</summary>
+
+Not officially. But the community-standard "virtual shiny" applies the
+Gen 2 shiny formula backwards to Gen 1 DVs, and a Pokémon that would be
+shiny in Gen 2 can be identified in Gen 1. This mod uses the engine's
+own implementation of that formula rather than its own version, so it
+agrees with any other shiny-aware mod you have installed. Fully
+retroactive — DVs never change, so an old save's shinies are found on
+load.
+</details>
+
+<details>
+<summary>Fossil Ribbon — which Pokémon count?</summary>
+
+Omanyte, Omastar, Kabuto, Kabutops and Aerodactyl — the same list Kanto
+Achievements uses for its Fossil Revival achievement, so the two agree.
+It must be originally yours; a traded one won't claim it. Gen 1 doesn't
+record a revival event, so strictly this checks species + original
+trainer — but in an unmodified game those five have no other source, so
+in practice it means exactly what it says.
+</details>
+
+<details>
+<summary>Earth and Warrior — how are these different?</summary>
+
+Same counter, two tiers: 100 wins for Earth, 250 for Warrior, both for
+one individual Pokémon in the active slot. Same relationship as
+Winning (10) and Victory (25), except those are for *streaks* across
+your whole party, while these are one Pokémon's lifetime tally.
+</details>
+
+<details>
 <summary>Winning and Victory — does the whole party get them?</summary>
 
 Yes, every Pokémon in your party when the streak lands, matching how

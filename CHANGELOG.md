@@ -1,11 +1,138 @@
 # Changelog
 
+## 0.15.3
+
+- Fixed the scroll indicator running off the right edge. It was drawn at
+  a hardcoded x=108, which fit "1-4/17" but not "14-17/17" (64px wide,
+  ending at 172 against a 156 margin) -- so it clipped as soon as the
+  numbers got wide. It is now right-aligned by measured width and stays
+  inside regardless of how many ribbons exist.
+- Descriptions now sit in the same column as the ribbon name instead of
+  flush against the left margin. Reported from device as the layout
+  looking like it "tilts": with names indented past the icon and
+  descriptions jutting back to x=4, the left edge stepped in and out
+  down the screen. One column reads straight.
+- That narrowed the description budget from 19 characters to 16, so all
+  twelve over-length descriptions were rewritten shorter (e.g.
+  "Bought for 999999." -> "Costs 999999.", "Revived from stone." ->
+  "Revived fossil."). The regression test's budget was updated to match,
+  so it still guards every name and description.
+
+### Note for a future version
+
+Modern Party UI (piftee/gen1recomp-modern-party-ui) demonstrates that a
+screen can expose `uiSize()` and get a WIDER logical canvas on a wide
+display -- the engine honours it in Game.lua (`elseif top and top.uiSize`)
+and Renderer:setUISize clamps the request safely. That contradicts an
+earlier assumption here that 160px was a hard ceiling. Adopting it would
+give these columns real breathing room on a phone in landscape rather
+than forcing shorter text. Deliberately NOT done in this release: it
+changes how the screen reports its own size and deserves its own device
+test rather than riding along with a layout fix. The shortened
+descriptions are the right floor either way, since a strict 4:3 display
+still gets exactly 160px.
+
+## 0.15.2
+
+- Credited **Miss Default Bunny** for suggesting the Shiny Ribbon, in
+  the gen1recomp Discord -- in the README credits, THIRD_PARTY_NOTICES,
+  the in-game mod card, and against the 0.13.0 entry where the ribbon
+  was introduced.
+
+## 0.15.1
+
+- Tightened the gap between the Pokemon's name and the first ribbon row
+  (window top 32 -> 20), reclaiming the dead band visible on device.
+- Names no longer clip mid-word. On real hardware the three longest
+  overflowed the name column and rendered as "Hall of Fame R..",
+  "Best Friends R.." and "Gorg. Royal Ri..". They now degrade instead:
+  the full "<Name> Ribbon" is used when it fits, otherwise the redundant
+  " Ribbon" suffix is dropped -- so those three read "Hall of Fame",
+  "Best Friends" and "Gorgeous Royal". Clipping remains only as a last
+  resort that nothing currently reaches.
+- "Gorg. Royal" is now just "Gorgeous Royal". The abbreviation only
+  existed to fit the column; with the fallback it isn't needed.
+- Shortened two descriptions that were also truncating on device:
+  "Champion, no faints." -> "No faints at all.", and
+  "Rare shining colors." -> "Rare shining hues."
+- Added a regression test covering every name and description against
+  the real column budgets, so a future ribbon whose text is too long
+  fails the suite instead of shipping clipped.
+
+## 0.15.0
+
+- Added a dev toggle: **[DEV] Give lead all ribbons**, in the mod's own
+  options screen. Same schema and convention as Pokemon Snag's
+  `dev_replay_meowth_quest` -- a plain toggle row, default OFF, so it
+  ships inert for every real player.
+- While on, party slot 1 is kept fully decorated with every ribbon on
+  each sync (load, battle end, etc.) -- for testing the display without
+  playing to unlock everything by hand. Turning it back off does not
+  strip what was granted; nothing in this mod ever revokes an award, so
+  a debug ribbon behaves exactly like a real one once given.
+- Tested against the real storage path the mod manager itself writes to
+  (loader.modOptions), not a guessed API -- mod.options only exposes
+  define/get to the mod itself, an option's value is written by the
+  manager UI, so the test pokes that same storage rather than a
+  nonexistent mod.options:set.
+
+## 0.14.0
+
+- **Fossil Ribbon** (seventeen total) -- for a revived fossil Pokemon
+  (Omanyte, Omastar, Kabuto, Kabutops, Aerodactyl), OT-checked so a
+  traded one doesn't claim a revival you didn't perform. Fully
+  retroactive.
+- When kanto_achievements is installed, the species list is read from
+  ITS "fossil_revival" achievement at runtime rather than kept as a
+  second copy that could drift; the local list is the standalone
+  fallback. This is the first thing that actually uses the
+  kanto_achievements optional dependency.
+- Honest scope note: Gen1 records no revival event, so this can't
+  distinguish a revived fossil from one obtained another way. In an
+  unmodified game these five species have no other legitimate source,
+  so species + your OT is exact in practice.
+- Icon is a diagonal bone. An ammonite spiral was the obvious choice and
+  was tried twice -- it collapsed into speckle at 16px and read as
+  another dark disc next to Earth's globe, so it was discarded rather
+  than shipped muddy. The bone was then rotated off-horizontal so it
+  can't be confused with Effort's dumbbell at a glance.
+- Icon sheet is now 272x16, seventeen cells.
+
+## 0.13.0
+
+- Two new ribbons (sixteen total):
+  - **Shiny Ribbon** -- suggested by Miss Default Bunny in the gen1recomp
+    Discord. For a Pokemon with the "virtual shiny" DV spread.
+    Gen 1 has no shiny flag, so this calls the engine's own
+    `Stats.isShiny` (src/pokemon/Stats.lua) -- the Gen 2 formula read
+    back against Gen 1 DVs -- rather than re-deriving the rules here. If
+    the engine's definition ever changes, this follows it instead of
+    silently disagreeing; a test asserts both agree.
+    Fully retroactive: DVs never change.
+  - **Warrior Ribbon** -- 250 wins for one Pokemon in the active slot, a
+    second tier on Earth Ribbon's existing per-mon counter, mirroring
+    the Winning(10)/Victory(25) streak pair.
+- On the Century Ribbon idea from Kanto Achievements: dropped rather
+  than shipped. The preferred reading (each Pokemon accumulating 100
+  wins of its own) is *identical* to what Earth Ribbon already does --
+  the two would always unlock together, which is a duplicate label, not
+  a new achievement. Warrior extends the tier instead.
+- Icon sheet extended to 256x16, sixteen cells: crossed swords for
+  Warrior (the only X-form in the set) and an off-centre sparkle with
+  satellite sparks for Shiny (deliberately unlike Rare's chunky 5-point
+  star and Gorgeous Royal's rayed diamond).
+
 ## 0.12.1
 
 - Each row now shows the full "<Name> Ribbon" (e.g. "Effort Ribbon",
   "Rare Ribbon") instead of just the short label.
-- Hall of Fame Ribbon, Best Friends Ribbon, Gorgeous Royal Ribbon are most likely to error but haven’t on my device, let me know if you come across anything. clipToWidth safety net covers it either way (clips to ".." rather
-  than running off-screen)
+- Honest caveat: this sandbox has no real ROM font to measure against
+  (fixture data is missing lowercase glyphs entirely), so the three
+  longest -- Hall of Fame Ribbon, Best Friends Ribbon, Gorgeous Royal
+  Ribbon -- couldn't be pixel-verified here. The existing width-based
+  clipToWidth safety net covers it either way (clips to ".." rather
+  than running off-screen), but those three are worth a real-device
+  glance.
 
 ## 0.12.0
 

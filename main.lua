@@ -34,6 +34,17 @@ local STARTER_FLAGS = {
 }
 
 return function(mod)
+  -- Same schema/pattern as Pokemon Snag's dev_replay_meowth_quest:
+  -- a toggle row is { key, type = "toggle", label, default }
+  -- (src/mods/ManagerState.lua's buildOptionRows), mod.options:get(key)
+  -- always reads the live value, default false so it ships inert for
+  -- every real player. Checked fresh in syncAll below, so flipping it
+  -- mid-session takes effect on the very next sync -- no restart.
+  mod.options:define({
+    { key = "dev_give_lead_all_ribbons", type = "toggle",
+      label = "[DEV] Give lead all ribbons", default = false },
+  })
+
   -- ------- catalog
 
   local source = mod:read("ribbons.lua")
@@ -326,29 +337,107 @@ return function(mod)
     end
   end
 
-  -- ------- EARTH: live only, per-mon "in the active slot" win counter
+  -- ------- SHINY: sync only (DVs never change, so sync is complete)
   --
-  -- "One mon wins 100 battles in the active slot." kanto_achievements'
+  -- Gen 1 has no shiny flag; the community-standard "virtual shiny" is
+  -- the Gen 2 formula read back against Gen 1 DVs. The engine already
+  -- implements exactly that in Stats.isShiny (src/pokemon/Stats.lua:90),
+  -- so this calls it rather than re-deriving the DV rules here -- if the
+  -- engine's definition ever changes, this follows it instead of
+  -- silently disagreeing.
+
+  local Stats = require("src.pokemon.Stats")
+
+  local function syncShiny(save)
+    for _, mon in ipairs(eachMon(save)) do
+      if Stats.isShiny(mon.dvs) then
+        awardRibbon(mon, "SHINY", "shiny DV spread")
+      end
+    end
+  end
+
+  -- ------- FOSSIL: sync only
+  --
+  -- A revived fossil Pokemon. The species list matches the one
+  -- kanto_achievements uses for its own "Fossil Revival" achievement, so
+  -- the two agree about what counts. When that mod is installed this
+  -- reads ITS list at runtime (achievement id "fossil_revival",
+  -- condition.species) rather than keeping a second copy that could
+  -- drift; the local list below is the standalone fallback.
+  --
+  -- OT-checked like every other origin ribbon, so a traded Kabutops
+  -- doesn't claim a revival you didn't perform. Note this can't tell a
+  -- revived fossil from one caught by other means (Gen1 records no
+  -- revival event), but in an unmodified game these five species have
+  -- no other legitimate source, so species + your OT is exact in
+  -- practice.
+  local FOSSIL_SPECIES_FALLBACK = {
+    "OMANYTE", "OMASTAR", "KABUTO", "KABUTOPS", "AERODACTYL",
+  }
+
+  local fossilSpeciesSet -- resolved once, on first use
+  local function fossilSpecies()
+    if fossilSpeciesSet then return fossilSpeciesSet end
+    local list = FOSSIL_SPECIES_FALLBACK
+    local ka = mod.find("kanto_achievements")
+    local ok, theirs = pcall(function()
+      for _, a in ipairs(ka.exports.achievements) do
+        if a.id == "fossil_revival" and a.condition
+            and type(a.condition.species) == "table" then
+          return a.condition.species
+        end
+      end
+    end)
+    if ok and type(theirs) == "table" and #theirs > 0 then
+      list = theirs
+      mod.log:info("using kanto_achievements' fossil species list (%d entries)",
+        #theirs)
+    end
+    fossilSpeciesSet = {}
+    for _, sp in ipairs(list) do fossilSpeciesSet[sp] = true end
+    return fossilSpeciesSet
+  end
+
+  local function syncFossil(save)
+    local species = fossilSpecies()
+    for _, mon in ipairs(eachMon(save)) do
+      if species[mon.species] and isOwnOT(mon, save) then
+        awardRibbon(mon, "FOSSIL", "revived fossil species")
+      end
+    end
+  end
+
+  -- ------- EARTH / WARRIOR: live only, per-mon "in the active slot"
+  -- win counter, two tiers.
+  --
+  -- "One mon wins N battles in the active slot." kanto_achievements'
   -- win counters are per-save, not per-mon, so this needs its own
   -- tracking regardless. The active slot at the moment of victory is
-  -- battle.battler (the last mon standing / self.active on the player
-  -- side) -- approximated here as the first living, non-fainted party
-  -- mon at battle.ended, which is exactly the mon that was active when
-  -- the last enemy went down for a normal win.
+  -- approximated as the first living, non-fainted party mon at
+  -- battle.ended -- exactly the mon that was active when the last enemy
+  -- went down for a normal win.
   --
   -- The count lives on the mon itself (mon.earthWins), not in mod.save,
   -- so it survives boxing/reordering and isn't confused between mons.
   -- Live only: Gen1 doesn't record a per-mon win tally to sync from.
-
-  local EARTH_WINS_NEEDED = 100
+  --
+  -- Two tiers, mirroring the Winning(10)/Victory(25) streak pair:
+  -- Earth at 100, Warrior at 250.
+  local WIN_TIERS = {
+    { at = 100, id = "EARTH" },
+    { at = 250, id = "WARRIOR" },
+  }
 
   local function creditEarthWin(save)
     if not save then return end
     for _, mon in ipairs(save.party or {}) do
       if (mon.hp or 0) > 0 then
         mon.earthWins = (mon.earthWins or 0) + 1
-        if mon.earthWins >= EARTH_WINS_NEEDED and not hasRibbon(mon, "EARTH") then
-          awardRibbon(mon, "EARTH", "100 wins in the active slot")
+        for _, tier in ipairs(WIN_TIERS) do
+          if mon.earthWins >= tier.at and not hasRibbon(mon, tier.id) then
+            awardRibbon(mon, tier.id,
+              ("%d wins in the active slot"):format(tier.at))
+          end
         end
         return -- credit only the first (front-most) healthy mon
       end
@@ -452,6 +541,22 @@ return function(mod)
   -- game.ready: { game = <Game> } -- fires with save already attached.
   -- save.loaded: { save = <table>, meta, modsDiff } -- no `game` field.
 
+  -- While the toggle above is on, the lead (party[1]) is kept fully
+  -- decorated on every sync -- for screen/layout testing, not intended
+  -- to leave on. Turning it back off does NOT strip ribbons it granted:
+  -- nothing in this mod ever revokes an award, same as every other
+  -- ribbon here, so a debug decoration behaves exactly like a real one
+  -- once given. Idempotent either way (awardRibbon no-ops on a ribbon
+  -- the mon already has), so this is safe to run every sync.
+  local function devAwardAllToLead(save)
+    if mod.options:get("dev_give_lead_all_ribbons") ~= true then return end
+    local lead = save.party and save.party[1]
+    if not lead then return end
+    for _, r in ipairs(catalog) do
+      awardRibbon(lead, r.id, "[DEV] award-all toggle")
+    end
+  end
+
   local function syncAll(save)
     if not save then return end
     syncStarter(save)
@@ -459,9 +564,12 @@ return function(mod)
     syncRare(save)
     syncTraveler(save)
     syncEffort(save)
+    syncShiny(save)
+    syncFossil(save)
     syncHallOfFame(save)
     syncLegend(save)
     syncBestFriends(save)
+    devAwardAllToLead(save)
   end
 
   local activeGame
@@ -529,7 +637,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.12.1"
+  mod.exports.version = "0.15.3"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -632,7 +740,14 @@ return function(mod)
   local MARGIN = 4
   local ICON_W = 16
   local NAME_X = MARGIN + ICON_W + 4 -- 24
-  local DESC_X = MARGIN
+  -- Descriptions sit in the SAME column as the name, not flush against
+  -- the left margin. Reported from device as the layout looking like it
+  -- "tilts": with the name indented past the icon and the description
+  -- jutting back out to x=4, the left edge stepped in and out down the
+  -- screen. One column reads straight. Costs 20px of description width
+  -- (152 -> 132, i.e. 16 characters), which is why every description
+  -- was shortened to fit in 0.15.3.
+  local DESC_X = NAME_X
 
   -- Truncation is by measured pixel width via Font.width, so a long
   -- string is structurally unable to overflow no matter what a future
@@ -646,6 +761,22 @@ return function(mod)
       out = out:sub(1, #out - 1)
     end
     return out .. ".."
+  end
+
+  -- Names degrade instead of clipping mid-word. On real hardware the
+  -- full "Hall of Fame Ribbon" overflowed and clipToWidth rendered it
+  -- "Hall of Fame R..", which is uglier and no more informative than
+  -- just dropping the suffix. So: try "<short> Ribbon", fall back to
+  -- "<short>" alone, and only clip if even that won't fit. The suffix is
+  -- the redundant part on a screen already titled RIBBONS, so it's the
+  -- right thing to lose first.
+  local function fitName(def, x)
+    local budget = SCREEN_W - x - MARGIN
+    local base = def.short or def.name
+    local full = base .. " Ribbon"
+    if Font.width(full) <= budget then return full end
+    if Font.width(base) <= budget then return base end
+    return clipToWidth(base, x)
   end
 
   local function ownedRibbons(mon)
@@ -679,8 +810,7 @@ return function(mod)
       -- glyphs entirely), so those three specifically are worth a
       -- real-device look: either they fit, or they clip to ".." cleanly
       -- rather than running off-screen either way.
-      Font.draw(clipToWidth((entry.def.short or entry.def.name) .. " Ribbon", NAME_X),
-        NAME_X, y + 4)
+      Font.draw(fitName(entry.def, NAME_X), NAME_X, y + 4)
       Font.draw(clipToWidth(entry.def.description, DESC_X), DESC_X, y + DESC_DY)
       shown = shown + 1
     end
@@ -715,11 +845,17 @@ return function(mod)
         Font.draw(mon and monLabel(mon) or "RIBBONS", 8, 4)
         if total > WINDOW_SIZE then
           -- position within the OWNED list only -- never a hint about
-          -- ribbons not yet earned
-          Font.draw(("%d-%d/%d"):format(self.scroll + 1,
-            math.min(self.scroll + WINDOW_SIZE, total), total), 108, 4)
+          -- ribbons not yet earned.
+          -- Right-aligned by MEASURED width: this used to draw at a
+          -- hardcoded x=108, which fit "1-4/17" but ran off the edge
+          -- once the numbers got wider ("14-17/17" is 64px and ended at
+          -- 172, past the 156 margin). Anchoring to the right margin
+          -- keeps it inside no matter how many ribbons exist.
+          local label = ("%d-%d/%d"):format(self.scroll + 1,
+            math.min(self.scroll + WINDOW_SIZE, total), total)
+          Font.draw(label, SCREEN_W - MARGIN - Font.width(label), 4)
         end
-        local shown = drawRibbonWindow(mon, 32, self.scroll)
+        local shown = drawRibbonWindow(mon, 20, self.scroll)
         if shown == 0 then
           love.graphics.setColor(0, 0, 0, 1)
           Font.draw("No ribbons yet.", 16, 64)

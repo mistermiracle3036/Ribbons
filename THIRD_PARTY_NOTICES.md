@@ -21,6 +21,8 @@
   ordinary directional input the same way any menu does, so a player
   who also has that mod installed gets its hold-to-repeat behavior on
   this screen for free.
+- The Shiny Ribbon was suggested by **Miss Default Bunny** in the
+  gen1recomp Discord.
 - Pokémon and all related names are trademarks of Nintendo / Creatures
   Inc. / GAME FREAK inc. This mod contains no ROM data or copyrighted
   assets; it is a fan-made script mod and requires the user's own game
