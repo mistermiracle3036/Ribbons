@@ -123,6 +123,26 @@ with the same nickname is rejected.
 </details>
 
 <details>
+<summary>Legend Ribbon — what counts as "zero faints"?</summary>
+
+Not one of your Pokémon can drop to 0 HP at any point during the
+Champion battle — a genuinely clean sweep, start to finish. It's
+awarded to the whole party the same moment Hall of Fame is, and it's
+live-only: there's no way to check an old save's history for whether a
+past Champion clear was clean.
+</details>
+
+<details>
+<summary>Earth Ribbon — which Pokémon gets credit for a win?</summary>
+
+Whichever Pokémon is at the front of your party AND still standing
+(not fainted) when the battle ends. A benched Pokémon, or one that
+fainted earlier in the fight, doesn't accrue a win that battle — the
+next healthy one in line does. It's tracked on that specific Pokémon,
+so trading it away or releasing it loses the count.
+</details>
+
+<details>
 <summary>Winning and Victory — does the whole party get them?</summary>
 
 Yes, every Pokémon in your party when the streak lands, matching how

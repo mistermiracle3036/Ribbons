@@ -1,5 +1,66 @@
 # Changelog
 
+## 0.12.1
+
+- Each row now shows the full "<Name> Ribbon" (e.g. "Effort Ribbon",
+  "Rare Ribbon") instead of just the short label.
+- Honest caveat: this sandbox has no real ROM font to measure against
+  (fixture data is missing lowercase glyphs entirely), so the three
+  longest -- Hall of Fame Ribbon, Best Friends Ribbon, Gorgeous Royal
+  Ribbon -- couldn't be pixel-verified here. The existing width-based
+  clipToWidth safety net covers it either way (clips to ".." rather
+  than running off-screen), but those three are worth a real-device
+  glance.
+
+## 0.12.0
+
+- The ribbons screen scrolls now instead of paging in fixed chunks of 3.
+  Up/Down move one row at a time through the full owned list (4 visible
+  at once); A or B closes from anywhere. A multi-row list shows its
+  position (e.g. "2-5/7") in the corner -- scoped to what's been earned,
+  never a hint about what hasn't.
+- No dependency taken for this. The redesign was prompted by looking at
+  G1R HoldToScrollUI by WizzStar
+  (github.com/WizzStar/PKMN-G1R-HoldToScrollUI-Mod), which auto-repeats
+  a held D-pad direction for any menu that polls ordinary directional
+  input. This screen just polls plain Up/Down like any other menu, so a
+  player who also has that mod gets free hold-to-scroll; without it,
+  repeated taps scroll one row each either way. Credited in
+  THIRD_PARTY_NOTICES.md.
+- Row pitch tightened (30px -> 27px) to fit 4 rows instead of 3 in the
+  same vertical space.
+
+## 0.11.0
+
+- Two new ribbons (fourteen total):
+  - **Legend Ribbon** -- beat the Champion with zero party faints.
+    There's no direct "this was the Champion battle" signal, so this
+    reuses the Hall of Fame resolver's own detection: a fresh Hall of
+    Fame entry only ever appears immediately after a Champion win
+    (record_hall_of_fame runs from the Champion Room script right
+    after), so a per-battle faint flag (reset on battle.started, set by
+    battle.fainted) is checked at the moment a new HoF entry is seen.
+    Live-only: an existing save's faint history for a past Champion
+    battle isn't recorded anywhere to sync from.
+  - **Earth Ribbon** -- one Pokemon wins 100 battles in the active slot.
+    The count lives on the Pokemon itself (mon.earthWins), credited to
+    the first healthy party member on every win -- so it travels through
+    boxing and reordering like every other ribbon here, and a benched or
+    fainted mon never accrues credit for a win it didn't fight. Live-only
+    for the same reason as Winning/Victory: Gen1 keeps no per-mon win
+    tally to recompute from an existing save.
+- Fixed a real bug caught while writing this: the Legend resolver's
+  "have I already checked this Hall of Fame entry" state was a single
+  counter shared across every save, which would silently cross-
+  contaminate on a second save (or, as testing caught directly, between
+  independent saves in the same run). It now lives on the save table
+  itself.
+- Icon sheet extended to 224x16, fourteen cells: a shield for Legend
+  (a laurel wreath was tried first and looked like a broken squiggle at
+  16px -- discarded before shipping) and a globe for Earth.
+- The icon-mapping test now actually reads the sheet's real dimensions
+  instead of a stale hardcoded stub value, and pins the two new cells.
+
 ## 0.10.3
 
 - Moved the icon sheet from `assets/ribbons.png` to just `ribbons.png`

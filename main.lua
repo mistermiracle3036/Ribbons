@@ -271,6 +271,90 @@ return function(mod)
     end
   end
 
+  -- ------- LEGEND: live only
+  --
+  -- "Beat the Champion with zero party faints." There is no separate
+  -- signal for "this was the Champion battle" -- but a fresh Hall of
+  -- Fame entry only ever appears immediately after one
+  -- (record_hall_of_fame, data/scripts/story.lua:1175, runs from the
+  -- Champion Room script right after the win). So: track whether ANY
+  -- player-side mon faints during a battle (battle.started resets the
+  -- flag, battle.fainted with battler.isPlayer sets it), and when
+  -- syncHallOfFame notices a HoF entry it hasn't seen before, check
+  -- whether the battle immediately preceding it was clean. Reuses the
+  -- proven HoF detection rather than separately guessing which battle
+  -- was the Champion fight.
+  --
+  -- Live only, deliberately: an existing save's history of faints
+  -- during a past Champion battle isn't recorded anywhere, so this
+  -- can't sync retroactively without guessing -- and a wrongly-awarded
+  -- "flawless" ribbon is a worse failure than a missing one.
+
+  local battleHadPlayerFaint = false
+
+  mod.events:on("battle.started", function() battleHadPlayerFaint = false end)
+  mod.events:on("battle.fainted", function(ev)
+    if ev and ev.battler and ev.battler.isPlayer then
+      battleHadPlayerFaint = true
+    end
+  end)
+
+  local function syncLegend(save)
+    local hof = save.hallOfFame
+    if type(hof) ~= "table" then return end
+    -- "how many HoF entries this save has already been checked against"
+    -- lives on the save itself, not a module-level counter -- a shared
+    -- counter would leak state between separate saves (or, as caught in
+    -- testing, between independent save tables in the same run)
+    local seen = save._krSeenHofCount or 0
+    if #hof <= seen then return end -- no new induction
+    local justInducted = hof[#hof]
+    save._krSeenHofCount = #hof
+    if battleHadPlayerFaint then
+      mod.log:info("Champion clear had at least one faint -- no Legend Ribbon")
+      return
+    end
+    local mons = eachMon(save)
+    for _, rec in ipairs(justInducted) do
+      for _, mon in ipairs(mons) do
+        if mon.species == rec.species and mon.nickname == rec.nickname
+            and isOwnOT(mon, save) then
+          awardRibbon(mon, "LEGEND", "flawless Champion clear")
+          break
+        end
+      end
+    end
+  end
+
+  -- ------- EARTH: live only, per-mon "in the active slot" win counter
+  --
+  -- "One mon wins 100 battles in the active slot." kanto_achievements'
+  -- win counters are per-save, not per-mon, so this needs its own
+  -- tracking regardless. The active slot at the moment of victory is
+  -- battle.battler (the last mon standing / self.active on the player
+  -- side) -- approximated here as the first living, non-fainted party
+  -- mon at battle.ended, which is exactly the mon that was active when
+  -- the last enemy went down for a normal win.
+  --
+  -- The count lives on the mon itself (mon.earthWins), not in mod.save,
+  -- so it survives boxing/reordering and isn't confused between mons.
+  -- Live only: Gen1 doesn't record a per-mon win tally to sync from.
+
+  local EARTH_WINS_NEEDED = 100
+
+  local function creditEarthWin(save)
+    if not save then return end
+    for _, mon in ipairs(save.party or {}) do
+      if (mon.hp or 0) > 0 then
+        mon.earthWins = (mon.earthWins or 0) + 1
+        if mon.earthWins >= EARTH_WINS_NEEDED and not hasRibbon(mon, "EARTH") then
+          awardRibbon(mon, "EARTH", "100 wins in the active slot")
+        end
+        return -- credit only the first (front-most) healthy mon
+      end
+    end
+  end
+
   -- ------- BEST_FRIENDS: sync (Yellow only)
   --
   -- Yellow's Pikachu happiness is a real ported system
@@ -376,6 +460,7 @@ return function(mod)
     syncTraveler(save)
     syncEffort(save)
     syncHallOfFame(save)
+    syncLegend(save)
     syncBestFriends(save)
   end
 
@@ -396,6 +481,7 @@ return function(mod)
   local function onBattleEnded(result, save)
     if not save then return end
     if result == "win" then
+      creditEarthWin(save)
       local streak = mod.save:get("win_streak", 0) + 1
       mod.save:set("win_streak", streak)
       for _, t in ipairs(STREAK_RIBBONS) do
@@ -443,7 +529,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.10.3"
+  mod.exports.version = "0.12.1"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -517,12 +603,24 @@ return function(mod)
     return ribbonSheet or nil
   end
 
-  -- No scroll or selection input on the ribbons screen -- descriptions
-  -- are hand-written under each name rather than shown for a highlighted
-  -- row Gen3-style. Three fit per page; owned lists longer than that
-  -- paginate with A (see drawRibbonPage / the screen's update).
-  local ROW_H = 30
-  local DESC_DY = 18 -- below the 16px icon, not across it
+  -- Up/Down scroll the owned list one row at a time; A or B closes.
+  -- WINDOW_SIZE rows visible at once fits the standalone screen's box
+  -- (32..142) at this row pitch: 4*27 = 108px, comfortably inside 110.
+  --
+  -- This scrolls rather than pages in fixed chunks of 3 (the previous
+  -- design) because a mod called G1R HoldToScrollUI by WizzStar
+  -- (github.com/WizzStar/PKMN-G1R-HoldToScrollUI-Mod) showed the
+  -- pattern worth adopting: it auto-repeats a held D-pad direction by
+  -- injecting synthetic wasPressed edges through an `input.step` hook
+  -- for any screen that polls ordinary directional input. No dependency
+  -- is taken here -- this screen just polls plain wasPressed("up"/
+  -- "down") like any other menu, so if a player also has that mod
+  -- installed, holding the D-pad auto-repeats here for free; without
+  -- it, normal repeated taps scroll one row each. Credited in
+  -- THIRD_PARTY_NOTICES.md for the interaction design.
+  local WINDOW_SIZE = 4
+  local ROW_H = 27
+  local DESC_DY = 16 -- below the 16px icon, not across it
 
   -- Layout is left-aligned and measured, not eyeballed. The GB frame is
   -- 160px wide on every platform (the phone just scales it), so the
@@ -550,14 +648,6 @@ return function(mod)
     return out .. ".."
   end
 
-  -- ONE renderer for both surfaces, drawing one PAGE (3 ribbons) of a
-  -- mon's owned list. With twelve ribbons in the catalog, "+N MORE"
-  -- truncation stopped being acceptable -- a decorated mon would hide
-  -- most of its case. Instead the owned list is chunked into pages of 3:
-  -- the summary hook registers one page per chunk (A walks through them
-  -- like any other summary page), and the standalone screen pages with A.
-  local PER_PAGE = 3
-
   local function ownedRibbons(mon)
     local owned = {}
     for i, r in ipairs(catalog) do
@@ -566,16 +656,14 @@ return function(mod)
     return owned
   end
 
-  local function pageCountFor(mon)
-    return math.max(1, math.ceil(#ownedRibbons(mon) / PER_PAGE))
-  end
-
-  local function drawRibbonPage(mon, topY, page)
+  -- Draws rows [scroll+1 .. scroll+WINDOW_SIZE] of the owned list.
+  -- Returns how many rows were drawn and the owned total, so the caller
+  -- can show an empty state or a scroll-position indicator.
+  local function drawRibbonWindow(mon, topY, scroll)
     local img = sheet()
     local owned = ownedRibbons(mon)
-    local first = (page - 1) * PER_PAGE
     local shown = 0
-    for i = first + 1, math.min(first + PER_PAGE, #owned) do
+    for i = scroll + 1, math.min(scroll + WINDOW_SIZE, #owned) do
       local entry = owned[i]
       local y = topY + shown * ROW_H
       local quad = ribbonQuads and ribbonQuads[entry.cell]
@@ -584,7 +672,14 @@ return function(mod)
         love.graphics.draw(img, quad, MARGIN, y)
       end
       love.graphics.setColor(0, 0, 0, 1)
-      Font.draw(clipToWidth(entry.def.short or entry.def.name, NAME_X),
+      -- Full "<Name> Ribbon" per row now, not just the short label.
+      -- clipToWidth is the safety net for the three longest (Hall of
+      -- Fame, Best Friends, Gorgeous Royal) -- this sandbox has no real
+      -- ROM font to measure against (fixtures are missing lowercase
+      -- glyphs entirely), so those three specifically are worth a
+      -- real-device look: either they fit, or they clip to ".." cleanly
+      -- rather than running off-screen either way.
+      Font.draw(clipToWidth((entry.def.short or entry.def.name) .. " Ribbon", NAME_X),
         NAME_X, y + 4)
       Font.draw(clipToWidth(entry.def.description, DESC_X), DESC_X, y + DESC_DY)
       shown = shown + 1
@@ -597,21 +692,18 @@ return function(mod)
   -- same icons and descriptions as the nested page.
   mod.content.screens:register("KantoRibbonsDetail", {
     new = function(game, mon)
-      local state = { game = game, isOpaque = true, page = 1 }
-      state.pageCount = pageCountFor(mon)
+      local state = { game = game, isOpaque = true, scroll = 0 }
+      local total = #ownedRibbons(mon)
+      local maxScroll = math.max(0, total - WINDOW_SIZE)
 
-      -- A pages forward and closes off the last page, mirroring the
-      -- summary cycle; B closes immediately from anywhere
       function state:update()
         local input = game.input
         if not input then return end
-        if input:wasPressed("a") then
-          if self.page < self.pageCount then
-            self.page = self.page + 1
-          else
-            game.stack:pop()
-          end
-        elseif input:wasPressed("b") then
+        if input:wasPressed("up") then
+          self.scroll = math.max(0, self.scroll - 1)
+        elseif input:wasPressed("down") then
+          self.scroll = math.min(maxScroll, self.scroll + 1)
+        elseif input:wasPressed("a") or input:wasPressed("b") then
           game.stack:pop()
         end
       end
@@ -621,10 +713,13 @@ return function(mod)
         love.graphics.rectangle("fill", 0, 0, 160, 144)
         love.graphics.setColor(0, 0, 0, 1)
         Font.draw(mon and monLabel(mon) or "RIBBONS", 8, 4)
-        if self.pageCount > 1 then
-          Font.draw(("%d/%d"):format(self.page, self.pageCount), 128, 4)
+        if total > WINDOW_SIZE then
+          -- position within the OWNED list only -- never a hint about
+          -- ribbons not yet earned
+          Font.draw(("%d-%d/%d"):format(self.scroll + 1,
+            math.min(self.scroll + WINDOW_SIZE, total), total), 108, 4)
         end
-        local shown = drawRibbonPage(mon, 32, self.page)
+        local shown = drawRibbonWindow(mon, 32, self.scroll)
         if shown == 0 then
           love.graphics.setColor(0, 0, 0, 1)
           Font.draw("No ribbons yet.", 16, 64)

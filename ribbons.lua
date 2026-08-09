@@ -47,6 +47,18 @@ return {
     description = "Stat Exp maxed.",
   },
   {
+    id = "LEGEND",
+    name = "Legend Ribbon",
+    short = "Legend",
+    description = "Champion, no faints.",
+  },
+  {
+    id = "EARTH",
+    name = "Earth Ribbon",
+    short = "Earth",
+    description = "100 wins, one mon.",
+  },
+  {
     id = "BEST_FRIENDS",
     name = "Best Friends Ribbon",
     short = "Best Friends",
