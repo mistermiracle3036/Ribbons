@@ -2,6 +2,29 @@
 
 ## 0.20.3
 
+**Updating from 0.18.0?** Versions 0.19.0 through 0.20.2 were never
+published, so this release delivers all of them together. Since 0.18.0
+you get:
+
+- The **Best Friends Ribbon is no longer Pikachu-only.** With
+  [Happiness](https://github.com/thorkdev/gen1recomp-happiness) installed
+  (optional), any Pokémon that reaches maximum happiness earns it —
+  retroactively, and however that Pokémon came to you. More than one
+  Pokémon can hold it now.
+- **Fixed: no Starter Ribbon on a save imported from a real cartridge.**
+  The flag naming which starter you chose is something gen1recomp
+  records, not the original game, so it can't survive the import. The
+  mod now works it out from ownership instead. Thanks to **LeHaz** for
+  the report.
+- New option: **Wide ribbons screen** (off by default). On a genuinely
+  wide display the screen can use a 304-pixel canvas instead of the
+  160-pixel Game Boy frame, which lets the longest ribbon names show in
+  full instead of dropping the word "Ribbon".
+- A **dev toggle for maxing happiness**, so the Best Friends Ribbon is
+  testable without a very long walk.
+
+New in 0.20.3 itself:
+
 - New dev option: **[DEV] Max lead happiness** (off by default). Sets the
   lead Pokémon's happiness to maximum so the Best Friends Ribbon can be
   checked without walking 1,760 steps or feeding 33 Rare Candies for it.
