@@ -6,10 +6,11 @@ actually simulates. Ribbons live on the Pokémon itself, so they survive
 boxing, evolution and trades, and they open straight from the status
 screen: press A past the moves page.
 
-> **Development Preview:** Kanto Ribbons is in active development. Bug
-> reports and ideas are welcome in [GitHub Issues](../../issues) — please
-> include the version number from your load log and which other mods were
-> enabled.
+> **Still growing.** New ribbons and refinements land regularly, but
+> nothing here ever revokes a ribbon it has already awarded, so updating
+> is always safe. Bug reports and ideas are welcome in
+> [GitHub Issues](../../issues) — please include the version from your
+> load log and which other mods were enabled.
 
 Want the exact award conditions, prices and locations? Open the
 **[FAQ and spoiler guide](FAQ.md)** — every detailed answer is collapsed
@@ -70,12 +71,14 @@ three are strictly sequential: you can't skip ahead to Royal without
 Gorgeous already on that Pokémon.
 
 ‡ Contest ribbons need the **Kanto Contests** mod (v0.7.3 or newer),
-which is what records the win. It goes to the Pokémon that actually
-performed, and because that record is stored on the Pokémon itself, it is
-retroactive: a Pokémon that won a Contest before you installed this
-version still gets the ribbon the next time your save syncs, and keeps it
-if you later remove the Contests mod. Without that mod nothing is awarded
-— this mod never guesses which Pokémon might have won something.
+which is what records the win. There's one ribbon per contest category,
+the way Gen III did it — Beauty, Cute, Smart and Tough arrive as that mod
+adds those contests. It goes to the Pokémon that actually performed, and
+because the record is stored on the Pokémon itself, it is retroactive: a
+Pokémon that won a Contest before you installed this version still gets
+the ribbon the next time your save syncs, and keeps it if you later
+remove the Contests mod. Without that mod nothing is awarded — this mod
+never guesses which Pokémon might have won something.
 
 Win streaks are counted from the moment you install the mod — a streak you
 were already on doesn't count, because the save doesn't record which
@@ -83,13 +86,22 @@ Pokémon were with you for it.
 
 ## Installation
 
+**From my mod index** (easiest, and updates come to you):
+
+1. Mod manager → **Find Mods** → **Add index**.
+2. Paste `mistermiracle3036/mod-index`.
+3. Install Kanto Ribbons from the list.
+
+**Or from a zip:**
+
 1. Download `kanto_ribbons-<version>.zip` from the
    [latest release](../../releases/latest).
 2. In the launcher: **MODS → Import mod .zip**. On iOS, delete any older
    downloaded copy of the zip from Files first.
 3. Fully quit and relaunch.
-4. Requires gen1recomp **0.1.38 or newer**. No other mod and no engine
-   change is required.
+
+Requires gen1recomp **0.1.38 or newer**. No other mod and no engine change
+is required.
 
 **Updating:** once installed, the launcher checks this repo for new
 releases. The mod's entry shows "vX.Y.Z available" → tap → **Update** →
@@ -105,9 +117,11 @@ load log prints the running version so you can confirm what's live.
   Pokémon (0.7.4+) so the Snag Ribbon applies retroactively; older
   versions still award it live.
 - **[Kanto Contests](https://github.com/mistermiracle3036/Kanto-Contests)** —
-  optional. Reads the per-category `mon.contestWins` record it writes on
-  the Pokémon that performed, so the contest ribbons apply retroactively
-  and survive that mod being removed. Needs v0.7.3 or newer.
+  optional, and the source of the Cool Ribbon. Reads the per-category
+  `mon.contestWins` record it writes on the Pokémon that performed, so
+  contest ribbons apply retroactively and survive that mod being removed.
+  Needs v0.7.3 or newer; it's out now, currently an alpha with the COOL
+  contest only.
 - **Kanto Achievements** — optional. Reserved for future ribbons that
   reuse its tracked stats rather than re-counting them.
 - **gen1_modern_ui** — works. The ribbons screen opens the same way
