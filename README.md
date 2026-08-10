@@ -52,7 +52,7 @@ so you only reveal what you want.
 | Warrior | One Pokémon wins 250 battles in the active slot | No |
 | Shiny | Born with the rare "virtual shiny" DV spread | Yes |
 | Fossil | A fossil Pokémon revived by you | Yes |
-| Best Friends | Yellow only — your lab Pikachu at maximum happiness | Yes |
+| Best Friends | Max happiness — Yellow's lab Pikachu, or any Pokémon with [Happiness](https://github.com/thorkdev/gen1recomp-happiness)§ | Yes |
 | Winning | In the party for a 10-battle win streak | No |
 | Victory | In the party for a 25-battle win streak | No |
 | Gorgeous | Bought from the Meowth, Celadon Mansion 1F — ₽10,000† | — |
@@ -79,6 +79,14 @@ Pokémon that won a Contest before you installed this version still gets
 the ribbon the next time your save syncs, and keeps it if you later
 remove the Contests mod. Without that mod nothing is awarded — this mod
 never guesses which Pokémon might have won something.
+
+§ Without **Happiness** installed, the ribbon works exactly as before:
+Yellow only, and only your lab Pikachu, using Yellow's own native
+happiness system. With it installed, every Pokémon tracks happiness (not
+just Pikachu), and reaching the cap earns the ribbon whatever species it
+is — retroactively, and no matter how the Pokémon came to you, since
+happiness travels with a Pokémon rather than proving where it came from.
+More than one Pokémon can hold this ribbon.
 
 Win streaks are counted from the moment you install the mod — a streak you
 were already on doesn't count, because the save doesn't record which
@@ -122,15 +130,19 @@ load log prints the running version so you can confirm what's live.
   contest ribbons apply retroactively and survive that mod being removed.
   Needs v0.7.3 or newer; it's out now, currently an alpha with the COOL
   contest only.
+- **[Happiness](https://github.com/thorkdev/gen1recomp-happiness)** —
+  optional. Reads `mon.happiness`, the 0–255 value it tracks for every
+  Pokémon, so the Best Friends Ribbon isn't Pikachu-only when this is
+  installed. Reads the field directly; no version floor.
 - **Kanto Achievements** — optional. Reserved for future ribbons that
   reuse its tracked stats rather than re-counting them.
 - **gen1_modern_ui** — works. The ribbons screen opens the same way
   (A past the last summary page); Modern UI users see the mod's own
   screen styling rather than Modern UI's, since Modern UI's API doesn't
   accept external pages.
-- Works in **Red, Blue and Yellow**. The Best Friends Ribbon is
-  Yellow-only by design (it uses Yellow's Pikachu happiness system);
-  everything else is version-agnostic.
+- Works in **Red, Blue and Yellow**. Without Happiness installed, the
+  Best Friends Ribbon is Yellow-only (it uses Yellow's own Pikachu
+  happiness system); everything else is version-agnostic.
 
 ## A note on how it hooks in
 

@@ -461,24 +461,62 @@ return function(mod)
     end
   end
 
-  -- ------- BEST_FRIENDS: sync (Yellow only)
+  -- ------- BEST_FRIENDS: sync
   --
-  -- Yellow's Pikachu happiness is a real ported system
-  -- (src/world/PikachuFollower.lua, engine/events/pikachu_happiness.asm):
-  -- save.pikachuHappiness, 0..255, starting at 90. Max bond = the Best
-  -- Friends Ribbon, awarded to the lab Pikachu itself -- the same
-  -- family + OT match the Starter resolver uses, so a wild-caught or
-  -- traded Pikachu can't claim it. Non-Yellow saves never set
-  -- EVENT_CHOSE_PIKACHU, so this is inert everywhere else.
+  -- TWO independent sources, because two different systems can own a
+  -- Pokemon's happiness and they do not overlap.
+  --
+  -- 1. VANILLA YELLOW. Yellow's Pikachu happiness is a real ported system
+  --    (src/world/PikachuFollower.lua, engine/events/pikachu_happiness.asm):
+  --    save.pikachuHappiness, 0..255, starting at 90. Max bond = the Best
+  --    Friends Ribbon, awarded to the lab Pikachu itself -- the same
+  --    family + OT match the Starter resolver uses, so a wild-caught or
+  --    traded Pikachu can't claim it. Non-Yellow saves never set
+  --    EVENT_CHOSE_PIKACHU, so this arm is inert everywhere else.
+  --
+  -- 2. THE HAPPINESS MOD (thorkdev/gen1recomp-happiness, id "happiness"),
+  --    which gives EVERY Pokemon a 0..255 `mon.happiness`. Read straight
+  --    off the mon, so this is retroactive and survives that mod being
+  --    uninstalled, exactly like mon.contestWins. That mod publishes no
+  --    exports at all, so the field IS the whole contract -- there is
+  --    nothing to call and nothing to version-check.
+  --
+  -- The arms must stay separate rather than one replacing the other: for
+  -- a PIKACHU on a Yellow save the happiness mod deliberately never
+  -- writes mon.happiness and leaves save.pikachuHappiness to vanilla
+  -- (its own `isYellowPikachu` carve-out), so arm 2 cannot see the
+  -- companion Pikachu and arm 1 is still the only thing that can award
+  -- it. Reading mon.happiness for that mon would find nothing.
+  --
+  -- No OT check on arm 2, deliberately, and unlike arm 1. Arm 1 asks
+  -- "is this the Pikachu you were given in the lab" -- an identity
+  -- question, where a traded lookalike would be wrong. Arm 2 asks "did
+  -- this Pokemon reach maximum happiness", which is true however it came
+  -- to you: happiness travels with the mon, and if you walked a traded
+  -- Pokemon to 255 that bond is yours.
+  --
+  -- One ribbon per Pokemon, not one per save: several mons can max out,
+  -- and each has earned it.
+
+  local MAX_HAPPINESS = 255 -- both systems use the same 0..255 range
 
   local function syncBestFriends(save)
-    if not (save.flags and save.flags.EVENT_CHOSE_PIKACHU) then return end
-    if (save.pikachuHappiness or 0) < 255 then return end
+    -- arm 1: vanilla Yellow companion Pikachu
+    if save.flags and save.flags.EVENT_CHOSE_PIKACHU
+        and (save.pikachuHappiness or 0) >= MAX_HAPPINESS then
+      for _, mon in ipairs(eachMon(save)) do
+        if (mon.species == "PIKACHU" or mon.species == "RAICHU")
+            and isOwnOT(mon, save) then
+          awardRibbon(mon, "BEST_FRIENDS", "Pikachu happiness maxed")
+          break -- one lab Pikachu, one bond
+        end
+      end
+    end
+
+    -- arm 2: any mon the happiness mod has taken to the cap
     for _, mon in ipairs(eachMon(save)) do
-      if (mon.species == "PIKACHU" or mon.species == "RAICHU")
-          and isOwnOT(mon, save) then
-        awardRibbon(mon, "BEST_FRIENDS", "Pikachu happiness maxed")
-        return -- one bond, one ribbon
+      if type(mon.happiness) == "number" and mon.happiness >= MAX_HAPPINESS then
+        awardRibbon(mon, "BEST_FRIENDS", "happiness maxed")
       end
     end
   end
@@ -710,7 +748,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.19.0"
+  mod.exports.version = "0.20.0"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 

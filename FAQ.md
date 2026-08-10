@@ -114,13 +114,27 @@ EV training, and it takes a *lot* of battling.
 </details>
 
 <details>
-<summary>Best Friends Ribbon — how do I raise Pikachu's happiness?</summary>
+<summary>Best Friends Ribbon — how do I raise happiness?</summary>
 
-Yellow only, and it uses the game's real Pikachu happiness value (the one
-the follower Pikachu's mood reflects). Keep it in your party, keep it
-healthy, win battles, don't let it faint. At maximum happiness the ribbon
-is awarded to your **lab** Pikachu specifically — a traded or wild one
-won't take it.
+Two different ways, depending on what you have installed.
+
+**Without the Happiness mod:** Yellow only, and it uses the game's real
+Pikachu happiness value (the one the follower Pikachu's mood reflects).
+Keep it in your party, keep it healthy, win battles, don't let it faint.
+At maximum happiness the ribbon is awarded to your **lab** Pikachu
+specifically — a traded or wild one won't take it.
+
+**With [Happiness](https://github.com/thorkdev/gen1recomp-happiness)
+installed:** every Pokémon tracks its own happiness, not just Pikachu.
+Any Pokémon that reaches the cap earns the ribbon, whatever species it is
+and however you got it — a traded or wild-caught Pokémon can earn this
+one, unlike the Pikachu-only path. More than one Pokémon can hold the
+ribbon at once. It's retroactive: a Pokémon already at max happiness gets
+the ribbon the next time your save syncs, with nothing to redo.
+
+Both paths can be active on the same save without conflicting — the
+Happiness mod deliberately leaves Yellow's lab Pikachu to vanilla's own
+system rather than tracking it too, so nothing double-counts.
 </details>
 
 <details>

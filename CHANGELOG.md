@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.20.0
+
+- **Best Friends Ribbon is no longer Pikachu-only.** With
+  [Happiness](https://github.com/thorkdev/gen1recomp-happiness) installed
+  (optional), ANY Pokemon that reaches maximum happiness earns the ribbon
+  -- not just Yellow's companion Pikachu. Retroactive: happiness lives on
+  the Pokemon itself, so this applies the moment your save syncs, for
+  every Pokemon already at the cap. No OT check here, unlike the Pikachu
+  arm -- happiness travels with a Pokemon however it came to you, so a
+  traded or wild-caught Pokemon walked to max happiness earns it too.
+  Without Happiness installed, only the original Yellow-companion-Pikachu
+  path applies, exactly as before.
+- Multiple Pokemon can now hold the Best Friends Ribbon at once. It was
+  written as a single-winner ribbon because only one Pikachu could ever
+  qualify; that assumption doesn't hold once any Pokemon can.
+
 ## 0.19.0
 
 - New option: **Wide ribbons screen** (off by default). On a wide display
