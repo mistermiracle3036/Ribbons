@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.18.0
+
+**Updating from 0.15.4?** This release also carries everything in 0.17.0
+and 0.16.0 below -- the Cool Ribbon and the fix for the ribbons screen
+looking tilted. Neither of those versions was published, so those changes
+reach you for the first time here.
+
+- The **Legend Ribbon** is now unmistakably a **horseshoe**: open at the
+  top, nail holes punched down each branch, flared heels and a closed toe.
+  0.17.0 gave it a filled body, which fixed it vanishing at 16px, but the
+  shape itself was read off the screen as a horseshoe rather than the
+  wreath it was drawn as -- so this leans into that. It suits "a flawless
+  run" better anyway.
+
 ## 0.17.0
 
 - The Contest Ribbon becomes the **Cool Ribbon**. Contest ribbons are now
@@ -9,10 +23,10 @@
   Nothing to migrate: the win itself is stored on the Pokemon, so a
   Pokemon that already had the Contest Ribbon simply resolves to the Cool
   Ribbon the next time your save syncs.
-- Redrew the **Legend Ribbon**. It was the only icon in the sheet made
-  entirely of 1-pixel outline with no filled body at all, so at 16x16 on a
-  real screen it read as a few stray dots rather than a shape. It is now a
-  filled laurel wreath.
+- Redrew the **Legend Ribbon** with a filled body. It was the only icon in
+  the sheet made entirely of 1-pixel outline with nothing filled in at
+  all, so at 16x16 on a real screen it read as a few stray dots rather
+  than a shape. (Sharpened into a proper horseshoe in 0.18.0.)
 - The Cool Ribbon's rosette has **longer tails**, fanning out to the
   bottom of the icon, so it reads as a prize rosette rather than a coin.
 - Corrected several documentation claims that no longer matched the code:
