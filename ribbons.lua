@@ -115,10 +115,15 @@ return {
     short = "Gorgeous Royal",
     description = "Costs 999999.",
   },
+  -- Contest ribbons are one per category, matching the contest you win.
+  -- Only COOL exists in Kanto Contests today; BEAUTY/CUTE/SMART/TOUGH get
+  -- their own entry and their own icon cell as that mod adds them. The
+  -- resolver keys off mon.contestWins[CATEGORY], which is already recorded
+  -- per category, so adding one here needs no save change.
   {
-    id = "CONTEST",
-    name = "Contest Ribbon",
-    short = "Contest",
-    description = "Won a contest.",
+    id = "COOL",
+    name = "Cool Ribbon",
+    short = "Cool",
+    description = "A COOL contest.",
   },
 }

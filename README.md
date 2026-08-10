@@ -57,7 +57,7 @@ so you only reveal what you want.
 | Gorgeous | Bought from the Meowth, Celadon Mansion 1F — ₽10,000† | — |
 | Royal | Same Meowth — ₽100,000, needs Gorgeous first† | — |
 | Gorgeous Royal | Same Meowth — ₽999,999, needs Royal first† | — |
-| Contest | Won a Contest at the Celadon Contest Hall‡ | Yes‡ |
+| Cool | Won the COOL Contest at the Celadon Contest Hall‡ | Yes‡ |
 
 \* Snag syncs retroactively for Pokémon snagged with **Pokemon Snag 0.7.4 or
 newer**, which marks them permanently. Older snags are still awarded live
@@ -69,7 +69,7 @@ Rearrange your party first if you want a specific one decorated. The
 three are strictly sequential: you can't skip ahead to Royal without
 Gorgeous already on that Pokémon.
 
-‡ The Contest Ribbon needs the **Kanto Contests** mod (v0.7.0 or newer),
+‡ Contest ribbons need the **Kanto Contests** mod (v0.7.3 or newer),
 which is what records the win. It goes to the Pokémon that actually
 performed, and because that record is stored on the Pokémon itself, it is
 retroactive: a Pokémon that won a Contest before you installed this

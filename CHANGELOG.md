@@ -2,14 +2,20 @@
 
 ## 0.16.0
 
-- New: the **Contest Ribbon**, for a Pokemon that wins a Contest in the
-  Kanto Contests mod. The win is recorded on the Pokemon itself, so the
-  ribbon is awarded the way this mod prefers -- recomputed from save
-  state, not from a live event. A Pokemon that won a contest before this
-  version still gets the ribbon on the next sync, and keeps it if the
-  contest mod is later uninstalled. Kanto Contests v0.7.0 or newer is
-  what writes the record; without it nothing is awarded and nothing is
-  guessed.
+- New: the **Cool Ribbon**, for a Pokemon that wins the COOL Contest in
+  the Kanto Contests mod. Contest ribbons are one per category, the way
+  Gen III did it -- Beauty, Cute, Smart and Tough join it as that mod adds
+  those contests, and the plumbing for them is already in place.
+  The win is recorded on the Pokemon itself, so the ribbon is awarded the
+  way this mod prefers -- recomputed from save state, not from a live
+  event. A Pokemon that won a contest before this version still gets the
+  ribbon on the next sync, and keeps it if the contest mod is later
+  uninstalled. Kanto Contests v0.7.3 or newer is what writes the record;
+  without it nothing is awarded and nothing is guessed.
+- Redrew the **Legend Ribbon**. It was the only icon in the sheet made
+  entirely of 1-pixel outline with no filled body at all, so at 16x16 on a
+  real screen it read as a few stray dots rather than a shape. It is now a
+  filled laurel wreath.
 - Fixed the ribbons screen looking tilted. The description column was
   straightened in 0.15.3, but the screen still drew its header at x=8 and
   its empty-state line at x=16, so there were four different left edges

@@ -13,7 +13,7 @@ return {
       "Pokemon now carry ribbons (mon.ribbons), stored on the mon itself so they persist through boxes, evolution and trades",
       "Starter Ribbon: awarded to the Pokemon you chose in Oak's lab (or Yellow's lab Pikachu)",
       "retroactive sync -- an existing save gets the Starter Ribbon on the correct Pokemon at load, with no player intervention",
-      "Contest Ribbon: awarded to the Pokemon that wins a Contest in the Kanto Contests mod (v0.7.0+), read back from the win recorded on the mon itself so it applies retroactively and outlives that mod being removed",
+      "Cool Ribbon: awarded to the Pokemon that wins the COOL Contest in the Kanto Contests mod (v0.7.3+), read back from the win recorded on the mon itself so it applies retroactively and outlives that mod being removed; contest ribbons are one per category, the rest arrive as that mod adds those contests",
     },
     known = {
       "a starter that was released or traded away cannot be tagged -- there is no Pokemon left to tag; logged rather than guessed at",
@@ -27,7 +27,7 @@ return {
     { who = "DexNav example", for_ = "the screens registry + ui hook decoration pattern used for both ribbon screens" },
     { who = "G1R HoldToScrollUI (WizzStar)", for_ = "the hold-to-scroll interaction design behind the 0.12.0 ribbons screen -- not a dependency, but compatible for free since this screen polls plain directional input" },
     { who = "Miss Default Bunny", for_ = "suggesting the Shiny Ribbon, in the gen1recomp Discord" },
-    { who = "Kanto Contests", for_ = "recording a Contest win on the Pokemon itself, which is what the Contest Ribbon reads" },
+    { who = "Kanto Contests", for_ = "recording a contest win on the Pokemon itself, per category, which is what the contest ribbons read" },
   },
 
   compat = { engine = ">=0.0.0-dev <2.0.0", modApi = 2 },

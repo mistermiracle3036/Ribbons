@@ -76,6 +76,13 @@ return function(mod)
     return mon ~= nil and mon.ribbons ~= nil and mon.ribbons[id] == true
   end
 
+  local function inCatalog(id)
+    for _, r in ipairs(catalog) do
+      if r.id == id then return true end
+    end
+    return false
+  end
+
   local function awardRibbon(mon, id, why)
     if not mon or hasRibbon(mon, id) then return false end
     mon.ribbons = mon.ribbons or {}
@@ -578,24 +585,36 @@ return function(mod)
   -- and Fossil check OT because those ask "did YOU get this here" --
   -- a different question.)
   --
-  -- Counts are stored per category (COOL/BEAUTY/CUTE/SMART/TOUGH) even
-  -- though one Contest Ribbon covers all of them today, so per-category
-  -- ribbons can be added later without touching an existing save.
-  local function contestWinTotal(mon)
-    local wins = mon and mon.contestWins
-    if type(wins) ~= "table" then return 0 end
-    local total = 0
-    for _, n in pairs(wins) do
-      if type(n) == "number" then total = total + n end
-    end
-    return total
-  end
+  -- One ribbon per contest CATEGORY, matching the contest you won, the way
+  -- Gen III did it. Only COOL is reachable today because Kanto Contests
+  -- only runs a COOL contest -- the rest are listed here so that adding
+  -- one is a catalog entry plus an icon cell and nothing else. A category
+  -- with no catalog entry simply awards nothing.
+  --
+  -- 0.16.0 shipped this for one turn as a single "CONTEST" ribbon. A save
+  -- from that build carries a stale mon.ribbons.CONTEST, which is inert:
+  -- the screen renders from the catalog, so an id no longer in it is not
+  -- drawn. Nothing is lost, because the win itself lives in
+  -- mon.contestWins and re-resolves to the COOL ribbon on the next sync.
+  local CONTEST_RIBBONS = {
+    COOL = "COOL", BEAUTY = "BEAUTY", CUTE = "CUTE",
+    SMART = "SMART", TOUGH = "TOUGH",
+  }
 
   local function syncContest(save)
     if not save then return end
     for _, mon in ipairs(eachMon(save)) do
-      if contestWinTotal(mon) > 0 then
-        awardRibbon(mon, "CONTEST", "won a Pokemon Contest")
+      local wins = mon.contestWins
+      if type(wins) == "table" then
+        for category, count in pairs(wins) do
+          local id = CONTEST_RIBBONS[category]
+          -- only award an id the catalog actually defines: a category
+          -- whose ribbon has not been drawn yet must write nothing to the
+          -- save rather than a flag for a ribbon that cannot be shown
+          if id and inCatalog(id) and type(count) == "number" and count > 0 then
+            awardRibbon(mon, id, ("won a %s contest"):format(category))
+          end
+        end
       end
     end
   end

@@ -113,10 +113,10 @@ won't take it.
 </details>
 
 <details>
-<summary>Contest Ribbon — how do I win one?</summary>
+<summary>Cool Ribbon — how do I win one?</summary>
 
 Win a Contest at the Celadon Contest Hall, which needs the **Kanto
-Contests** mod (v0.7.0 or newer). Appeal to the judge with moves that
+Contests** mod (v0.7.3 or newer). Appeal to the judge with moves that
 match the contest's category until his appeal meter is full — the
 Pokémon that performed gets the ribbon.
 
@@ -125,7 +125,7 @@ ribbon is retroactive: if you won a Contest before installing this
 version, it turns up the next time your save syncs. It also survives
 boxing, evolution, trading, and removing the Contests mod afterwards.
 
-Without the Contests mod installed, no Contest Ribbon is ever awarded —
+Without the Contests mod installed, no contest ribbon is ever awarded —
 there's nothing in a vanilla save that records a Contest, and this mod
 would rather award nothing than guess.
 </details>
