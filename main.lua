@@ -41,8 +41,22 @@ return function(mod)
   -- every real player. Checked fresh in syncAll below, so flipping it
   -- mid-session takes effect on the very next sync -- no restart.
   mod.options:define({
+    -- Off by default, and deliberately a choice rather than something
+    -- detected. Renderer:setUISize accepts ANY width from 160 to 640
+    -- without consulting the physical display (Renderer.lua:196-201), so
+    -- asking for the wide canvas on a narrow phone does not fail -- it
+    -- succeeds and scales the same screen down, making every glyph
+    -- physically smaller. Wider is only better when the display is
+    -- actually wide, and the mod cannot know that better than the player
+    -- looking at it.
+    { key = "wide_screen", type = "toggle",
+      label = "Wide ribbons screen", default = false },
     { key = "dev_give_lead_all_ribbons", type = "toggle",
       label = "[DEV] Give lead all ribbons", default = false },
+    -- No-ops unless the Happiness mod is installed; see
+    -- devMaxLeadHappiness for why it only raises an existing value.
+    { key = "dev_max_lead_happiness", type = "toggle",
+      label = "[DEV] Max lead happiness", default = false },
   })
 
   -- ------- catalog
@@ -129,10 +143,70 @@ return function(mod)
     return true
   end
 
+  -- ------- STARTER: the imported-save fallback
+  --
+  -- Reported by LeHaz in the gen1recomp Discord: a Red save whose starter
+  -- had long since become a VENUSAUR got no Starter Ribbon at all.
+  --
+  -- The cause is that EVENT_CHOSE_BULBASAUR / _CHARMANDER / _SQUIRTLE /
+  -- _PIKACHU are gen1recomp's OWN flags, set by its lab script
+  -- (data/scripts/oaks_lab.lua's starterBall, oaks_lab_yellow.lua:202).
+  -- They are not real Gen 1 wEventFlags bits, so they have no bit to
+  -- decode out of an imported .sav: src/save_convert/data/event_flags.lua
+  -- (and the Yellow table) contain ZERO EVENT_CHOSE_* entries, and
+  -- GenSave decodes "only bits with a known name"
+  -- (save_convert/GenSave.lua:733-737). EVENT_GOT_STARTER (bit 34) IS a
+  -- real bit and does survive.
+  --
+  -- So a save played start-to-finish inside gen1recomp is fine, and a
+  -- save imported from a real cartridge arrives knowing that a starter
+  -- was taken but not WHICH -- and starterFamily returned nil, so the
+  -- resolver bailed silently. That is precisely the "save that predates
+  -- the mod" case the whole retroactive design exists to serve.
+  --
+  -- Recovering it without guessing: in Gen 1 the only way to obtain a
+  -- second starter-family Pokemon is a trade, and a traded mon carries
+  -- the other trainer's OT. So an own-OT Pokemon in a starter family is
+  -- the starter -- as long as there is exactly ONE. Two or more is
+  -- genuinely ambiguous (a link trade from a friend playing the same
+  -- game keeps their OT, but a self-trade between your own two carts
+  -- would not), and this mod does not resolve ambiguity by guessing:
+  -- nothing here revokes an award, so a wrong one is permanent.
+  local function starterFromOwnership(save)
+    if not (save.flags and save.flags.EVENT_GOT_STARTER) then return nil end
+    local anyFamily = {}
+    for _, family in pairs(STARTER_FLAGS) do
+      for _, species in ipairs(family) do anyFamily[species] = true end
+    end
+    local candidates = {}
+    for _, mon in ipairs(eachMon(save)) do
+      if anyFamily[mon.species] and isOwnOT(mon, save) then
+        candidates[#candidates + 1] = mon
+      end
+    end
+    if #candidates == 1 then return candidates[1] end
+    if #candidates > 1 then
+      mod.log:warn("EVENT_GOT_STARTER is set with no EVENT_CHOSE_* flag " ..
+        "(imported save?) and %d of your Pokemon are in a starter family " ..
+        "-- cannot tell which was the starter, so no ribbon was placed",
+        #candidates)
+    end
+    return nil
+  end
+
   local function syncStarter(save)
     if not save then return end
     local family, flag = starterFamily(save)
-    if not family then return end -- no starter chosen yet, nothing to sync
+    if not family then
+      -- no EVENT_CHOSE_* to work from; try ownership instead
+      local mon = starterFromOwnership(save)
+      if mon then
+        awardRibbon(mon, "STARTER",
+          "sole own-OT starter-family Pokemon (imported save, no " ..
+          "EVENT_CHOSE_* flag)")
+      end
+      return
+    end
 
     local inFamily = {}
     for _, species in ipairs(family) do inFamily[species] = true end
@@ -451,24 +525,62 @@ return function(mod)
     end
   end
 
-  -- ------- BEST_FRIENDS: sync (Yellow only)
+  -- ------- BEST_FRIENDS: sync
   --
-  -- Yellow's Pikachu happiness is a real ported system
-  -- (src/world/PikachuFollower.lua, engine/events/pikachu_happiness.asm):
-  -- save.pikachuHappiness, 0..255, starting at 90. Max bond = the Best
-  -- Friends Ribbon, awarded to the lab Pikachu itself -- the same
-  -- family + OT match the Starter resolver uses, so a wild-caught or
-  -- traded Pikachu can't claim it. Non-Yellow saves never set
-  -- EVENT_CHOSE_PIKACHU, so this is inert everywhere else.
+  -- TWO independent sources, because two different systems can own a
+  -- Pokemon's happiness and they do not overlap.
+  --
+  -- 1. VANILLA YELLOW. Yellow's Pikachu happiness is a real ported system
+  --    (src/world/PikachuFollower.lua, engine/events/pikachu_happiness.asm):
+  --    save.pikachuHappiness, 0..255, starting at 90. Max bond = the Best
+  --    Friends Ribbon, awarded to the lab Pikachu itself -- the same
+  --    family + OT match the Starter resolver uses, so a wild-caught or
+  --    traded Pikachu can't claim it. Non-Yellow saves never set
+  --    EVENT_CHOSE_PIKACHU, so this arm is inert everywhere else.
+  --
+  -- 2. THE HAPPINESS MOD (thorkdev/gen1recomp-happiness, id "happiness"),
+  --    which gives EVERY Pokemon a 0..255 `mon.happiness`. Read straight
+  --    off the mon, so this is retroactive and survives that mod being
+  --    uninstalled, exactly like mon.contestWins. That mod publishes no
+  --    exports at all, so the field IS the whole contract -- there is
+  --    nothing to call and nothing to version-check.
+  --
+  -- The arms must stay separate rather than one replacing the other: for
+  -- a PIKACHU on a Yellow save the happiness mod deliberately never
+  -- writes mon.happiness and leaves save.pikachuHappiness to vanilla
+  -- (its own `isYellowPikachu` carve-out), so arm 2 cannot see the
+  -- companion Pikachu and arm 1 is still the only thing that can award
+  -- it. Reading mon.happiness for that mon would find nothing.
+  --
+  -- No OT check on arm 2, deliberately, and unlike arm 1. Arm 1 asks
+  -- "is this the Pikachu you were given in the lab" -- an identity
+  -- question, where a traded lookalike would be wrong. Arm 2 asks "did
+  -- this Pokemon reach maximum happiness", which is true however it came
+  -- to you: happiness travels with the mon, and if you walked a traded
+  -- Pokemon to 255 that bond is yours.
+  --
+  -- One ribbon per Pokemon, not one per save: several mons can max out,
+  -- and each has earned it.
+
+  local MAX_HAPPINESS = 255 -- both systems use the same 0..255 range
 
   local function syncBestFriends(save)
-    if not (save.flags and save.flags.EVENT_CHOSE_PIKACHU) then return end
-    if (save.pikachuHappiness or 0) < 255 then return end
+    -- arm 1: vanilla Yellow companion Pikachu
+    if save.flags and save.flags.EVENT_CHOSE_PIKACHU
+        and (save.pikachuHappiness or 0) >= MAX_HAPPINESS then
+      for _, mon in ipairs(eachMon(save)) do
+        if (mon.species == "PIKACHU" or mon.species == "RAICHU")
+            and isOwnOT(mon, save) then
+          awardRibbon(mon, "BEST_FRIENDS", "Pikachu happiness maxed")
+          break -- one lab Pikachu, one bond
+        end
+      end
+    end
+
+    -- arm 2: any mon the happiness mod has taken to the cap
     for _, mon in ipairs(eachMon(save)) do
-      if (mon.species == "PIKACHU" or mon.species == "RAICHU")
-          and isOwnOT(mon, save) then
-        awardRibbon(mon, "BEST_FRIENDS", "Pikachu happiness maxed")
-        return -- one bond, one ribbon
+      if type(mon.happiness) == "number" and mon.happiness >= MAX_HAPPINESS then
+        awardRibbon(mon, "BEST_FRIENDS", "happiness maxed")
       end
     end
   end
@@ -564,6 +676,33 @@ return function(mod)
     end
   end
 
+  -- Maxes the lead's happiness so the Best Friends Ribbon is testable in
+  -- less than 1,760 steps. From the Happiness mod's starting 90 you need
+  -- +165, which is 55 walk ticks, 33 level-ups or 7 unclaimed Gym
+  -- Leaders -- too slow to verify a one-line resolver against.
+  --
+  -- Deliberately only RAISES a value that already exists. mon.happiness
+  -- belongs to the Happiness mod (thorkdev/gen1recomp-happiness); if that
+  -- mod is not installed the field is absent and this does nothing at
+  -- all, rather than fabricating a number no system owns and handing out
+  -- a Best Friends Ribbon nobody earned. So the toggle is inert on its
+  -- own and only shortcuts a system that is genuinely present.
+  --
+  -- 255 matches MAX_HAPPINESS in both that mod and vanilla Yellow's
+  -- save.pikachuHappiness. Like the award-all toggle above, turning this
+  -- back off does not revoke the ribbon it led to -- nothing here ever
+  -- revokes -- so treat it as permanent on any save you care about.
+  local function devMaxLeadHappiness(save)
+    if mod.options:get("dev_max_lead_happiness") ~= true then return end
+    local lead = save.party and save.party[1]
+    if not lead then return end
+    if type(lead.happiness) ~= "number" then return end -- mod not installed
+    if lead.happiness >= MAX_HAPPINESS then return end
+    lead.happiness = MAX_HAPPINESS
+    mod.log:info("[DEV] set %s happiness to %d",
+      lead.nickname or lead.species or "?", MAX_HAPPINESS)
+  end
+
   -- ------- CONTEST: sync
   --
   -- Kanto Contests (mistermiracle3036/Kanto-Contests) records a win on
@@ -621,6 +760,10 @@ return function(mod)
 
   local function syncAll(save)
     if not save then return end
+    -- BEFORE the resolvers, not after: this exists to feed syncBestFriends
+    -- on the very same pass. Run last and the ribbon would not appear
+    -- until some later sync, which reads as the toggle not working.
+    devMaxLeadHappiness(save)
     syncStarter(save)
     syncSnag(save)
     syncRare(save)
@@ -700,7 +843,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.18.0"
+  mod.exports.version = "0.20.3"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -740,6 +883,12 @@ return function(mod)
   })
 
   local Font = mod.ui.Font
+  -- Reached under the same engine_internals permission as the
+  -- SummaryMenu patch below. Only ever READ from (uiSize), never
+  -- configured -- Game:draw owns setUISize and calls it from this
+  -- screen's own uiSize() return value.
+  local Renderer = require("src.render.Renderer")
+  local PaletteFX = require("src.render.PaletteFX")
 
   -- lazy: mod.assets:image needs a graphics context, which a headless
   -- load (tests, validate) doesn't have. Loaded once, on first draw.
@@ -793,13 +942,27 @@ return function(mod)
   local ROW_H = 27
   local DESC_DY = 16 -- below the 16px icon, not across it
 
-  -- Layout is left-aligned and measured, not eyeballed. The GB frame is
-  -- 160px wide on every platform (the phone just scales it), so the
-  -- earlier x=36 text column left only ~15 characters before the right
-  -- edge and clipped the longer descriptions mid-word. Now the icon
-  -- sits at the left margin, the name runs beside it, and the
-  -- description gets its own full-width line underneath.
-  local SCREEN_W = 160
+  -- Layout is left-aligned and measured, not eyeballed. The icon sits at
+  -- the left margin, the name runs beside it, and the description gets
+  -- its own line underneath.
+  --
+  -- The canvas is no longer assumed to be 160px. A state on top of the
+  -- stack may expose uiSize(), and Game.lua:432-433 hands whatever it
+  -- returns to Renderer:setUISize before anything draws -- so this screen
+  -- can ask for the engine's wide surface. 304x144 is not invented here:
+  -- it is WideBattle.WIDTH/HEIGHT (src/battle/WideBattle.lua:22-23), the
+  -- same canvas the wide battle layout already uses, so a player who runs
+  -- wide sees one consistent width across the game.
+  --
+  -- `screenW` is re-read from the renderer at the top of every draw
+  -- rather than assumed, because setUISize CLAMPS: a request outside
+  -- 160..640 silently becomes 160x144 (Renderer.lua:197-201). Reading
+  -- back what we actually got means the layout is correct even when the
+  -- request was refused, instead of drawing a 304-wide screen into a
+  -- 160-wide surface.
+  local CLASSIC_W, CLASSIC_H = 160, 144
+  local WIDE_W, WIDE_H = 304, 144
+  local screenW, screenH = CLASSIC_W, CLASSIC_H
   local MARGIN = 4
   local ICON_W = 16
   local NAME_X = MARGIN + ICON_W + 4 -- 24
@@ -828,7 +991,7 @@ return function(mod)
   -- ribbon's text says -- rather than relying on every description
   -- being hand-checked against the margin.
   local function clipToWidth(text, x)
-    local budget = SCREEN_W - x - MARGIN
+    local budget = screenW - x - MARGIN
     if Font.width(text) <= budget then return text end
     local out = text
     while #out > 1 and Font.width(out .. "..") > budget do
@@ -845,7 +1008,7 @@ return function(mod)
   -- the redundant part on a screen already titled RIBBONS, so it's the
   -- right thing to lose first.
   local function fitName(def, x)
-    local budget = SCREEN_W - x - MARGIN
+    local budget = screenW - x - MARGIN
     local base = def.short or def.name
     local full = base .. " Ribbon"
     if Font.width(full) <= budget then return full end
@@ -912,9 +1075,83 @@ return function(mod)
         end
       end
 
+      -- Whether the wide canvas is wanted is decided ONCE, here, and the
+      -- uiSize/sgbPalettes methods are only INSTALLED when it is.
+      --
+      -- That is not tidiness, it is the fix for a real regression in
+      -- 0.19.0/0.20.x. Game:draw picks the screen's palette by walking
+      -- DOWN the stack and stopping at the first state that has an
+      -- sgbPalettes method at all (Game.lua:488-495) -- "the topmost
+      -- state that knows its palette owns the screen (overlays like text
+      -- boxes inherit from what's beneath them)". This screen never had
+      -- one, so the search fell through to the overworld underneath and
+      -- this screen INHERITED its colour zones. That inheritance is where
+      -- the ribbon icons' colour has always come from.
+      --
+      -- Defining sgbPalettes unconditionally stopped that search here.
+      -- Returning nil from it then meant no zones at all, so ADVANCED and
+      -- the other colour modes drew the whole screen in flat greyscale --
+      -- reported from device. Merely HAVING the method is the side
+      -- effect; what it returns is secondary.
+      --
+      -- So when the option is off, this state carries neither method and
+      -- is byte-for-byte the 0.18.0 state object. Only the wide path,
+      -- which genuinely must own its palette, installs them.
+      --
+      -- pcall'd and defaulted: an options read that throws must leave the
+      -- screen on the classic path rather than take it down.
+      local okOpt, wantWide = pcall(function()
+        return mod.options:get("wide_screen")
+      end)
+      wantWide = okOpt and wantWide or false
+
+      if wantWide then
+        -- Asked for BEFORE anything draws: Game:draw resolves the top
+        -- state's surface every frame (Game.lua:432-433), so returning
+        -- the wide size here is what widens the canvas.
+        function state:uiSize()
+          return WIDE_W, WIDE_H
+        end
+
+        -- Widening the canvas moves the SGB colorization pass out from
+        -- under the screen, so the wide path has to own its palette.
+        --
+        -- A state exposing no zones normally gets one invented for it,
+        -- but PaletteFX.whole() is hardcoded to tiles (0,0)-(19,17)
+        -- (PaletteFX.lua:284-286) -- exactly 160x144. On a 304-wide
+        -- canvas that remap stops dead at x=160 and leaves the right half
+        -- untouched in the three forced-mono COLORS modes (OG / OG INV /
+        -- CLASSIC). BattleState.lua:122-126 documents the same trap for
+        -- the wide battle, which is why WideBattle ships zones() at all.
+        function state:sgbPalettes()
+          local w, h = self:uiSize()
+          local mode = PaletteFX.mode or "gbc"
+          if mode == "og" or mode == "og_inv" or mode == "classic" then
+            return { PaletteFX.zone(PaletteFX.GRAYS, 0, 0, w / 8 - 1, h / 8 - 1) }
+          end
+          -- Colour modes: a full-canvas passthrough zone, the shape
+          -- WideBattle.zones() uses for the same case. NOT nil -- nil
+          -- here would strip colour exactly the way the 0.19.0
+          -- regression did, since this method's presence has already
+          -- ended Game.lua's search for a palette owner.
+          return { { colors = false, x = 0, y = 0, w = w, h = h } }
+        end
+      end
+
       function state:draw()
+        -- Read back the surface we actually got rather than the one we
+        -- asked for. setUISize clamps a request outside 160..640 to the
+        -- classic size without saying so, and other things (a wide
+        -- battle underneath) can own the surface instead -- in either
+        -- case the layout below has to follow the real width.
+        local okSize, w, h = pcall(function()
+          return Renderer:uiSize()
+        end)
+        screenW = (okSize and type(w) == "number") and w or CLASSIC_W
+        screenH = (okSize and type(h) == "number") and h or CLASSIC_H
+
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.rectangle("fill", 0, 0, 160, 144)
+        love.graphics.rectangle("fill", 0, 0, screenW, screenH)
         love.graphics.setColor(0, 0, 0, 1)
         -- The indicator is measured FIRST so the title can be clipped
         -- against the space it actually leaves. A 10-character nickname
@@ -935,17 +1172,17 @@ return function(mod)
           label = ("%d-%d/%d"):format(self.scroll + 1,
             math.min(self.scroll + WINDOW_SIZE, total), total)
         end
-        local titleBudget = SCREEN_W - MARGIN - TITLE_X
+        local titleBudget = screenW - MARGIN - TITLE_X
         if label then
           titleBudget = titleBudget - Font.width(label) - 4
         end
         local title = mon and monLabel(mon) or "RIBBONS"
         if Font.width(title) > titleBudget then
-          title = clipToWidth(title, SCREEN_W - MARGIN - titleBudget)
+          title = clipToWidth(title, screenW - MARGIN - titleBudget)
         end
         Font.draw(title, TITLE_X, 4)
         if label then
-          Font.draw(label, SCREEN_W - MARGIN - Font.width(label), 4)
+          Font.draw(label, screenW - MARGIN - Font.width(label), 4)
         end
         local shown = drawRibbonWindow(mon, 20, self.scroll)
         if shown == 0 then

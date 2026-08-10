@@ -64,6 +64,15 @@ looks for a Pokémon in that evolution family whose original trainer is
 you. So an evolved starter still matches, and a **traded** Pokémon of the
 same species can't be mistaken for it.
 
+**If your save came from a real cartridge**, that flag isn't there — it's
+something gen1recomp records, not the original game, so it can't survive
+the import. Your save knows you took *a* starter but not which one. In
+that case the mod works it out from ownership instead: the only way to
+get a second starter-family Pokémon in Gen 1 is a trade, and traded
+Pokémon carry someone else's trainer ID, so the one that's originally
+yours is your starter. If somehow more than one qualifies, it awards
+nothing and says so in the log rather than picking wrong.
+
 An earlier version guessed "party slot 1" instead and got this wrong on
 any save where you'd caught or reordered anything. That's fixed.
 </details>
@@ -114,13 +123,27 @@ EV training, and it takes a *lot* of battling.
 </details>
 
 <details>
-<summary>Best Friends Ribbon — how do I raise Pikachu's happiness?</summary>
+<summary>Best Friends Ribbon — how do I raise happiness?</summary>
 
-Yellow only, and it uses the game's real Pikachu happiness value (the one
-the follower Pikachu's mood reflects). Keep it in your party, keep it
-healthy, win battles, don't let it faint. At maximum happiness the ribbon
-is awarded to your **lab** Pikachu specifically — a traded or wild one
-won't take it.
+Two different ways, depending on what you have installed.
+
+**Without the Happiness mod:** Yellow only, and it uses the game's real
+Pikachu happiness value (the one the follower Pikachu's mood reflects).
+Keep it in your party, keep it healthy, win battles, don't let it faint.
+At maximum happiness the ribbon is awarded to your **lab** Pikachu
+specifically — a traded or wild one won't take it.
+
+**With [Happiness](https://github.com/thorkdev/gen1recomp-happiness)
+installed:** every Pokémon tracks its own happiness, not just Pikachu.
+Any Pokémon that reaches the cap earns the ribbon, whatever species it is
+and however you got it — a traded or wild-caught Pokémon can earn this
+one, unlike the Pikachu-only path. More than one Pokémon can hold the
+ribbon at once. It's retroactive: a Pokémon already at max happiness gets
+the ribbon the next time your save syncs, with nothing to redo.
+
+Both paths can be active on the same save without conflicting — the
+Happiness mod deliberately leaves Yellow's lab Pikachu to vanilla's own
+system rather than tracking it too, so nothing double-counts.
 </details>
 
 <details>

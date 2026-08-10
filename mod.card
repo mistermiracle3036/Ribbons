@@ -14,11 +14,13 @@ return {
       "Starter Ribbon: awarded to the Pokemon you chose in Oak's lab (or Yellow's lab Pikachu)",
       "retroactive sync -- an existing save gets the Starter Ribbon on the correct Pokemon at load, with no player intervention",
       "Cool Ribbon: awarded to the Pokemon that wins the COOL Contest in the Kanto Contests mod (v0.7.3+), read back from the win recorded on the mon itself so it applies retroactively and outlives that mod being removed; contest ribbons are one per category, the rest arrive as that mod adds those contests",
+      "Best Friends Ribbon now reads mon.happiness from the Happiness mod (thorkdev/gen1recomp-happiness) when installed, so any Pokemon at maximum happiness qualifies, not only Yellow's lab Pikachu; the two happiness sources are independent and do not double-count the same Pokemon",
+      "Wide ribbons screen option: on a wide display the screen can use the same 304px canvas the wide battle layout uses instead of 160px, lifting the 16-character text budget that has shaped several ribbon names and descriptions; off by default since the engine grants any width regardless of the real display",
     },
     known = {
       "a starter that was released or traded away cannot be tagged -- there is no Pokemon left to tag; logged rather than guessed at",
       "a Yellow save holding both the lab Pikachu and a wild-caught one is genuinely ambiguous (Gen1 stores nothing to separate them); resolved party-before-boxes with a warning in the log",
-      "icon colour is not the mod's to choose: the screen exposes no sgbPalettes(), so PaletteFX colours each icon by its tile position and the same ribbon can look different colours at different scroll positions -- icons are distinguished by silhouette, not hue",
+      "icon colour is not the mod's to choose: with the classic screen this state exposes no sgbPalettes(), so Game.lua's palette search falls through to the state underneath and the screen INHERITS its colour zones -- which is why the same ribbon can look different colours at different scroll positions, and why icons are distinguished by silhouette rather than hue",
       "win streaks (Winning, Victory), Legend, Earth, Warrior and pre-0.7.4 snags cannot apply retroactively -- the save records nothing to recompute them from, so they are awarded live only and a run predating the mod earns them from zero",
     },
   },
@@ -28,7 +30,9 @@ return {
     { who = "DexNav example", for_ = "the screens registry + ui hook decoration pattern used for both ribbon screens" },
     { who = "G1R HoldToScrollUI (WizzStar)", for_ = "the hold-to-scroll interaction design behind the 0.12.0 ribbons screen -- not a dependency, but compatible for free since this screen polls plain directional input" },
     { who = "Miss Default Bunny", for_ = "suggesting the Shiny Ribbon, in the gen1recomp Discord" },
+    { who = "LeHaz", for_ = "reporting that an imported cartridge save never got the Starter Ribbon -- EVENT_CHOSE_* is a gen1recomp-only flag with no bit in a real Gen 1 save, fixed in 0.20.1" },
     { who = "Kanto Contests", for_ = "recording a contest win on the Pokemon itself, per category, which is what the contest ribbons read" },
+    { who = "Happiness (thorkdev)", for_ = "tracking mon.happiness for every Pokemon, which is what lets the Best Friends Ribbon reach beyond Yellow's lab Pikachu" },
   },
 
   -- keep this in step with manifest.json's game_version

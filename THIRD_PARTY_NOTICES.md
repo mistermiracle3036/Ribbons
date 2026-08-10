@@ -13,6 +13,11 @@
 - **Kanto Contests** — optional integration. Reads `mon.contestWins`,
   the per-category record it writes on the Pokémon that won, so the
   contest ribbons apply retroactively; no code is shared.
+- **[Happiness](https://github.com/thorkdev/gen1recomp-happiness)** by
+  thorkdev — optional integration. Reads `mon.happiness`, the 0–255 value
+  it tracks for every Pokémon, so the Best Friends Ribbon can be earned
+  by any Pokémon rather than only Yellow's lab Pikachu; no code is
+  shared.
 - The ribbon system reimagined here is inspired by the Generation III–IX
   ribbons of the official games; no assets or data from those games are
   included. All icon art (`ribbons.png`) is original to this mod.
@@ -25,6 +30,9 @@
   this screen for free.
 - The Shiny Ribbon was suggested by **Miss Default Bunny** in the
   gen1recomp Discord.
+- **LeHaz** reported, in the gen1recomp Discord, that a save imported from
+  a real cartridge never received the Starter Ribbon — the bug fixed in
+  0.20.1.
 - Pokémon and all related names are trademarks of Nintendo / Creatures
   Inc. / GAME FREAK inc. This mod contains no ROM data or copyrighted
   assets; it is a fan-made script mod and requires the user's own game

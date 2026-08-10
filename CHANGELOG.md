@@ -1,5 +1,94 @@
 # Changelog
 
+## 0.20.3
+
+- New dev option: **[DEV] Max lead happiness** (off by default). Sets the
+  lead Pokémon's happiness to maximum so the Best Friends Ribbon can be
+  checked without walking 1,760 steps or feeding 33 Rare Candies for it.
+  It only raises a happiness value that already exists, so with the
+  Happiness mod not installed it does nothing at all rather than handing
+  out a ribbon nobody earned. Like the other dev toggle, turning it back
+  off does not take the ribbon away.
+
+## 0.20.2
+
+- **Fixed: ribbon icons drawn in black and white**, even in ADVANCED and
+  the other colour modes. A regression introduced in 0.19.0 and present
+  in 0.20.0 and 0.20.1; reported from device before any of those reached
+  a release.
+
+  The ribbons screen has never picked its own colours — it inherits them
+  from the screen underneath it. Adding wide-screen support in 0.19.0
+  gave the screen a palette method so the wide canvas could be coloured
+  correctly, but the engine treats *having* that method as "this screen
+  owns its colours", which stopped the inheritance and left the screen
+  with none at all.
+
+  The palette method is now only attached when the wide screen option is
+  actually on. With it off — the default — the screen is exactly what it
+  was in 0.18.0 and inherits colour as it always did.
+
+## 0.20.1
+
+- **Fixed: no Starter Ribbon on a save imported from a real cartridge.**
+  Thanks to **LeHaz** for reporting this in the gen1recomp Discord — a Red
+  save whose Bulbasaur had long since become a Venusaur was getting no
+  Starter Ribbon at all.
+
+  The mod identifies your starter from an event flag the game sets in
+  Oak's lab. That flag is gen1recomp's own, not something a real Gen 1
+  cartridge records, so an imported save arrives knowing that you took a
+  starter but not which one — and the ribbon was skipped silently.
+
+  When that flag is missing, the mod now works it out from ownership
+  instead: in Gen 1 the only way to get a second starter-family Pokémon
+  is a trade, and traded Pokémon carry the other trainer's ID. So if
+  exactly one Bulbasaur/Charmander/Squirtle/Pikachu-family Pokémon in
+  your save is originally yours, that's your starter. If more than one
+  is, it says so in the log and awards nothing rather than guessing —
+  the ribbon is permanent, so a wrong award would be worse than a late
+  one.
+
+  Evolved starters were never the problem and still work: the ribbon
+  matches the whole family, so a Venusaur is found the same as a
+  Bulbasaur. Saves played start to finish inside gen1recomp were always
+  fine and are unaffected by this change.
+
+## 0.20.0
+
+- **Best Friends Ribbon is no longer Pikachu-only.** With
+  [Happiness](https://github.com/thorkdev/gen1recomp-happiness) installed
+  (optional), ANY Pokemon that reaches maximum happiness earns the ribbon
+  -- not just Yellow's companion Pikachu. Retroactive: happiness lives on
+  the Pokemon itself, so this applies the moment your save syncs, for
+  every Pokemon already at the cap. No OT check here, unlike the Pikachu
+  arm -- happiness travels with a Pokemon however it came to you, so a
+  traded or wild-caught Pokemon walked to max happiness earns it too.
+  Without Happiness installed, only the original Yellow-companion-Pikachu
+  path applies, exactly as before.
+- Multiple Pokemon can now hold the Best Friends Ribbon at once. It was
+  written as a single-winner ribbon because only one Pikachu could ever
+  qualify; that assumption doesn't hold once any Pokemon can.
+
+## 0.19.0
+
+- New option: **Wide ribbons screen** (off by default). On a wide display
+  the ribbons screen can now use the same 304-pixel canvas the wide battle
+  layout uses, instead of the 160-pixel Game Boy frame.
+- What that buys: the text column goes from 132 pixels to 276 -- 16
+  characters to 34. **Hall of Fame**, **Best Friends** and **Gorgeous
+  Royal** have been quietly dropping the word "Ribbon" from their names to
+  fit; with the wide screen on, all three show in full, and descriptions
+  stop having to be written to a 16-character budget.
+- It is a toggle rather than something detected, on purpose. The engine
+  grants any canvas width asked for without checking the actual display,
+  so switching this on with a narrow screen does not fail -- it just makes
+  everything smaller. Only turn it on if your display is genuinely wide.
+- The layout follows the canvas it actually receives rather than the one
+  it asked for, so if the request is refused nothing is drawn off-screen.
+- Turning the option off returns the screen to exactly the 160-pixel
+  layout of 0.18.0, including how the icons are coloured.
+
 ## 0.18.0
 
 **Updating from 0.15.4?** 0.16.0 and 0.17.0 were never published, so this
