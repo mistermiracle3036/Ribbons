@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.19.0
+
+- New option: **Wide ribbons screen** (off by default). On a wide display
+  the ribbons screen can now use the same 304-pixel canvas the wide battle
+  layout uses, instead of the 160-pixel Game Boy frame.
+- What that buys: the text column goes from 132 pixels to 276 -- 16
+  characters to 34. **Hall of Fame**, **Best Friends** and **Gorgeous
+  Royal** have been quietly dropping the word "Ribbon" from their names to
+  fit; with the wide screen on, all three show in full, and descriptions
+  stop having to be written to a 16-character budget.
+- It is a toggle rather than something detected, on purpose. The engine
+  grants any canvas width asked for without checking the actual display,
+  so switching this on with a narrow screen does not fail -- it just makes
+  everything smaller. Only turn it on if your display is genuinely wide.
+- The layout follows the canvas it actually receives rather than the one
+  it asked for, so if the request is refused nothing is drawn off-screen.
+- Turning the option off returns the screen to exactly the 160-pixel
+  layout of 0.18.0, including how the icons are coloured.
+
 ## 0.18.0
 
 **Updating from 0.15.4?** 0.16.0 and 0.17.0 were never published, so this
