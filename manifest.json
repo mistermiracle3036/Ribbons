@@ -1,7 +1,7 @@
 {
   "id": "kanto_ribbons",
   "name": "Kanto Ribbons",
-  "version": "0.15.4",
+  "version": "0.16.0",
   "api": 2,
   "entry": "main.lua",
   "profile": "content",
@@ -15,9 +15,10 @@
   "dependencies": [],
   "optional_dependencies": [
     "kanto_achievements",
-    "snag_quest"
+    "snag_quest",
+    "kanto_contests"
   ],
   "conflicts": [],
-  "description": "Seventeen per-Pokemon ribbons reimagined for Gen1 -- earned, bought, and bonded -- awarded automatically (retroactively where the save allows) and shown inside the status screen.",
+  "description": "Eighteen per-Pokemon ribbons reimagined for Gen1 -- earned, bought, and bonded -- awarded automatically (retroactively where the save allows) and shown inside the status screen.",
   "github": "mistermiracle3036/kanto_ribbons"
 }

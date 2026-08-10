@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.16.0
+
+- New: the **Contest Ribbon**, for a Pokemon that wins a Contest in the
+  Kanto Contests mod. The win is recorded on the Pokemon itself, so the
+  ribbon is awarded the way this mod prefers -- recomputed from save
+  state, not from a live event. A Pokemon that won a contest before this
+  version still gets the ribbon on the next sync, and keeps it if the
+  contest mod is later uninstalled. Kanto Contests v0.7.0 or newer is
+  what writes the record; without it nothing is awarded and nothing is
+  guessed.
+- Fixed the ribbons screen looking tilted. The description column was
+  straightened in 0.15.3, but the screen still drew its header at x=8 and
+  its empty-state line at x=16, so there were four different left edges
+  (4, 8, 16 and 24) down one 160px screen. Everything now sits on either
+  the icon column or the text column. The header was the most visible of
+  these: the scroll indicator opposite it was anchored 4px from the right
+  while the header sat 8px from the left, which made the whole top row
+  look off.
+- The header is now clipped against the space the scroll indicator
+  actually leaves. A 10-character nickname plus the widest indicator came
+  to exactly the full width -- they fit, but with nothing to spare, and
+  that was luck rather than design.
+
 ## 0.15.4
 
 - Republish so the ribbon icons actually load. In v0.15.3 the icon sheet

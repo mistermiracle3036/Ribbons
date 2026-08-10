@@ -557,6 +557,49 @@ return function(mod)
     end
   end
 
+  -- ------- CONTEST: sync
+  --
+  -- Kanto Contests (mistermiracle3036/Kanto-Contests) records a win on
+  -- the mon that actually performed, as mon.contestWins[CATEGORY] = n.
+  -- That is the same on-the-mon shape as mon.earthWins, so it survives
+  -- boxing, evolution and trading exactly like the ribbon it earns.
+  --
+  -- It also makes this resolver retroactive in the way this mod prefers:
+  -- the win is in the save, not in a live event, so a Pokemon that won a
+  -- contest before this ribbon existed picks it up on the next sync.
+  -- Nothing here guesses -- a save with no contestWins awards nothing.
+  --
+  -- Deliberately NOT gated on kanto_contests being loaded. The data is
+  -- in the save either way, so a player who uninstalls the contest mod
+  -- keeps a ribbon already earned; nothing in this mod revokes.
+  --
+  -- No OT check: a contest win belongs to the Pokemon that performed,
+  -- and ribbons travel with it, so a traded winner keeps it. (Starter
+  -- and Fossil check OT because those ask "did YOU get this here" --
+  -- a different question.)
+  --
+  -- Counts are stored per category (COOL/BEAUTY/CUTE/SMART/TOUGH) even
+  -- though one Contest Ribbon covers all of them today, so per-category
+  -- ribbons can be added later without touching an existing save.
+  local function contestWinTotal(mon)
+    local wins = mon and mon.contestWins
+    if type(wins) ~= "table" then return 0 end
+    local total = 0
+    for _, n in pairs(wins) do
+      if type(n) == "number" then total = total + n end
+    end
+    return total
+  end
+
+  local function syncContest(save)
+    if not save then return end
+    for _, mon in ipairs(eachMon(save)) do
+      if contestWinTotal(mon) > 0 then
+        awardRibbon(mon, "CONTEST", "won a Pokemon Contest")
+      end
+    end
+  end
+
   local function syncAll(save)
     if not save then return end
     syncStarter(save)
@@ -569,6 +612,7 @@ return function(mod)
     syncHallOfFame(save)
     syncLegend(save)
     syncBestFriends(save)
+    syncContest(save)
     devAwardAllToLead(save)
   end
 
@@ -637,7 +681,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.15.4"
+  mod.exports.version = "0.16.0"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -680,8 +724,8 @@ return function(mod)
 
   -- lazy: mod.assets:image needs a graphics context, which a headless
   -- load (tests, validate) doesn't have. Loaded once, on first draw.
-  -- One 96x16 sheet, six 16x16 cells in catalog order -- a single image
-  -- load and one quad table no matter how many ribbons get added later,
+  -- One 288x16 sheet, eighteen 16x16 cells in catalog order -- a single
+  -- image load and one quad table no matter how many ribbons get added,
   -- rather than one newImage call per ribbon.
   local ICON_SIZE = 16
   local ribbonSheet, ribbonQuads
@@ -748,6 +792,17 @@ return function(mod)
   -- (152 -> 132, i.e. 16 characters), which is why every description
   -- was shortened to fit in 0.15.3.
   local DESC_X = NAME_X
+  -- Every left edge on this screen is one of exactly two values: MARGIN
+  -- for the icon gutter and anything with no icon beside it, and NAME_X
+  -- for the text column. 0.15.4 still drew the header at x=8 and the
+  -- empty-state line at x=16 -- neither matched anything else, so the
+  -- screen had four left edges (4, 8, 16, 24) and still read as tilted
+  -- even after the description column was fixed in 0.15.3. The header is
+  -- the worst offender because the scroll indicator opposite it IS
+  -- anchored to MARGIN (right edge 156), so the top row was visibly
+  -- lopsided: 8 in from the left, 4 in from the right.
+  local TITLE_X = MARGIN
+  local EMPTY_X = MARGIN
 
   -- Truncation is by measured pixel width via Font.width, so a long
   -- string is structurally unable to overflow no matter what a future
@@ -842,23 +897,41 @@ return function(mod)
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.rectangle("fill", 0, 0, 160, 144)
         love.graphics.setColor(0, 0, 0, 1)
-        Font.draw(mon and monLabel(mon) or "RIBBONS", 8, 4)
+        -- The indicator is measured FIRST so the title can be clipped
+        -- against the space it actually leaves. A 10-character nickname
+        -- (80px) and the widest indicator ("14-17/17", 64px) come to
+        -- exactly 156 with the margins -- i.e. they just fit today, with
+        -- nothing to spare. Rather than leave the top row depending on
+        -- that coincidence, the title yields.
+        --
+        -- position within the OWNED list only -- never a hint about
+        -- ribbons not yet earned.
+        -- Right-aligned by MEASURED width: this used to draw at a
+        -- hardcoded x=108, which fit "1-4/17" but ran off the edge
+        -- once the numbers got wider ("14-17/17" is 64px and ended at
+        -- 172, past the 156 margin). Anchoring to the right margin
+        -- keeps it inside no matter how many ribbons exist.
+        local label
         if total > WINDOW_SIZE then
-          -- position within the OWNED list only -- never a hint about
-          -- ribbons not yet earned.
-          -- Right-aligned by MEASURED width: this used to draw at a
-          -- hardcoded x=108, which fit "1-4/17" but ran off the edge
-          -- once the numbers got wider ("14-17/17" is 64px and ended at
-          -- 172, past the 156 margin). Anchoring to the right margin
-          -- keeps it inside no matter how many ribbons exist.
-          local label = ("%d-%d/%d"):format(self.scroll + 1,
+          label = ("%d-%d/%d"):format(self.scroll + 1,
             math.min(self.scroll + WINDOW_SIZE, total), total)
+        end
+        local titleBudget = SCREEN_W - MARGIN - TITLE_X
+        if label then
+          titleBudget = titleBudget - Font.width(label) - 4
+        end
+        local title = mon and monLabel(mon) or "RIBBONS"
+        if Font.width(title) > titleBudget then
+          title = clipToWidth(title, SCREEN_W - MARGIN - titleBudget)
+        end
+        Font.draw(title, TITLE_X, 4)
+        if label then
           Font.draw(label, SCREEN_W - MARGIN - Font.width(label), 4)
         end
         local shown = drawRibbonWindow(mon, 20, self.scroll)
         if shown == 0 then
           love.graphics.setColor(0, 0, 0, 1)
-          Font.draw("No ribbons yet.", 16, 64)
+          Font.draw("No ribbons yet.", EMPTY_X, 64)
         end
       end
 

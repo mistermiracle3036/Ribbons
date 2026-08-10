@@ -2,12 +2,15 @@
 -- main.lua, one resolver per id, all reachable from syncAll so every
 -- ribbon that can be derived from save state applies retroactively.
 --
--- Width budget (measured against Font.width, not guessed): a `short`
--- label has ~132px beside the icon and a `description` has ~152px on
--- its own line. main.lua clips overruns as a backstop, but nothing
--- here should need clipping.
+-- Width budget (measured against Font.width, not guessed): both a
+-- `short` label and a `description` get 132px, because both are drawn
+-- in the same x=24 column -- 16 characters at the font's 8px advance.
+-- main.lua clips overruns as a backstop, but nothing here should need
+-- clipping.
 --
--- The order here IS the icon-sheet cell order (assets/ribbons.png).
+-- The order here IS the icon-sheet cell order. The sheet is ribbons.png
+-- at the REPO ROOT, not assets/ -- that was a deliberate move in
+-- v0.10.3 and must not be "tidied" back into a subfolder.
 
 return {
   {
@@ -111,5 +114,11 @@ return {
     name = "Gorgeous Royal Ribbon",
     short = "Gorgeous Royal",
     description = "Costs 999999.",
+  },
+  {
+    id = "CONTEST",
+    name = "Contest Ribbon",
+    short = "Contest",
+    description = "Won a contest.",
   },
 }
