@@ -4,13 +4,15 @@
   [gen1recomp](https://github.com/bryanthaboi/gen1recomp) engine (mod
   API 2) and reaches engine internals under the `engine_internals`
   permission: it patches `SummaryMenu.update` in memory at runtime to
-  chain the ribbons screen into the status-screen page cycle. Its
-  bundled tests also drive engine modules directly.
+  chain the ribbons screen into the status-screen page cycle.
 - **Pokemon Snag** — optional integration. Reads the `mon.snagged` marker
   it sets on snagged Pokémon (0.7.4+) so the Snag Ribbon can apply
   retroactively; no code is shared.
 - **Kanto Achievements** — optional; reserved for future ribbons that
   read its exported stats.
+- **Kanto Contests** — optional integration. Reads `mon.contestWins`,
+  the per-category record it writes on the Pokémon that won, so the
+  contest ribbons apply retroactively; no code is shared.
 - The ribbon system reimagined here is inspired by the Generation III–IX
   ribbons of the official games; no assets or data from those games are
   included. All icon art (`ribbons.png`) is original to this mod.

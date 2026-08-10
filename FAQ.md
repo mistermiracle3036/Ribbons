@@ -21,16 +21,27 @@ confirm. If a Pokémon qualifies, it already has the ribbon.
 <details>
 <summary>Why don't I see a list of ribbons I haven't earned?</summary>
 
-Deliberate. The page shows only what a Pokémon *has* — no totals, no
-"3/12", no locked rows. If a Pokémon has none, the page says so and A
-closes it.
+Deliberate. The page shows only what a Pokémon *has* — no locked rows, no
+"3 of 18", nothing hinting at what's missing. If a Pokémon has none, the
+page says so and A closes it.
+
+The one number on screen is a scroll position, and it counts only ribbons
+that Pokémon already has: `1-4/9` on a Pokémon with nine ribbons. It
+never tells you how many exist in total.
 </details>
 
 <details>
 <summary>A Pokémon has lots of ribbons. Do they all fit?</summary>
 
-Three per page. A turns the page; off the last page, A closes the
-screen. B closes from anywhere. The header shows which page you're on.
+Four are visible at once. **Up** and **Down** scroll one row at a time,
+and **A** or **B** closes the screen. When a Pokémon has more than four,
+the header shows your position — `1-4/9` means you're looking at the
+first four of the nine ribbons *it has*. That number is never a count of
+ribbons you haven't earned.
+
+If you also run **G1R HoldToScrollUI**, holding a direction auto-repeats
+here for free — this screen polls ordinary directional input, so it picks
+that up without either mod knowing about the other.
 </details>
 
 ## Ribbons that apply to old saves
@@ -110,6 +121,24 @@ the follower Pikachu's mood reflects). Keep it in your party, keep it
 healthy, win battles, don't let it faint. At maximum happiness the ribbon
 is awarded to your **lab** Pikachu specifically — a traded or wild one
 won't take it.
+</details>
+
+<details>
+<summary>Cool Ribbon — how do I win one?</summary>
+
+Win a Contest at the Celadon Contest Hall, which needs the **Kanto
+Contests** mod (v0.7.3 or newer). Appeal to the judge with moves that
+match the contest's category until his appeal meter is full — the
+Pokémon that performed gets the ribbon.
+
+The win is recorded on that Pokémon, not in a list somewhere, so the
+ribbon is retroactive: if you won a Contest before installing this
+version, it turns up the next time your save syncs. It also survives
+boxing, evolution, trading, and removing the Contests mod afterwards.
+
+Without the Contests mod installed, no contest ribbon is ever awarded —
+there's nothing in a vanilla save that records a Contest, and this mod
+would rather award nothing than guess.
 </details>
 
 <details>

@@ -17,8 +17,9 @@ so you only reveal what you want.
 
 ## Features
 
-- **Seventeen ribbons**, earned several ways: story milestones, hard
-  training, flawless battles, lucky DVs, and one very expensive shop.
+- **Eighteen ribbons**, earned several ways: story milestones, hard
+  training, flawless battles, lucky DVs, a Contest win, and one very
+  expensive shop.
 - **Awarded automatically.** Nothing to toggle or claim. If a Pokémon
   qualifies, it already has the ribbon by the time you look.
 - **Retroactive on existing saves.** Most ribbons are recomputed from
@@ -27,8 +28,8 @@ so you only reveal what you want.
   work from, the mod says so in the log instead of guessing.
 - **Opens from the status screen** in every UI: STATS → MOVES → RIBBONS,
   all on the A button, no menu entries anywhere. Only ribbons a Pokémon
-  *has* are listed — no "you're missing these" checklist — and long
-  collections page with A, three to a page.
+  *has* are listed — no "you're missing these" checklist. Four at a time,
+  Up/Down scrolls one row, A or B closes.
 - **One self-contained package.** No engine files to replace, no
   companion downloads.
 - **A shop.** The Meowth in Celadon Mansion, 1F, sells three ribbons at
@@ -56,6 +57,7 @@ so you only reveal what you want.
 | Gorgeous | Bought from the Meowth, Celadon Mansion 1F — ₽10,000† | — |
 | Royal | Same Meowth — ₽100,000, needs Gorgeous first† | — |
 | Gorgeous Royal | Same Meowth — ₽999,999, needs Royal first† | — |
+| Cool | Won the COOL Contest at the Celadon Contest Hall‡ | Yes‡ |
 
 \* Snag syncs retroactively for Pokémon snagged with **Pokemon Snag 0.7.4 or
 newer**, which marks them permanently. Older snags are still awarded live
@@ -66,6 +68,14 @@ at the moment of capture, but can't be recovered after the fact.
 Rearrange your party first if you want a specific one decorated. The
 three are strictly sequential: you can't skip ahead to Royal without
 Gorgeous already on that Pokémon.
+
+‡ Contest ribbons need the **Kanto Contests** mod (v0.7.3 or newer),
+which is what records the win. It goes to the Pokémon that actually
+performed, and because that record is stored on the Pokémon itself, it is
+retroactive: a Pokémon that won a Contest before you installed this
+version still gets the ribbon the next time your save syncs, and keeps it
+if you later remove the Contests mod. Without that mod nothing is awarded
+— this mod never guesses which Pokémon might have won something.
 
 Win streaks are counted from the moment you install the mod — a streak you
 were already on doesn't count, because the save doesn't record which
@@ -94,6 +104,10 @@ load log prints the running version so you can confirm what's live.
   optional. Reads the permanent `mon.snagged` marker it sets on snagged
   Pokémon (0.7.4+) so the Snag Ribbon applies retroactively; older
   versions still award it live.
+- **[Kanto Contests](https://github.com/mistermiracle3036/Kanto-Contests)** —
+  optional. Reads the per-category `mon.contestWins` record it writes on
+  the Pokémon that performed, so the contest ribbons apply retroactively
+  and survive that mod being removed. Needs v0.7.3 or newer.
 - **Kanto Achievements** — optional. Reserved for future ribbons that
   reuse its tracked stats rather than re-counting them.
 - **gen1_modern_ui** — works. The ribbons screen opens the same way

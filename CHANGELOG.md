@@ -1,5 +1,66 @@
 # Changelog
 
+## 0.18.0
+
+**Updating from 0.15.4?** 0.16.0 and 0.17.0 were never published, so this
+release delivers all three at once. Since 0.15.4 you get:
+
+- an **18th ribbon, the Cool Ribbon**, awarded to a Pokemon that wins the
+  COOL Contest in the Kanto Contests mod (v0.7.3 or newer). Retroactive:
+  a Pokemon that already won one gets it the next time your save syncs.
+- the **ribbons screen no longer looking tilted** -- every element now
+  lines up on one of two columns instead of four different left edges.
+- a **readable Legend Ribbon icon**. It was a 1-pixel outline with no
+  filled body and all but disappeared at 16x16.
+
+New in 0.18.0 itself:
+
+- The **Legend Ribbon** is now unmistakably a **horseshoe**: open at the
+  top, nail holes punched down each branch, flared heels and a closed toe.
+  0.17.0 gave it a filled body, which fixed it vanishing at 16px, but the
+  shape itself was read off the screen as a horseshoe rather than the
+  wreath it was drawn as -- so this leans into that. It suits "a flawless
+  run" better anyway.
+
+## 0.17.0
+
+- The Contest Ribbon becomes the **Cool Ribbon**. Contest ribbons are now
+  one per category, the way Gen III did it -- Beauty, Cute, Smart and
+  Tough join it as Kanto Contests adds those contests, and the plumbing
+  for them is already in place. Needs Kanto Contests v0.7.3 or newer.
+  Nothing to migrate: the win itself is stored on the Pokemon, so a
+  Pokemon that already had the Contest Ribbon simply resolves to the Cool
+  Ribbon the next time your save syncs.
+- Redrew the **Legend Ribbon** with a filled body. It was the only icon in
+  the sheet made entirely of 1-pixel outline with nothing filled in at
+  all, so at 16x16 on a real screen it read as a few stray dots rather
+  than a shape. (Sharpened into a proper horseshoe in 0.18.0.)
+- The Cool Ribbon's rosette has **longer tails**, fanning out to the
+  bottom of the icon, so it reads as a prize rosette rather than a coin.
+- Corrected several documentation claims that no longer matched the code:
+  the ribbons screen scrolls four rows on Up/Down rather than paging three
+  at a time on A, ribbons open from the status screen rather than a party
+  submenu row, and the mod card shipped a placeholder author name.
+
+## 0.16.0
+
+- New: the **Contest Ribbon**, for a Pokemon that wins a Contest in the
+  Kanto Contests mod. The win is recorded on the Pokemon itself, so the
+  ribbon is awarded the way this mod prefers -- recomputed from save
+  state, not from a live event. (Renamed to the Cool Ribbon in 0.17.0.)
+- Fixed the ribbons screen looking tilted. The description column was
+  straightened in 0.15.3, but the screen still drew its header at x=8 and
+  its empty-state line at x=16, so there were four different left edges
+  (4, 8, 16 and 24) down one 160px screen. Everything now sits on either
+  the icon column or the text column. The header was the most visible of
+  these: the scroll indicator opposite it was anchored 4px from the right
+  while the header sat 8px from the left, which made the whole top row
+  look off.
+- The header is now clipped against the space the scroll indicator
+  actually leaves. A 10-character nickname plus the widest indicator came
+  to exactly the full width -- they fit, but with nothing to spare, and
+  that was luck rather than design.
+
 ## 0.15.4
 
 - Republish so the ribbon icons actually load. In v0.15.3 the icon sheet
