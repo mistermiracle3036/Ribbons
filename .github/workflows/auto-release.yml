@@ -118,10 +118,13 @@ jobs:
             [ -e "$entry" ] || continue
             cp -r "$entry" "build/$MOD_ID/"
           done
-          cd build
-          # the launcher's updater prefers "<id>-<version>.zip"
-          zip -qr "../${MOD_ID}-${VERSION}.zip" "$MOD_ID"
-          cd ..
+          # the launcher's updater prefers the asset name "<id>-<version>.zip";
+          # the archive interior is flat (manifest.json at the root), which is
+          # what the community mod index requires and what locateRoot reads as
+          # a root-level mod.
+          cd "build/$MOD_ID"
+          zip -qr "../../${MOD_ID}-${VERSION}.zip" .
+          cd ../..
           echo "--- zip contents ---"; unzip -l "${MOD_ID}-${VERSION}.zip"
 
       - name: Publish the release with the zip attached
