@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.20.3
+
+- New dev option: **[DEV] Max lead happiness** (off by default). Sets the
+  lead Pokémon's happiness to maximum so the Best Friends Ribbon can be
+  checked without walking 1,760 steps or feeding 33 Rare Candies for it.
+  It only raises a happiness value that already exists, so with the
+  Happiness mod not installed it does nothing at all rather than handing
+  out a ribbon nobody earned. Like the other dev toggle, turning it back
+  off does not take the ribbon away.
+
 ## 0.20.2
 
 - **Fixed: ribbon icons drawn in black and white**, even in ADVANCED and

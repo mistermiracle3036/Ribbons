@@ -152,12 +152,19 @@ declared via the `engine_internals` permission, the same mechanism Snag
 Quest uses for its battle changes. No file on disk is modified, and
 removing the mod removes the patch.
 
-## Dev toggle
+## Dev toggles
 
-The mod's own options screen has **[DEV] Give lead all ribbons**
-(off by default). Turn it on to keep party slot 1 fully decorated for
-testing the display -- turning it back off leaves whatever was granted
-in place, same as any other ribbon here.
+Both are on the mod's own options screen and both default to off.
+Turning either back off leaves whatever was granted in place, same as
+any other ribbon here — nothing in this mod revokes an award.
+
+- **[DEV] Give lead all ribbons** — keeps party slot 1 fully decorated,
+  for testing the display.
+- **[DEV] Max lead happiness** — sets the lead Pokémon's happiness to
+  maximum so the Best Friends Ribbon can be tested without the long
+  climb. Only raises a value that already exists, so it does nothing
+  unless the [Happiness](https://github.com/thorkdev/gen1recomp-happiness)
+  mod is installed.
 
 ## Credits
 

@@ -53,6 +53,10 @@ return function(mod)
       label = "Wide ribbons screen", default = false },
     { key = "dev_give_lead_all_ribbons", type = "toggle",
       label = "[DEV] Give lead all ribbons", default = false },
+    -- No-ops unless the Happiness mod is installed; see
+    -- devMaxLeadHappiness for why it only raises an existing value.
+    { key = "dev_max_lead_happiness", type = "toggle",
+      label = "[DEV] Max lead happiness", default = false },
   })
 
   -- ------- catalog
@@ -672,6 +676,33 @@ return function(mod)
     end
   end
 
+  -- Maxes the lead's happiness so the Best Friends Ribbon is testable in
+  -- less than 1,760 steps. From the Happiness mod's starting 90 you need
+  -- +165, which is 55 walk ticks, 33 level-ups or 7 unclaimed Gym
+  -- Leaders -- too slow to verify a one-line resolver against.
+  --
+  -- Deliberately only RAISES a value that already exists. mon.happiness
+  -- belongs to the Happiness mod (thorkdev/gen1recomp-happiness); if that
+  -- mod is not installed the field is absent and this does nothing at
+  -- all, rather than fabricating a number no system owns and handing out
+  -- a Best Friends Ribbon nobody earned. So the toggle is inert on its
+  -- own and only shortcuts a system that is genuinely present.
+  --
+  -- 255 matches MAX_HAPPINESS in both that mod and vanilla Yellow's
+  -- save.pikachuHappiness. Like the award-all toggle above, turning this
+  -- back off does not revoke the ribbon it led to -- nothing here ever
+  -- revokes -- so treat it as permanent on any save you care about.
+  local function devMaxLeadHappiness(save)
+    if mod.options:get("dev_max_lead_happiness") ~= true then return end
+    local lead = save.party and save.party[1]
+    if not lead then return end
+    if type(lead.happiness) ~= "number" then return end -- mod not installed
+    if lead.happiness >= MAX_HAPPINESS then return end
+    lead.happiness = MAX_HAPPINESS
+    mod.log:info("[DEV] set %s happiness to %d",
+      lead.nickname or lead.species or "?", MAX_HAPPINESS)
+  end
+
   -- ------- CONTEST: sync
   --
   -- Kanto Contests (mistermiracle3036/Kanto-Contests) records a win on
@@ -729,6 +760,10 @@ return function(mod)
 
   local function syncAll(save)
     if not save then return end
+    -- BEFORE the resolvers, not after: this exists to feed syncBestFriends
+    -- on the very same pass. Run last and the ribbon would not appear
+    -- until some later sync, which reads as the toggle not working.
+    devMaxLeadHappiness(save)
     syncStarter(save)
     syncSnag(save)
     syncRare(save)
@@ -808,7 +843,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.20.2"
+  mod.exports.version = "0.20.3"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
