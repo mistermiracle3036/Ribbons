@@ -30,6 +30,9 @@
   this screen for free.
 - The Shiny Ribbon was suggested by **Miss Default Bunny** in the
   gen1recomp Discord.
+- **LeHaz** reported, in the gen1recomp Discord, that a save imported from
+  a real cartridge never received the Starter Ribbon — the bug fixed in
+  0.20.1.
 - Pokémon and all related names are trademarks of Nintendo / Creatures
   Inc. / GAME FREAK inc. This mod contains no ROM data or copyrighted
   assets; it is a fan-made script mod and requires the user's own game

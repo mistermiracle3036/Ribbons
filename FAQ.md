@@ -64,6 +64,15 @@ looks for a Pokémon in that evolution family whose original trainer is
 you. So an evolved starter still matches, and a **traded** Pokémon of the
 same species can't be mistaken for it.
 
+**If your save came from a real cartridge**, that flag isn't there — it's
+something gen1recomp records, not the original game, so it can't survive
+the import. Your save knows you took *a* starter but not which one. In
+that case the mod works it out from ownership instead: the only way to
+get a second starter-family Pokémon in Gen 1 is a trade, and traded
+Pokémon carry someone else's trainer ID, so the one that's originally
+yours is your starter. If somehow more than one qualifies, it awards
+nothing and says so in the log rather than picking wrong.
+
 An earlier version guessed "party slot 1" instead and got this wrong on
 any save where you'd caught or reordered anything. That's fixed.
 </details>

@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.20.1
+
+- **Fixed: no Starter Ribbon on a save imported from a real cartridge.**
+  Thanks to **LeHaz** for reporting this in the gen1recomp Discord — a Red
+  save whose Bulbasaur had long since become a Venusaur was getting no
+  Starter Ribbon at all.
+
+  The mod identifies your starter from an event flag the game sets in
+  Oak's lab. That flag is gen1recomp's own, not something a real Gen 1
+  cartridge records, so an imported save arrives knowing that you took a
+  starter but not which one — and the ribbon was skipped silently.
+
+  When that flag is missing, the mod now works it out from ownership
+  instead: in Gen 1 the only way to get a second starter-family Pokémon
+  is a trade, and traded Pokémon carry the other trainer's ID. So if
+  exactly one Bulbasaur/Charmander/Squirtle/Pikachu-family Pokémon in
+  your save is originally yours, that's your starter. If more than one
+  is, it says so in the log and awards nothing rather than guessing —
+  the ribbon is permanent, so a wrong award would be worse than a late
+  one.
+
+  Evolved starters were never the problem and still work: the ribbon
+  matches the whole family, so a Venusaur is found the same as a
+  Bulbasaur. Saves played start to finish inside gen1recomp were always
+  fine and are unaffected by this change.
+
 ## 0.20.0
 
 - **Best Friends Ribbon is no longer Pikachu-only.** With

@@ -139,10 +139,70 @@ return function(mod)
     return true
   end
 
+  -- ------- STARTER: the imported-save fallback
+  --
+  -- Reported by LeHaz in the gen1recomp Discord: a Red save whose starter
+  -- had long since become a VENUSAUR got no Starter Ribbon at all.
+  --
+  -- The cause is that EVENT_CHOSE_BULBASAUR / _CHARMANDER / _SQUIRTLE /
+  -- _PIKACHU are gen1recomp's OWN flags, set by its lab script
+  -- (data/scripts/oaks_lab.lua's starterBall, oaks_lab_yellow.lua:202).
+  -- They are not real Gen 1 wEventFlags bits, so they have no bit to
+  -- decode out of an imported .sav: src/save_convert/data/event_flags.lua
+  -- (and the Yellow table) contain ZERO EVENT_CHOSE_* entries, and
+  -- GenSave decodes "only bits with a known name"
+  -- (save_convert/GenSave.lua:733-737). EVENT_GOT_STARTER (bit 34) IS a
+  -- real bit and does survive.
+  --
+  -- So a save played start-to-finish inside gen1recomp is fine, and a
+  -- save imported from a real cartridge arrives knowing that a starter
+  -- was taken but not WHICH -- and starterFamily returned nil, so the
+  -- resolver bailed silently. That is precisely the "save that predates
+  -- the mod" case the whole retroactive design exists to serve.
+  --
+  -- Recovering it without guessing: in Gen 1 the only way to obtain a
+  -- second starter-family Pokemon is a trade, and a traded mon carries
+  -- the other trainer's OT. So an own-OT Pokemon in a starter family is
+  -- the starter -- as long as there is exactly ONE. Two or more is
+  -- genuinely ambiguous (a link trade from a friend playing the same
+  -- game keeps their OT, but a self-trade between your own two carts
+  -- would not), and this mod does not resolve ambiguity by guessing:
+  -- nothing here revokes an award, so a wrong one is permanent.
+  local function starterFromOwnership(save)
+    if not (save.flags and save.flags.EVENT_GOT_STARTER) then return nil end
+    local anyFamily = {}
+    for _, family in pairs(STARTER_FLAGS) do
+      for _, species in ipairs(family) do anyFamily[species] = true end
+    end
+    local candidates = {}
+    for _, mon in ipairs(eachMon(save)) do
+      if anyFamily[mon.species] and isOwnOT(mon, save) then
+        candidates[#candidates + 1] = mon
+      end
+    end
+    if #candidates == 1 then return candidates[1] end
+    if #candidates > 1 then
+      mod.log:warn("EVENT_GOT_STARTER is set with no EVENT_CHOSE_* flag " ..
+        "(imported save?) and %d of your Pokemon are in a starter family " ..
+        "-- cannot tell which was the starter, so no ribbon was placed",
+        #candidates)
+    end
+    return nil
+  end
+
   local function syncStarter(save)
     if not save then return end
     local family, flag = starterFamily(save)
-    if not family then return end -- no starter chosen yet, nothing to sync
+    if not family then
+      -- no EVENT_CHOSE_* to work from; try ownership instead
+      local mon = starterFromOwnership(save)
+      if mon then
+        awardRibbon(mon, "STARTER",
+          "sole own-OT starter-family Pokemon (imported save, no " ..
+          "EVENT_CHOSE_* flag)")
+      end
+      return
+    end
 
     local inFamily = {}
     for _, species in ipairs(family) do inFamily[species] = true end
@@ -748,7 +808,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.20.0"
+  mod.exports.version = "0.20.1"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 

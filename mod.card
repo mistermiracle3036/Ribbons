@@ -30,6 +30,7 @@ return {
     { who = "DexNav example", for_ = "the screens registry + ui hook decoration pattern used for both ribbon screens" },
     { who = "G1R HoldToScrollUI (WizzStar)", for_ = "the hold-to-scroll interaction design behind the 0.12.0 ribbons screen -- not a dependency, but compatible for free since this screen polls plain directional input" },
     { who = "Miss Default Bunny", for_ = "suggesting the Shiny Ribbon, in the gen1recomp Discord" },
+    { who = "LeHaz", for_ = "reporting that an imported cartridge save never got the Starter Ribbon -- EVENT_CHOSE_* is a gen1recomp-only flag with no bit in a real Gen 1 save, fixed in 0.20.1" },
     { who = "Kanto Contests", for_ = "recording a contest win on the Pokemon itself, per category, which is what the contest ribbons read" },
     { who = "Happiness (thorkdev)", for_ = "tracking mon.happiness for every Pokemon, which is what lets the Best Friends Ribbon reach beyond Yellow's lab Pikachu" },
   },
