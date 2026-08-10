@@ -2,10 +2,18 @@
 
 ## 0.18.0
 
-**Updating from 0.15.4?** This release also carries everything in 0.17.0
-and 0.16.0 below -- the Cool Ribbon and the fix for the ribbons screen
-looking tilted. Neither of those versions was published, so those changes
-reach you for the first time here.
+**Updating from 0.15.4?** 0.16.0 and 0.17.0 were never published, so this
+release delivers all three at once. Since 0.15.4 you get:
+
+- an **18th ribbon, the Cool Ribbon**, awarded to a Pokemon that wins the
+  COOL Contest in the Kanto Contests mod (v0.7.3 or newer). Retroactive:
+  a Pokemon that already won one gets it the next time your save syncs.
+- the **ribbons screen no longer looking tilted** -- every element now
+  lines up on one of two columns instead of four different left edges.
+- a **readable Legend Ribbon icon**. It was a 1-pixel outline with no
+  filled body and all but disappeared at 16x16.
+
+New in 0.18.0 itself:
 
 - The **Legend Ribbon** is now unmistakably a **horseshoe**: open at the
   top, nail holes punched down each branch, flared heels and a closed toe.
