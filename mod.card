@@ -1,12 +1,12 @@
 return {
-  summary = "Permanent per-Pokemon ribbons for Gen1 achievements, awarded automatically and shown on the Pokemon's own party menu.",
-  author  = "YOUR_HANDLE_HERE",
+  summary = "Eighteen permanent per-Pokemon ribbons for Gen1 achievements, awarded automatically and shown on the Pokemon's own status screen.",
+  author  = "mistermiracle3036",
 
   tags = { "mechanic", "collection", "ui" },
 
   differences = {
     changed = {
-      "the party submenu (where STATS lives) gains a RIBBONS row, one under STATS; every vanilla row is untouched",
+      "the status screen gains a third page: A cycles STATS -> MOVES -> RIBBONS -> close, so no menu anywhere gains a row for it",
       "the START menu gains a RIBBONS row before SAVE, for a whole-party overview",
     },
     added = {
@@ -18,7 +18,8 @@ return {
     known = {
       "a starter that was released or traded away cannot be tagged -- there is no Pokemon left to tag; logged rather than guessed at",
       "a Yellow save holding both the lab Pikachu and a wild-caught one is genuinely ambiguous (Gen1 stores nothing to separate them); resolved party-before-boxes with a warning in the log",
-      "ribbons appear in the party submenu, not on the status/stat screen itself -- src/ui/SummaryMenu.lua exposes no hook, so no mod can currently draw there without an engine change (Route B)",
+      "icon colour is not the mod's to choose: the screen exposes no sgbPalettes(), so PaletteFX colours each icon by its tile position and the same ribbon can look different colours at different scroll positions -- icons are distinguished by silhouette, not hue",
+      "win streaks (Winning, Victory), Legend, Earth, Warrior and pre-0.7.4 snags cannot apply retroactively -- the save records nothing to recompute them from, so they are awarded live only and a run predating the mod earns them from zero",
     },
   },
 
@@ -30,5 +31,6 @@ return {
     { who = "Kanto Contests", for_ = "recording a contest win on the Pokemon itself, per category, which is what the contest ribbons read" },
   },
 
-  compat = { engine = ">=0.0.0-dev <2.0.0", modApi = 2 },
+  -- keep this in step with manifest.json's game_version
+  compat = { engine = ">=0.1.38 <2.0.0", modApi = 2 },
 }

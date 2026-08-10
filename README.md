@@ -28,8 +28,8 @@ so you only reveal what you want.
   work from, the mod says so in the log instead of guessing.
 - **Opens from the status screen** in every UI: STATS → MOVES → RIBBONS,
   all on the A button, no menu entries anywhere. Only ribbons a Pokémon
-  *has* are listed — no "you're missing these" checklist — and long
-  collections page with A, three to a page.
+  *has* are listed — no "you're missing these" checklist. Four at a time,
+  Up/Down scrolls one row, A or B closes.
 - **One self-contained package.** No engine files to replace, no
   companion downloads.
 - **A shop.** The Meowth in Celadon Mansion, 1F, sells three ribbons at
@@ -104,6 +104,10 @@ load log prints the running version so you can confirm what's live.
   optional. Reads the permanent `mon.snagged` marker it sets on snagged
   Pokémon (0.7.4+) so the Snag Ribbon applies retroactively; older
   versions still award it live.
+- **[Kanto Contests](https://github.com/mistermiracle3036/Kanto-Contests)** —
+  optional. Reads the per-category `mon.contestWins` record it writes on
+  the Pokémon that performed, so the contest ribbons apply retroactively
+  and survive that mod being removed. Needs v0.7.3 or newer.
 - **Kanto Achievements** — optional. Reserved for future ribbons that
   reuse its tracked stats rather than re-counting them.
 - **gen1_modern_ui** — works. The ribbons screen opens the same way

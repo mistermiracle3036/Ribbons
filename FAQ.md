@@ -21,16 +21,27 @@ confirm. If a Pokémon qualifies, it already has the ribbon.
 <details>
 <summary>Why don't I see a list of ribbons I haven't earned?</summary>
 
-Deliberate. The page shows only what a Pokémon *has* — no totals, no
-"3/12", no locked rows. If a Pokémon has none, the page says so and A
-closes it.
+Deliberate. The page shows only what a Pokémon *has* — no locked rows, no
+"3 of 18", nothing hinting at what's missing. If a Pokémon has none, the
+page says so and A closes it.
+
+The one number on screen is a scroll position, and it counts only ribbons
+that Pokémon already has: `1-4/9` on a Pokémon with nine ribbons. It
+never tells you how many exist in total.
 </details>
 
 <details>
 <summary>A Pokémon has lots of ribbons. Do they all fit?</summary>
 
-Three per page. A turns the page; off the last page, A closes the
-screen. B closes from anywhere. The header shows which page you're on.
+Four are visible at once. **Up** and **Down** scroll one row at a time,
+and **A** or **B** closes the screen. When a Pokémon has more than four,
+the header shows your position — `1-4/9` means you're looking at the
+first four of the nine ribbons *it has*. That number is never a count of
+ribbons you haven't earned.
+
+If you also run **G1R HoldToScrollUI**, holding a direction auto-repeats
+here for free — this screen polls ordinary directional input, so it picks
+that up without either mod knowing about the other.
 </details>
 
 ## Ribbons that apply to old saves
