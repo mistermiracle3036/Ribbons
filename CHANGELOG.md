@@ -1,21 +1,31 @@
 # Changelog
 
-## 0.16.0
+## 0.17.0
 
-- New: the **Cool Ribbon**, for a Pokemon that wins the COOL Contest in
-  the Kanto Contests mod. Contest ribbons are one per category, the way
-  Gen III did it -- Beauty, Cute, Smart and Tough join it as that mod adds
-  those contests, and the plumbing for them is already in place.
-  The win is recorded on the Pokemon itself, so the ribbon is awarded the
-  way this mod prefers -- recomputed from save state, not from a live
-  event. A Pokemon that won a contest before this version still gets the
-  ribbon on the next sync, and keeps it if the contest mod is later
-  uninstalled. Kanto Contests v0.7.3 or newer is what writes the record;
-  without it nothing is awarded and nothing is guessed.
+- The Contest Ribbon becomes the **Cool Ribbon**. Contest ribbons are now
+  one per category, the way Gen III did it -- Beauty, Cute, Smart and
+  Tough join it as Kanto Contests adds those contests, and the plumbing
+  for them is already in place. Needs Kanto Contests v0.7.3 or newer.
+  Nothing to migrate: the win itself is stored on the Pokemon, so a
+  Pokemon that already had the Contest Ribbon simply resolves to the Cool
+  Ribbon the next time your save syncs.
 - Redrew the **Legend Ribbon**. It was the only icon in the sheet made
   entirely of 1-pixel outline with no filled body at all, so at 16x16 on a
   real screen it read as a few stray dots rather than a shape. It is now a
   filled laurel wreath.
+- The Cool Ribbon's rosette has **longer tails**, fanning out to the
+  bottom of the icon, so it reads as a prize rosette rather than a coin.
+- Corrected several documentation claims that no longer matched the code:
+  the ribbons screen scrolls four rows on Up/Down rather than paging three
+  at a time on A, ribbons open from the status screen rather than a party
+  submenu row, and the mod card shipped a placeholder author name.
+
+## 0.16.0
+
+- New: the **Contest Ribbon**, for a Pokemon that wins a Contest in the
+  Kanto Contests mod. The win is recorded on the Pokemon itself, so the
+  ribbon is awarded the way this mod prefers -- recomputed from save
+  state, not from a live event. (Renamed to the Cool Ribbon in 0.17.0.)
 - Fixed the ribbons screen looking tilted. The description column was
   straightened in 0.15.3, but the screen still drew its header at x=8 and
   its empty-state line at x=16, so there were four different left edges
