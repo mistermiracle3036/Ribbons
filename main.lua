@@ -808,7 +808,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.20.1"
+  mod.exports.version = "0.20.2"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1040,46 +1040,67 @@ return function(mod)
         end
       end
 
-      -- Asked for BEFORE anything draws: Game:draw resolves the top
-      -- state's surface every frame (Game.lua:432-433), so returning the
-      -- wide size here is what widens the canvas. Returning the classic
-      -- size is not a no-op either -- it is what puts the surface back
-      -- when this screen closes.
+      -- Whether the wide canvas is wanted is decided ONCE, here, and the
+      -- uiSize/sgbPalettes methods are only INSTALLED when it is.
       --
-      -- pcall'd and defaulted: an options read that throws must not take
-      -- the whole screen down before it has drawn a single pixel.
-      function state:uiSize()
-        local ok, wide = pcall(function()
-          return mod.options:get("wide_screen")
-        end)
-        if ok and wide then return WIDE_W, WIDE_H end
-        return CLASSIC_W, CLASSIC_H
-      end
+      -- That is not tidiness, it is the fix for a real regression in
+      -- 0.19.0/0.20.x. Game:draw picks the screen's palette by walking
+      -- DOWN the stack and stopping at the first state that has an
+      -- sgbPalettes method at all (Game.lua:488-495) -- "the topmost
+      -- state that knows its palette owns the screen (overlays like text
+      -- boxes inherit from what's beneath them)". This screen never had
+      -- one, so the search fell through to the overworld underneath and
+      -- this screen INHERITED its colour zones. That inheritance is where
+      -- the ribbon icons' colour has always come from.
+      --
+      -- Defining sgbPalettes unconditionally stopped that search here.
+      -- Returning nil from it then meant no zones at all, so ADVANCED and
+      -- the other colour modes drew the whole screen in flat greyscale --
+      -- reported from device. Merely HAVING the method is the side
+      -- effect; what it returns is secondary.
+      --
+      -- So when the option is off, this state carries neither method and
+      -- is byte-for-byte the 0.18.0 state object. Only the wide path,
+      -- which genuinely must own its palette, installs them.
+      --
+      -- pcall'd and defaulted: an options read that throws must leave the
+      -- screen on the classic path rather than take it down.
+      local okOpt, wantWide = pcall(function()
+        return mod.options:get("wide_screen")
+      end)
+      wantWide = okOpt and wantWide or false
 
-      -- Widening the canvas is not just a layout change: it moves the
-      -- SGB colorization pass out from under the screen.
-      --
-      -- A state exposing no zones normally gets one invented for it, but
-      -- PaletteFX.whole() is hardcoded to tiles (0,0)-(19,17)
-      -- (PaletteFX.lua:284-286) -- exactly 160x144. On a 304-wide canvas
-      -- its remap would stop dead at x=160 and leave the right half
-      -- untouched in the three forced-mono COLORS modes (OG / OG INV /
-      -- CLASSIC). BattleState.lua:122-126 documents this same trap for
-      -- the wide battle, which is why WideBattle ships zones() at all.
-      --
-      -- So: cover the REAL canvas, and only in the modes that invent a
-      -- zone at all. Every other mode returns nil exactly as before, so
-      -- the colour path on the classic screen is bit-for-bit unchanged --
-      -- deliberately, because icon colour on this screen comes out of
-      -- that path and is not something the mod should start steering.
-      function state:sgbPalettes()
-        local w, h = self:uiSize()
-        if w <= CLASSIC_W then return nil end -- classic: the invented zone already fits
-        local mode = PaletteFX.mode or "gbc"
-        if mode == "og" or mode == "og_inv" or mode == "classic" then
-          return { PaletteFX.zone(PaletteFX.GRAYS, 0, 0, w / 8 - 1, h / 8 - 1) }
+      if wantWide then
+        -- Asked for BEFORE anything draws: Game:draw resolves the top
+        -- state's surface every frame (Game.lua:432-433), so returning
+        -- the wide size here is what widens the canvas.
+        function state:uiSize()
+          return WIDE_W, WIDE_H
         end
-        return nil
+
+        -- Widening the canvas moves the SGB colorization pass out from
+        -- under the screen, so the wide path has to own its palette.
+        --
+        -- A state exposing no zones normally gets one invented for it,
+        -- but PaletteFX.whole() is hardcoded to tiles (0,0)-(19,17)
+        -- (PaletteFX.lua:284-286) -- exactly 160x144. On a 304-wide
+        -- canvas that remap stops dead at x=160 and leaves the right half
+        -- untouched in the three forced-mono COLORS modes (OG / OG INV /
+        -- CLASSIC). BattleState.lua:122-126 documents the same trap for
+        -- the wide battle, which is why WideBattle ships zones() at all.
+        function state:sgbPalettes()
+          local w, h = self:uiSize()
+          local mode = PaletteFX.mode or "gbc"
+          if mode == "og" or mode == "og_inv" or mode == "classic" then
+            return { PaletteFX.zone(PaletteFX.GRAYS, 0, 0, w / 8 - 1, h / 8 - 1) }
+          end
+          -- Colour modes: a full-canvas passthrough zone, the shape
+          -- WideBattle.zones() uses for the same case. NOT nil -- nil
+          -- here would strip colour exactly the way the 0.19.0
+          -- regression did, since this method's presence has already
+          -- ended Game.lua's search for a palette owner.
+          return { { colors = false, x = 0, y = 0, w = w, h = h } }
+        end
       end
 
       function state:draw()

@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.20.2
+
+- **Fixed: ribbon icons drawn in black and white**, even in ADVANCED and
+  the other colour modes. A regression introduced in 0.19.0 and present
+  in 0.20.0 and 0.20.1; reported from device before any of those reached
+  a release.
+
+  The ribbons screen has never picked its own colours — it inherits them
+  from the screen underneath it. Adding wide-screen support in 0.19.0
+  gave the screen a palette method so the wide canvas could be coloured
+  correctly, but the engine treats *having* that method as "this screen
+  owns its colours", which stopped the inheritance and left the screen
+  with none at all.
+
+  The palette method is now only attached when the wide screen option is
+  actually on. With it off — the default — the screen is exactly what it
+  was in 0.18.0 and inherits colour as it always did.
+
 ## 0.20.1
 
 - **Fixed: no Starter Ribbon on a save imported from a real cartridge.**
