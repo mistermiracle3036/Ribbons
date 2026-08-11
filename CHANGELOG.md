@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.20.4
+
+Groundwork for Pokémon Gold support, plus licensing. Nothing changes in
+play on Red/Blue/Yellow — every change here either reads data the same
+way it did before or only activates on a save shape Gen 1 never produces.
+
+- The mod is now formally **MIT licensed** (new `LICENSE` file). The
+  licence covers this mod's own code and original art — not ROM-derived
+  material or Nintendo trademarks. README credits expanded to match.
+- **Gold groundwork**, dormant until Gold support is declared in a later
+  version:
+  - Money checks work on both generations (Gold keeps money in a
+    different place; buying a shop ribbon there would have misread your
+    balance in both directions).
+  - Hall of Fame records are read in both generations' formats (Gold
+    stores teams differently; inductions would have been invisible).
+  - The Starter Ribbon knows Gold's own record of which Pokémon Elm gave
+    you — three real cartridge flags, so it is exact, survives save
+    imports, and follows evolution just like the Gen 1 path. No Gen 1
+    behaviour changed.
+- `NOTES.md` added: the verified Gen 2 findings and the roadmap (the
+  Gold port with a Goldenrod ribbon vendor, then a Hatched ribbon for
+  Pokémon hatched from eggs).
+
 ## 0.20.3
 
 **Updating from 0.18.0?** Versions 0.19.0 through 0.20.2 were never

@@ -168,11 +168,21 @@ any other ribbon here — nothing in this mod revokes an award.
 
 ## Credits
 
+- All icon art (`ribbons.png`) was drawn for this mod; it ships nothing
+  copied from any game or any other artist.
 - **Miss Default Bunny** — suggested the Shiny Ribbon, in the gen1recomp
   Discord.
+- **LeHaz** — reported the missing Starter Ribbon on imported saves
+  (fixed in 0.20.1).
 - **WizzStar** — [G1R HoldToScrollUI](https://github.com/WizzStar/PKMN-G1R-HoldToScrollUI-Mod)
   inspired the scrolling ribbons screen (not a dependency; see
   THIRD_PARTY_NOTICES).
+- **thorkdev** — [Happiness](https://github.com/thorkdev/gen1recomp-happiness)
+  is the optional Gen 1 source for the Best Friends Ribbon.
+- Pokémon and all related names are trademarks of Nintendo / Creatures
+  Inc. / GAME FREAK inc.
 
+Licensed under [MIT](LICENSE) — the licence covers this mod's own code
+and art, not ROM-derived material or the trademarks above.
 Built for [gen1recomp](https://github.com/bryanthaboi/gen1recomp).
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

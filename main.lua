@@ -135,6 +135,51 @@ return function(mod)
     return nil
   end
 
+  -- ------- STARTER on Gold: the cart itself recorded the choice
+  --
+  -- Gold needs none of Gen 1's workarounds. EVENT_GOT_CYNDAQUIL_FROM_ELM
+  -- (27) / _TOTODILE_ (28) / _CHIKORITA_ (29) are REAL wEventFlags bits
+  -- from the cartridge, set by Elm's own gift script -- verified in
+  -- tests/drivers/gold/flag_names.lua and Vm.lua's setevent. Being real
+  -- cart bits they also survive a .sav import, so the imported-save hole
+  -- that needed starterFromOwnership on Gen 1 does not exist here.
+  --
+  -- Gen 2 event flags are NUMERIC bit indices, not string keys
+  -- (src/world/gen2/Events.lua): save.events[floor(id/8)] holds the byte,
+  -- bit id%8. Read straight off the save table so this stays a pure
+  -- save-state resolver like everything else in this file. On a Gen 1
+  -- save, save.events does not exist and this returns nil instantly.
+  --
+  -- Breeding caveat, new to Gen 2: a bred Croconaw hatches with YOUR OT,
+  -- so own-OT no longer guarantees uniqueness within the family. The
+  -- flag still names the right FAMILY exactly; if breeding has produced
+  -- several own-OT members, the shared candidate scan below applies the
+  -- same party-before-boxes-with-a-warning rule as Yellow's two-Pikachu
+  -- case. The 0.22.0 Hatched ribbon may later give hatchlings a marker
+  -- worth excluding on; until then this is the honest tiebreak.
+  local GOLD_STARTER_FLAGS = {
+    { flag = 27, family = { "CYNDAQUIL", "QUILAVA", "TYPHLOSION" } },
+    { flag = 28, family = { "TOTODILE", "CROCONAW", "FERALIGATR" } },
+    { flag = 29, family = { "CHIKORITA", "BAYLEEF", "MEGANIUM" } },
+  }
+
+  local function goldEventFlag(save, id)
+    local events = save and save.events
+    if type(events) ~= "table" then return false end
+    local row = events[math.floor(id / 8)]
+    if type(row) ~= "number" then return false end
+    return math.floor(row / (2 ^ (id % 8))) % 2 == 1
+  end
+
+  local function goldStarterFamily(save)
+    for _, entry in ipairs(GOLD_STARTER_FLAGS) do
+      if goldEventFlag(save, entry.flag) then
+        return entry.family, ("gold event flag %d"):format(entry.flag)
+      end
+    end
+    return nil
+  end
+
   local function isOwnOT(mon, save)
     local player = save.player
     if not player then return true end -- pre-OT save: don't exclude anything
@@ -198,7 +243,12 @@ return function(mod)
     if not save then return end
     local family, flag = starterFamily(save)
     if not family then
-      -- no EVENT_CHOSE_* to work from; try ownership instead
+      -- Gold records the choice as numeric cart bits instead
+      family, flag = goldStarterFamily(save)
+    end
+    if not family then
+      -- no flag on either generation; try Gen 1's ownership fallback
+      -- (its EVENT_GOT_STARTER guard keeps it inert on Gold)
       local mon = starterFromOwnership(save)
       if mon then
         awardRibbon(mon, "STARTER",
@@ -342,9 +392,37 @@ return function(mod)
   -- The induction itself runs inside a script, so the script.ended sync
   -- pass below doubles as the live award -- no separate path to drift.
 
-  local function syncHallOfFame(save)
+  -- The two generations store the Hall of Fame differently, and the Gen 1
+  -- shape silently reads as EMPTY on Gold -- ipairs over a table whose
+  -- rows live under .teams yields nothing, so every induction would be
+  -- invisible and no ribbon would ever land. Verified against
+  -- src/core/gen2/HallOfFame.lua (v0.1.78):
+  --   Gen 1:  save.hallOfFame = { entry, entry, ... }
+  --           each entry a list of { species, level, nickname }
+  --   Gold:   save.hallOfFame = { count = N, teams = { team, ... } }
+  --           each team = { winCount, mons = { same row fields } }
+  -- Both row shapes carry species/level/nickname, which is all the
+  -- matcher reads -- so one adapter here and the resolvers below stay
+  -- shared. Capability detection (is .teams a table?), not a version
+  -- check, per the house rule.
+  local function hofEntries(save)
     local hof = save.hallOfFame
-    if type(hof) ~= "table" or #hof == 0 then return end
+    if type(hof) ~= "table" then return {} end
+    if type(hof.teams) == "table" then
+      local out = {}
+      for _, team in ipairs(hof.teams) do
+        if type(team) == "table" and type(team.mons) == "table" then
+          out[#out + 1] = team.mons
+        end
+      end
+      return out
+    end
+    return hof
+  end
+
+  local function syncHallOfFame(save)
+    local hof = hofEntries(save)
+    if #hof == 0 then return end
     local mons = eachMon(save)
     for _, entry in ipairs(hof) do
       for _, rec in ipairs(entry) do
@@ -392,8 +470,10 @@ return function(mod)
   end)
 
   local function syncLegend(save)
-    local hof = save.hallOfFame
-    if type(hof) ~= "table" then return end
+    -- through the same both-shapes adapter as syncHallOfFame, so a Gold
+    -- induction (hof.teams) is seen here too instead of reading as an
+    -- eternally-empty list
+    local hof = hofEntries(save)
     -- "how many HoF entries this save has already been checked against"
     -- lives on the save itself, not a module-level counter -- a shared
     -- counter would leak state between separate saves (or, as caught in
@@ -599,6 +679,26 @@ return function(mod)
     { id = "GORGEOUS_ROYAL", price = 999999 },
   }
 
+  -- Money moved in Gen 2: save.money on Gen 1, save.player.money on Gold
+  -- (src/core/gen2/Save.lua:345). Reading save.money on a Gold save gets
+  -- nil, `or 0` turns that into "broke", and a write would land on a field
+  -- nothing reads -- the price check silently misbehaves in BOTH
+  -- directions. Try the Gen 2 home first, by capability not by version.
+  local function getMoney(save)
+    if save.player and type(save.player.money) == "number" then
+      return save.player.money
+    end
+    return save.money or 0
+  end
+
+  local function spendMoney(save, amount)
+    if save.player and type(save.player.money) == "number" then
+      save.player.money = math.max(0, save.player.money - amount)
+    else
+      save.money = math.max(0, (save.money or 0) - amount)
+    end
+  end
+
   -- one command checks+deducts+awards atomically; the script branches on
   -- ctx.lastCheck and the KR_SHOP_LINE token reads the message it left
   mod.content.commands:register("kanto_ribbons:buy_next", {
@@ -620,12 +720,12 @@ return function(mod)
         say("That one wears\nall three already.\nMagnificent, meow!")
         return
       end
-      if (save.money or 0) < tier.price then
+      if getMoney(save) < tier.price then
         say(("%s?\nThat's $%d.\nMeow-t of range?"):format(
           ribbonName(tier.id), tier.price))
         return
       end
-      save.money = save.money - tier.price
+      spendMoney(save, tier.price)
       awardRibbon(lead, tier.id, ("bought for $%d"):format(tier.price))
       say(("Sold! %s\nfor %s.\nMeow-velous!"):format(
         ribbonName(tier.id), lead.nickname or lead.species or "your friend"))
@@ -843,7 +943,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.20.3"
+  mod.exports.version = "0.20.4"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
