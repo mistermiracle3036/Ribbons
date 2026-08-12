@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.21.0
+
+**Pokémon Gold support.** Ribbons now work on Gold as well as Red, Blue
+and Yellow. Nothing about Gen 1 changes.
+
+- The ribbons screen opens on Gold the same way it always has: from a
+  Pokémon's summary screen, pressing A past the last page. Gold's summary
+  has three pages of its own, so it is A on the third.
+- **Best Friends** needs no extra mod on Gold — happiness is built into
+  the game there. On Red/Blue/Yellow it still needs
+  [Happiness](https://github.com/thorkdev/gen1recomp-happiness).
+- **Starter** uses Gold's own record of which Pokémon Elm gave you, so it
+  is exact, applies retroactively, and follows the whole evolution line.
+- **Hall of Fame** reads Gold's records, which are stored differently.
+- The three shop ribbons stay Kanto-only for now. Gold's Celadon has no
+  Meowth to buy them from; a ribbon vendor in Goldenrod is planned.
+- **Snag** and **Cool** are still Gen 1 only, because the mods that award
+  them are.
+- The **Wide ribbons screen** option is Gen 1 only. Gold draws its screens
+  a different way and simply ignores it.
+
 ## 0.20.4
 
 Groundwork for Pokémon Gold support, plus licensing. Nothing changes in

@@ -1,7 +1,11 @@
 {
   "id": "kanto_ribbons",
   "name": "Kanto Ribbons",
-  "version": "0.20.4",
+  "version": "0.21.0",
+  "games": [
+    "gen1",
+    "gen2"
+  ],
   "api": 2,
   "entry": "main.lua",
   "profile": "content",
@@ -20,6 +24,6 @@
     "happiness"
   ],
   "conflicts": [],
-  "description": "Eighteen per-Pokemon ribbons reimagined for Gen1 -- earned, bought, and bonded -- awarded automatically (retroactively where the save allows) and shown inside the status screen.",
+  "description": "Eighteen per-Pokemon ribbons for Red/Blue/Yellow and Gold -- earned, bought, and bonded -- awarded automatically (retroactively where the save allows) and shown inside the status screen.",
   "github": "mistermiracle3036/kanto_ribbons"
 }

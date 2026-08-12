@@ -6,16 +6,45 @@ v0.1.78 source on 2026-08-11 unless dated otherwise.
 ## Gen 2 (Gold) roadmap
 
 Standing direction: new work targets Gold first, Red gets backfill.
-`games` stays undeclared until the mod is tested on a real Gold boot —
-declaring it asserts the mod works there.
+`games` is declared as of 0.21.0. That is a claim the mod WORKS on Gold,
+so it must not be published until a real Gold boot confirms it — the test
+draft is the right place for it, a public release is not.
 
-**0.21.0 — the Gold port** (planned):
+**0.21.0 — the Gold port** (BUILT, awaiting a real Gold boot):
 
-- Chain the ribbons screen into `src/ui/gen2/SummaryMenu.lua` (the
-  gen2check MK403 finding — Gold never instantiates the Gen 1
-  SummaryMenu, so the current patch installs cleanly and does nothing).
-  Three palette-named pages, different shape from Gen 1's; read it before
-  wiring. Screen id is `Gen2SummaryMenu`.
+Done in 0.21.0:
+
+- `games: ["gen1","gen2"]` declared. `game_version` deliberately left at
+  `>=0.1.38` — nothing here needs a newer engine floor, and raising it
+  would strand Gen 1 players for nothing.
+- BOTH SummaryMenu classes are patched, chosen by which module exists
+  rather than by asking the generation: Gold never instantiates
+  `src.ui.SummaryMenu` and Gen 1 never instantiates the gen2 one, so each
+  wrapper is dead code on the other side.
+- Gold chain point is **A on BLUE_PAGE (3)** — Gold's own update "quits on
+  the last page and otherwise falls through", so that is its equivalent of
+  Gen 1's past-the-last-page beat. Deliberately NOT intercepted: the
+  move-detail sub-screen (A there picks up/places a move) and EGG slots
+  (`mon.isEgg`), whose arm has no pages at all.
+- Gold PUSHES the ribbons screen rather than popping the summary first,
+  because `close()` runs a caller-owned `onClose`. Consequence: on Gold, B
+  returns to the summary; on Gen 1 it returns to the party list. A
+  deliberate difference.
+- The Meowth shop's `map_scripts` registration is skipped on Gen 2. The
+  engine blesses registering unconditionally (Loader.lua:733-737, the
+  drop is non-fatal) BUT reports it into `loader.errors`, which is the
+  mod manager's `[ERRS]` screen — the one visible channel on iOS. A red
+  line under a working mod reads as breakage, and nothing is lost by not
+  writing a registration that would be discarded.
+- Verified headlessly on both generations with `Loader.new{generation=N}`
+  AND `GameVersion.set(...)` so both signals agree (they diverge if only
+  the loader seam is set, which is why an earlier run looked like a
+  failure): `state=loaded` both sides, **zero** kanto_ribbons `[ERRS]`
+  lines both sides, Meowth shop present on red and absent on gold, both
+  ribbons screens registered on both.
+
+Still to do here:
+
 - Move the ribbon shop to a **new vendor NPC in Goldenrod** (developer
   decision, 2026-08-11). Gold has `CELADON_MANSION_1F` but
   `TEXT_CELADONMANSION1F_MEOWTH` is not in `rom_manifest_gold.json`, so

@@ -49,6 +49,12 @@ return function(mod)
     -- physically smaller. Wider is only better when the display is
     -- actually wide, and the mod cannot know that better than the player
     -- looking at it.
+    --
+    -- GEN 1 ONLY, and inert rather than broken on Gold: Game2:draw never
+    -- calls setUISize or asks a state for uiSize/sgbPalettes at all -- it
+    -- blits a fixed 160x144 through GBCFX and letterboxes the rest. So on
+    -- a Gold boot this toggle simply does nothing, which is the right
+    -- failure. Do not "fix" it by reaching into Gold's draw path.
     { key = "wide_screen", type = "toggle",
       label = "Wide ribbons screen", default = false },
     { key = "dev_give_lead_all_ribbons", type = "toggle",
@@ -737,24 +743,52 @@ return function(mod)
     return game.krShopLine or "Meow?"
   end)
 
-  mod.content.map_scripts:register("CELADON_MANSION_1F", {
-    priority = 500,
-    talk = {
-      TEXT_CELADONMANSION1F_MEOWTH = {
-        { "face_player" },
-        { "show_text", "Meowth: Meow!\nRibbons for the\ndiscerning owner!\f"
-          .. "$10000, $100000,\n$999999. Each needs\nthe one before.\f"
-          .. "For the POKeMON at\nthe front of your\nparty. Interested?" },
-        { "choice", { "BUY", "NO THANKS" } },
-        { "jump_if_false", "bye" },
-        { "kanto_ribbons:buy_next" },
-        { "show_text", "{KR_SHOP_LINE}" },
-        { "jump", "end" },
-        { "label", "bye" },
-        { "show_text", "Meow. The finer\nthings wait for\nno one." },
+  -- The Meowth shop is Gen 1 content and stays Gen 1 content: `map_scripts`
+  -- has no Gen 2 home at all, and Gold's Celadon has no
+  -- TEXT_CELADONMANSION1F_MEOWTH to take over even if it did. The Gold
+  -- equivalent is a vendor of this mod's own in Goldenrod (see NOTES.md).
+  --
+  -- Registering it anyway is explicitly BLESSED by the engine -- Loader
+  -- .lua:733-737 says a dual-generation mod "registers its content
+  -- unconditionally and should still load the half that does apply" and
+  -- the drop is deliberately not fatal. It is skipped here anyway for one
+  -- reason: the drop is reported into `loader.errors`, which is the mod
+  -- manager's [ERRS] screen, and that is THE visible channel on iOS. A
+  -- red line under a mod that is working perfectly reads as a failure to
+  -- every Gold player. Nothing is lost by not writing a registration that
+  -- would have been discarded.
+  --
+  -- This asks which generation is booting rather than probing a
+  -- capability, and that is the right question here: the subject is which
+  -- REGISTRIES exist, not which mechanic a Pokemon has. Defaults to Gen 1
+  -- so an engine without GameVersion still gets the shop.
+  local okGV, GameVersion = pcall(require, "src.core.GameVersion")
+  local generation = 1
+  if okGV and GameVersion and GameVersion.generation then
+    local okGen, g = pcall(GameVersion.generation)
+    if okGen and type(g) == "number" then generation = g end
+  end
+
+  if generation == 1 then
+    mod.content.map_scripts:register("CELADON_MANSION_1F", {
+      priority = 500,
+      talk = {
+        TEXT_CELADONMANSION1F_MEOWTH = {
+          { "face_player" },
+          { "show_text", "Meowth: Meow!\nRibbons for the\ndiscerning owner!\f"
+            .. "$10000, $100000,\n$999999. Each needs\nthe one before.\f"
+            .. "For the POKeMON at\nthe front of your\nparty. Interested?" },
+          { "choice", { "BUY", "NO THANKS" } },
+          { "jump_if_false", "bye" },
+          { "kanto_ribbons:buy_next" },
+          { "show_text", "{KR_SHOP_LINE}" },
+          { "jump", "end" },
+          { "label", "bye" },
+          { "show_text", "Meow. The finer\nthings wait for\nno one." },
+        },
       },
-    },
-  })
+    })
+  end
 
   -- ------- sync entry points
   -- game.ready: { game = <Game> } -- fires with save already attached.
@@ -943,7 +977,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.20.4"
+  mod.exports.version = "0.21.0"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1305,19 +1339,77 @@ return function(mod)
   -- declared for exactly this; Snag Quest's BattleState.throwBall patch
   -- is the precedent. `self.pageCount or 2` keeps it correct on a stock
   -- two-page screen and on any engine where other mods add pages.
-  local SummaryClass = require("src.ui.SummaryMenu")
-  local vanillaSummaryUpdate = SummaryClass.update
-  SummaryClass.update = function(self, dt)
-    local input = self.game and self.game.input
-    local last = self.pageCount or 2
-    if input and (self.page or 1) >= last
-        and (input:wasPressed("a") or input:wasPressed("b")) then
-      local game, mon = self.game, self.mon
-      game.stack:pop()
-      mod.ui.push(game, "KantoRibbonsDetail", mon)
-      return
+  --
+  -- BOTH generations are patched, and deliberately without asking which
+  -- game is booting. Gold runs a parallel engine: it never instantiates
+  -- src.ui.SummaryMenu, and Gen 1 never instantiates
+  -- src.ui.gen2.SummaryMenu, so installing both wrappers is safe and each
+  -- is dead code on the other side. That is capability detection applied
+  -- to modules -- patch what exists, let the generation pick.
+  --
+  -- pcall'd: on any build where a module is absent, the mod carries on
+  -- with the one it did find rather than failing to load.
+  local okGen1, SummaryClass = pcall(require, "src.ui.SummaryMenu")
+  if okGen1 and type(SummaryClass) == "table" and SummaryClass.update then
+    SummaryClass._krOriginals = SummaryClass._krOriginals or {}
+    local g1O = SummaryClass._krOriginals
+    g1O.update = g1O.update or SummaryClass.update
+    SummaryClass.update = function(self, dt)
+      local input = self.game and self.game.input
+      local last = self.pageCount or 2
+      if input and (self.page or 1) >= last
+          and (input:wasPressed("a") or input:wasPressed("b")) then
+        local game, mon = self.game, self.mon
+        game.stack:pop()
+        mod.ui.push(game, "KantoRibbonsDetail", mon)
+        return
+      end
+      return g1O.update(self, dt)
     end
-    return vanillaSummaryUpdate(self, dt)
+  end
+
+  -- Gold's summary screen, chained at the equivalent beat.
+  --
+  -- The page model is genuinely different, so this is not the Gen 1 patch
+  -- with a different require. Gold has exactly three pages -- PINK(1),
+  -- GREEN(2), BLUE(3) -- and its own update (src/ui/gen2/SummaryMenu.lua)
+  -- reads: B closes from anywhere, left/right turn pages, up/down walk the
+  -- party, and A "quits on the last page and otherwise FALLS THROUGH into
+  -- .d_right". So A-on-BLUE is Gold's own "past the last page" moment, and
+  -- that is the beat worth taking.
+  --
+  -- Two arms of Gold's update must NOT be intercepted:
+  --   * the move-detail sub-screen (self.moveDetail), where A picks up and
+  --     places a move -- stealing A there would break move reordering;
+  --   * an EGG, which has no pages, no ribbons, and whose own arm exits on
+  --     either A or B (Breeding marks the slot mon.isEgg rather than
+  --     overwriting the species).
+  --
+  -- Gold PUSHES rather than replacing: Gen 1 pops the summary first
+  -- because its page cycle ends there, but Gold's close() runs a caller's
+  -- onClose callback whose cleanup this mod does not own. Pushing on top
+  -- leaves that contract alone and makes B walk back to the summary
+  -- instead of out to the party list. Worth knowing when comparing the
+  -- two generations side by side -- it is a deliberate difference, not
+  -- drift.
+  local okGen2, Gen2Summary = pcall(require, "src.ui.gen2.SummaryMenu")
+  if okGen2 and type(Gen2Summary) == "table" and Gen2Summary.update then
+    Gen2Summary._krOriginals = Gen2Summary._krOriginals or {}
+    local g2O = Gen2Summary._krOriginals
+    g2O.update = g2O.update or Gen2Summary.update
+    local LAST_PAGE = Gen2Summary.BLUE_PAGE or 3
+    Gen2Summary.update = function(self, dt)
+      local input = self.game and self.game.input
+      local mon = self.mon
+      if input and not self.moveDetail
+          and not (type(mon) == "table" and mon.isEgg == true)
+          and self.page == LAST_PAGE
+          and input:wasPressed("a") then
+        mod.ui.push(self.game, "KantoRibbonsDetail", mon)
+        return
+      end
+      return g2O.update(self, dt)
+    end
   end
 
   -- and a whole-party overview, for checking everyone without backing
