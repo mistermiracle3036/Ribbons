@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.21.2
+
+- **Kanto Ribbons is now just "Ribbons".** The old name stopped being
+  true the moment Gold support landed — the ribbons were never really a
+  Kanto thing, and Johto's are the same ribbons.
+- **Nothing to do, and nothing lost.** It is the same mod underneath, so
+  your Pokémon keep every ribbon they have, your settings and win-streak
+  progress carry over, and the launcher will offer it as a normal update
+  rather than a new mod. The download is still named `kanto_ribbons`.
+- Docs updated to describe both generations rather than Kanto alone.
+
 ## 0.21.1
 
 - On Gold, ribbons now behave as a fourth page of the summary screen.
