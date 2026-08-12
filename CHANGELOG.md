@@ -2,6 +2,34 @@
 
 ## 0.21.3
 
+**Kanto Ribbons is now just "Ribbons", and it plays on Pokémon Gold.**
+
+Versions 0.20.4 through 0.21.2 were never published, so this release
+brings all of it at once. Coming from 0.20.3, here is everything:
+
+- **Gold support.** Ribbons work on Gold as well as Red, Blue and Yellow,
+  and open the same way — from a Pokémon's summary screen, past the last
+  page. On Gold they sit as a fourth page in the cycle, so **left** and
+  **right** reach them too, not just A.
+- **The mod is renamed to "Ribbons"**, because the ribbons were never
+  really a Kanto thing. It is the same mod: your Pokémon keep every
+  ribbon, your settings carry over, and the launcher offers it as an
+  ordinary update rather than a new install.
+- **Best Friends needs no extra mod on Gold** — happiness is built into
+  that game. On Red, Blue and Yellow it still uses
+  [Happiness](https://github.com/thorkdev/gen1recomp-happiness), and
+  without it, it stays Yellow's lab Pikachu only.
+- **Starter** uses each game's own record of the Pokémon you were given,
+  so it is exact on both, applies to saves you started long ago, and
+  follows the whole evolution line.
+- The mod is now **MIT licensed**, with a credits section naming everyone
+  who has shaped it.
+- Three things stay Kanto-only for now: the **shop ribbons** (Gold has no
+  Meowth selling them — a Goldenrod vendor is planned), and **Snag** and
+  **Cool**, whose mods are Gen 1 only.
+
+New in 0.21.3 itself:
+
 - **Ribbon icons are in colour on Gold.** They were drawing flat grey
   there. Each ribbon now has its own colour, picked to suit it — a pink
   heart for Best Friends, a green globe for Earth, gold for the Hall of
