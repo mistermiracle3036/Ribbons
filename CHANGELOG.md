@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.21.3
+
+- **Ribbon icons are in colour on Gold.** They were drawing flat grey
+  there. Each ribbon now has its own colour, picked to suit it — a pink
+  heart for Best Friends, a green globe for Earth, gold for the Hall of
+  Fame crown, and Generation III's own contest colours for contest
+  ribbons.
+- It is a small improvement on the Kanto games, where the colours come
+  from the game itself and shift as you scroll: on Gold each ribbon
+  keeps the same colour wherever it sits in the list. Red, Blue and
+  Yellow are untouched — their colouring works differently and is best
+  left alone.
+
 ## 0.21.2
 
 - **Kanto Ribbons is now just "Ribbons".** The old name stopped being

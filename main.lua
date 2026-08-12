@@ -977,7 +977,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.21.2"
+  mod.exports.version = "0.21.3"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1170,7 +1170,30 @@ return function(mod)
       local y = topY + shown * ROW_H
       local quad = ribbonQuads and ribbonQuads[entry.cell]
       if img and quad then
-        love.graphics.setColor(1, 1, 1, 1)
+        -- Gen 2 only: tint the icon with the ribbon's own colour.
+        --
+        -- Gold is a CGB game "whose colour is already IN the picture"
+        -- (Game2.lua's own words) -- a screen draws in real colour and
+        -- nothing remaps it afterwards, so the mod chooses and the choice
+        -- sticks. Without this the icons render as their raw greyscale
+        -- and every ribbon is the same flat grey, which is what the
+        -- device showed.
+        --
+        -- Multiply against three-value art: outline 16 stays a near-black
+        -- edge, shade 96 becomes a mid tone, fill 176 becomes the body.
+        -- One hue, three tones, silhouette untouched.
+        --
+        -- Gen 1 deliberately keeps setColor(1,1,1,1). Its colour comes
+        -- from SGB zones this screen inherits, and PaletteFX buckets
+        -- pixels into four shades BY RED CHANNEL -- a tint would move
+        -- pixels between buckets and corrupt the shading rather than
+        -- colour it. That was tried once and three of six icons collided.
+        local tint = generation == 2 and entry.def.color or nil
+        if type(tint) == "table" and #tint == 3 then
+          love.graphics.setColor(tint[1] / 255, tint[2] / 255, tint[3] / 255, 1)
+        else
+          love.graphics.setColor(1, 1, 1, 1)
+        end
         love.graphics.draw(img, quad, MARGIN, y)
       end
       love.graphics.setColor(0, 0, 0, 1)
