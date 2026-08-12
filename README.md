@@ -171,6 +171,14 @@ Both are on the mod's own options screen and both default to off.
 Turning either back off leaves whatever was granted in place, same as
 any other ribbon here — nothing in this mod revokes an award.
 
+> **Turn these on and off from a Red, Blue or Yellow game, not Gold.**
+> There is a bug in the engine (not this mod, and it affects every mod
+> with options) where a setting changed on Gold is forgotten on restart,
+> while one left on from a Kanto game stays on under Gold and can't be
+> switched off there. Since ribbons are never taken away, leaving
+> "give lead all ribbons" on by accident would permanently decorate
+> whatever Pokémon is at the front of your Gold party.
+
 - **[DEV] Give lead all ribbons** — keeps party slot 1 fully decorated,
   for testing the display.
 - **[DEV] Max lead happiness** — sets the lead Pokémon's happiness to
