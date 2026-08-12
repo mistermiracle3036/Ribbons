@@ -1,7 +1,7 @@
 {
   "id": "kanto_ribbons",
   "name": "Ribbons",
-  "version": "0.21.3",
+  "version": "0.21.4",
   "games": [
     "gen1",
     "gen2"
@@ -25,5 +25,5 @@
   ],
   "conflicts": [],
   "description": "Eighteen per-Pokemon ribbons for Red/Blue/Yellow and Gold -- earned, bought, and bonded -- awarded automatically (retroactively where the save allows) and shown inside the status screen.",
-  "github": "mistermiracle3036/kanto_ribbons"
+  "github": "mistermiracle3036/Ribbons"
 }

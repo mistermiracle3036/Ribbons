@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.21.4
+
+- The repository is now called **Ribbons** too, matching the mod. GitHub
+  forwards the old address, so existing links and installs keep working;
+  this version simply points at the new one directly so nothing has to
+  rely on the forward.
+- The download is still named `kanto_ribbons-<version>.zip`, and the mod
+  is still identified internally as `kanto_ribbons`. Both are deliberate:
+  changing either would make the launcher treat this as a different mod
+  and lose your settings.
+
 ## 0.21.3
 
 **Kanto Ribbons is now just "Ribbons", and it plays on Pokémon Gold.**
