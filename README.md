@@ -1,10 +1,14 @@
-# Kanto Ribbons
+# Ribbons
 
-Permanent, per-Pokémon **ribbons** for **gen1recomp** (Red / Blue / Yellow) —
-reimagined from the Generation III–IX ribbon system for things Gen 1
-actually simulates. Ribbons live on the Pokémon itself, so they survive
-boxing, evolution and trades, and they open straight from the status
-screen: press A past the moves page.
+Permanent, per-Pokémon **ribbons** for **gen1recomp** — Red, Blue, Yellow
+and **Gold** — reimagined from the Generation III–IX ribbon system for
+things these games actually simulate. Ribbons live on the Pokémon itself,
+so they survive boxing, evolution and trades, and they open straight from
+the status screen: press A past the last page.
+
+*(Formerly "Kanto Ribbons" — renamed with Gold support, since the ribbons
+are no longer a Kanto-only affair. Same mod, same saves, nothing to
+reinstall.)*
 
 > **Still growing.** New ribbons and refinements land regularly, but
 > nothing here ever revokes a ribbon it has already awarded, so updating
@@ -35,7 +39,7 @@ so you only reveal what you want.
   companion downloads.
 - **A shop.** The Meowth in Celadon Mansion, 1F, sells three ribbons at
   escalating, deliberately absurd prices — for whichever Pokémon is at
-  the **front of your party** when you buy.
+  the **front of your party** when you buy. Kanto games only for now.
 
 ## The ribbons
 
@@ -98,7 +102,7 @@ Pokémon were with you for it.
 
 1. Mod manager → **Find Mods** → **Add index**.
 2. Paste `mistermiracle3036/mod-index`.
-3. Install Kanto Ribbons from the list.
+3. Install Ribbons from the list.
 
 **Or from a zip:**
 
@@ -140,9 +144,18 @@ load log prints the running version so you can confirm what's live.
   (A past the last summary page); Modern UI users see the mod's own
   screen styling rather than Modern UI's, since Modern UI's API doesn't
   accept external pages.
-- Works in **Red, Blue and Yellow**. Without Happiness installed, the
-  Best Friends Ribbon is Yellow-only (it uses Yellow's own Pikachu
-  happiness system); everything else is version-agnostic.
+- Works in **Red, Blue, Yellow and Gold**. A few ribbons differ by game,
+  and all of it is automatic — nothing to configure:
+  - **Best Friends** needs no extra mod on Gold, where happiness is
+    built in. On Red/Blue/Yellow it needs Happiness (above), and without
+    that it is Yellow's lab Pikachu only.
+  - **Starter** uses each game's own record of the Pokémon you were
+    given, so it is exact on both and follows the whole evolution line.
+  - The three **shop ribbons** are Kanto-only for now; Gold has no
+    Meowth selling them. A vendor in Goldenrod is planned.
+  - **Snag** and **Cool** need mods that are themselves Gen 1 only.
+  - The **Wide ribbons screen** option does nothing on Gold, which draws
+    its screens a different way.
 
 ## A note on how it hooks in
 
@@ -168,11 +181,21 @@ any other ribbon here — nothing in this mod revokes an award.
 
 ## Credits
 
+- All icon art (`ribbons.png`) was drawn for this mod; it ships nothing
+  copied from any game or any other artist.
 - **Miss Default Bunny** — suggested the Shiny Ribbon, in the gen1recomp
   Discord.
+- **LeHaz** — reported the missing Starter Ribbon on imported saves
+  (fixed in 0.20.1).
 - **WizzStar** — [G1R HoldToScrollUI](https://github.com/WizzStar/PKMN-G1R-HoldToScrollUI-Mod)
   inspired the scrolling ribbons screen (not a dependency; see
   THIRD_PARTY_NOTICES).
+- **thorkdev** — [Happiness](https://github.com/thorkdev/gen1recomp-happiness)
+  is the optional Gen 1 source for the Best Friends Ribbon.
+- Pokémon and all related names are trademarks of Nintendo / Creatures
+  Inc. / GAME FREAK inc.
 
+Licensed under [MIT](LICENSE) — the licence covers this mod's own code
+and art, not ROM-derived material or the trademarks above.
 Built for [gen1recomp](https://github.com/bryanthaboi/gen1recomp).
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

@@ -33,6 +33,10 @@
 - **LeHaz** reported, in the gen1recomp Discord, that a save imported from
   a real cartridge never received the Starter Ribbon — the bug fixed in
   0.20.1.
+- This mod is released under the MIT licence (see `LICENSE`). That
+  licence covers this mod's own code and its original art only — it makes
+  no claim over ROM-derived material or Nintendo trademarks, neither of
+  which this mod contains or could relicense.
 - Pokémon and all related names are trademarks of Nintendo / Creatures
   Inc. / GAME FREAK inc. This mod contains no ROM data or copyrighted
   assets; it is a fan-made script mod and requires the user's own game

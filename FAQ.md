@@ -1,4 +1,4 @@
-# Kanto Ribbons — FAQ and spoiler guide
+# Ribbons — FAQ and spoiler guide
 
 Every answer is collapsed. Tap only what you want revealed.
 
@@ -271,7 +271,7 @@ disappear without a ribbon, that's a bug worth reporting.
 happened.</summary>
 
 That's the signature of a swallowed script error. Please open an issue
-with: your Kanto Ribbons version (from the load log), your game version
+with: your Ribbons version (from the load log), your game version
 (Red/Blue/Yellow), which NPC, and which other mods were enabled. If you
 can, retry with other mods disabled — knowing whether that changes it
 helps enormously.
@@ -289,7 +289,7 @@ you installed.
 <summary>Pressing A on the moves page closes the screen instead of
 showing ribbons.</summary>
 
-That means the mod isn't loaded (check the load log for the Kanto Ribbons
+That means the mod isn't loaded (check the load log for the Ribbons
 version line) or another mod is replacing the status screen's *input*
 handling wholesale. Please open an issue with your mod list.
 </details>

@@ -1,5 +1,111 @@
 # Changelog
 
+## 0.21.3
+
+**Kanto Ribbons is now just "Ribbons", and it plays on Pokémon Gold.**
+
+Versions 0.20.4 through 0.21.2 were never published, so this release
+brings all of it at once. Coming from 0.20.3, here is everything:
+
+- **Gold support.** Ribbons work on Gold as well as Red, Blue and Yellow,
+  and open the same way — from a Pokémon's summary screen, past the last
+  page. On Gold they sit as a fourth page in the cycle, so **left** and
+  **right** reach them too, not just A.
+- **The mod is renamed to "Ribbons"**, because the ribbons were never
+  really a Kanto thing. It is the same mod: your Pokémon keep every
+  ribbon, your settings carry over, and the launcher offers it as an
+  ordinary update rather than a new install.
+- **Best Friends needs no extra mod on Gold** — happiness is built into
+  that game. On Red, Blue and Yellow it still uses
+  [Happiness](https://github.com/thorkdev/gen1recomp-happiness), and
+  without it, it stays Yellow's lab Pikachu only.
+- **Starter** uses each game's own record of the Pokémon you were given,
+  so it is exact on both, applies to saves you started long ago, and
+  follows the whole evolution line.
+- The mod is now **MIT licensed**, with a credits section naming everyone
+  who has shaped it.
+- Three things stay Kanto-only for now: the **shop ribbons** (Gold has no
+  Meowth selling them — a Goldenrod vendor is planned), and **Snag** and
+  **Cool**, whose mods are Gen 1 only.
+
+New in 0.21.3 itself:
+
+- **Ribbon icons are in colour on Gold.** They were drawing flat grey
+  there. Each ribbon now has its own colour, picked to suit it — a pink
+  heart for Best Friends, a green globe for Earth, gold for the Hall of
+  Fame crown, and Generation III's own contest colours for contest
+  ribbons.
+- It is a small improvement on the Kanto games, where the colours come
+  from the game itself and shift as you scroll: on Gold each ribbon
+  keeps the same colour wherever it sits in the list. Red, Blue and
+  Yellow are untouched — their colouring works differently and is best
+  left alone.
+
+## 0.21.2
+
+- **Kanto Ribbons is now just "Ribbons".** The old name stopped being
+  true the moment Gold support landed — the ribbons were never really a
+  Kanto thing, and Johto's are the same ribbons.
+- **Nothing to do, and nothing lost.** It is the same mod underneath, so
+  your Pokémon keep every ribbon they have, your settings and win-streak
+  progress carry over, and the launcher will offer it as a normal update
+  rather than a new mod. The download is still named `kanto_ribbons`.
+- Docs updated to describe both generations rather than Kanto alone.
+
+## 0.21.1
+
+- On Gold, ribbons now behave as a fourth page of the summary screen.
+  Gold's pages wrap around, so pressing **right** past the last page or
+  **left** before the first one both land on ribbons — the direction you
+  were already travelling. A on the last page still opens them too.
+- Left and right also close the ribbons page, so scrolling through the
+  pages carries on rather than stopping dead once ribbons is open.
+
+## 0.21.0
+
+**Pokémon Gold support.** Ribbons now work on Gold as well as Red, Blue
+and Yellow. Nothing about Gen 1 changes.
+
+- The ribbons screen opens on Gold the same way it always has: from a
+  Pokémon's summary screen, pressing A past the last page. Gold's summary
+  has three pages of its own, so it is A on the third.
+- **Best Friends** needs no extra mod on Gold — happiness is built into
+  the game there. On Red/Blue/Yellow it still needs
+  [Happiness](https://github.com/thorkdev/gen1recomp-happiness).
+- **Starter** uses Gold's own record of which Pokémon Elm gave you, so it
+  is exact, applies retroactively, and follows the whole evolution line.
+- **Hall of Fame** reads Gold's records, which are stored differently.
+- The three shop ribbons stay Kanto-only for now. Gold's Celadon has no
+  Meowth to buy them from; a ribbon vendor in Goldenrod is planned.
+- **Snag** and **Cool** are still Gen 1 only, because the mods that award
+  them are.
+- The **Wide ribbons screen** option is Gen 1 only. Gold draws its screens
+  a different way and simply ignores it.
+
+## 0.20.4
+
+Groundwork for Pokémon Gold support, plus licensing. Nothing changes in
+play on Red/Blue/Yellow — every change here either reads data the same
+way it did before or only activates on a save shape Gen 1 never produces.
+
+- The mod is now formally **MIT licensed** (new `LICENSE` file). The
+  licence covers this mod's own code and original art — not ROM-derived
+  material or Nintendo trademarks. README credits expanded to match.
+- **Gold groundwork**, dormant until Gold support is declared in a later
+  version:
+  - Money checks work on both generations (Gold keeps money in a
+    different place; buying a shop ribbon there would have misread your
+    balance in both directions).
+  - Hall of Fame records are read in both generations' formats (Gold
+    stores teams differently; inductions would have been invisible).
+  - The Starter Ribbon knows Gold's own record of which Pokémon Elm gave
+    you — three real cartridge flags, so it is exact, survives save
+    imports, and follows evolution just like the Gen 1 path. No Gen 1
+    behaviour changed.
+- `NOTES.md` added: the verified Gen 2 findings and the roadmap (the
+  Gold port with a Goldenrod ribbon vendor, then a Hatched ribbon for
+  Pokémon hatched from eggs).
+
 ## 0.20.3
 
 **Updating from 0.18.0?** Versions 0.19.0 through 0.20.2 were never

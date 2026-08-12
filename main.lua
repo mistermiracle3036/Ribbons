@@ -1,4 +1,4 @@
--- Kanto Ribbons: per-Pokemon ribbons reimagined for Gen1 mechanics.
+-- Ribbons: permanent per-Pokemon ribbons for Gen 1 and Gen 2.
 --
 -- Ribbons are stored on the Pokemon table itself (mon.ribbons.ID = true).
 -- Mons serialize straight into the save, so this needs no save-schema
@@ -49,6 +49,12 @@ return function(mod)
     -- physically smaller. Wider is only better when the display is
     -- actually wide, and the mod cannot know that better than the player
     -- looking at it.
+    --
+    -- GEN 1 ONLY, and inert rather than broken on Gold: Game2:draw never
+    -- calls setUISize or asks a state for uiSize/sgbPalettes at all -- it
+    -- blits a fixed 160x144 through GBCFX and letterboxes the rest. So on
+    -- a Gold boot this toggle simply does nothing, which is the right
+    -- failure. Do not "fix" it by reaching into Gold's draw path.
     { key = "wide_screen", type = "toggle",
       label = "Wide ribbons screen", default = false },
     { key = "dev_give_lead_all_ribbons", type = "toggle",
@@ -135,6 +141,51 @@ return function(mod)
     return nil
   end
 
+  -- ------- STARTER on Gold: the cart itself recorded the choice
+  --
+  -- Gold needs none of Gen 1's workarounds. EVENT_GOT_CYNDAQUIL_FROM_ELM
+  -- (27) / _TOTODILE_ (28) / _CHIKORITA_ (29) are REAL wEventFlags bits
+  -- from the cartridge, set by Elm's own gift script -- verified in
+  -- tests/drivers/gold/flag_names.lua and Vm.lua's setevent. Being real
+  -- cart bits they also survive a .sav import, so the imported-save hole
+  -- that needed starterFromOwnership on Gen 1 does not exist here.
+  --
+  -- Gen 2 event flags are NUMERIC bit indices, not string keys
+  -- (src/world/gen2/Events.lua): save.events[floor(id/8)] holds the byte,
+  -- bit id%8. Read straight off the save table so this stays a pure
+  -- save-state resolver like everything else in this file. On a Gen 1
+  -- save, save.events does not exist and this returns nil instantly.
+  --
+  -- Breeding caveat, new to Gen 2: a bred Croconaw hatches with YOUR OT,
+  -- so own-OT no longer guarantees uniqueness within the family. The
+  -- flag still names the right FAMILY exactly; if breeding has produced
+  -- several own-OT members, the shared candidate scan below applies the
+  -- same party-before-boxes-with-a-warning rule as Yellow's two-Pikachu
+  -- case. The 0.22.0 Hatched ribbon may later give hatchlings a marker
+  -- worth excluding on; until then this is the honest tiebreak.
+  local GOLD_STARTER_FLAGS = {
+    { flag = 27, family = { "CYNDAQUIL", "QUILAVA", "TYPHLOSION" } },
+    { flag = 28, family = { "TOTODILE", "CROCONAW", "FERALIGATR" } },
+    { flag = 29, family = { "CHIKORITA", "BAYLEEF", "MEGANIUM" } },
+  }
+
+  local function goldEventFlag(save, id)
+    local events = save and save.events
+    if type(events) ~= "table" then return false end
+    local row = events[math.floor(id / 8)]
+    if type(row) ~= "number" then return false end
+    return math.floor(row / (2 ^ (id % 8))) % 2 == 1
+  end
+
+  local function goldStarterFamily(save)
+    for _, entry in ipairs(GOLD_STARTER_FLAGS) do
+      if goldEventFlag(save, entry.flag) then
+        return entry.family, ("gold event flag %d"):format(entry.flag)
+      end
+    end
+    return nil
+  end
+
   local function isOwnOT(mon, save)
     local player = save.player
     if not player then return true end -- pre-OT save: don't exclude anything
@@ -198,7 +249,12 @@ return function(mod)
     if not save then return end
     local family, flag = starterFamily(save)
     if not family then
-      -- no EVENT_CHOSE_* to work from; try ownership instead
+      -- Gold records the choice as numeric cart bits instead
+      family, flag = goldStarterFamily(save)
+    end
+    if not family then
+      -- no flag on either generation; try Gen 1's ownership fallback
+      -- (its EVENT_GOT_STARTER guard keeps it inert on Gold)
       local mon = starterFromOwnership(save)
       if mon then
         awardRibbon(mon, "STARTER",
@@ -342,9 +398,37 @@ return function(mod)
   -- The induction itself runs inside a script, so the script.ended sync
   -- pass below doubles as the live award -- no separate path to drift.
 
-  local function syncHallOfFame(save)
+  -- The two generations store the Hall of Fame differently, and the Gen 1
+  -- shape silently reads as EMPTY on Gold -- ipairs over a table whose
+  -- rows live under .teams yields nothing, so every induction would be
+  -- invisible and no ribbon would ever land. Verified against
+  -- src/core/gen2/HallOfFame.lua (v0.1.78):
+  --   Gen 1:  save.hallOfFame = { entry, entry, ... }
+  --           each entry a list of { species, level, nickname }
+  --   Gold:   save.hallOfFame = { count = N, teams = { team, ... } }
+  --           each team = { winCount, mons = { same row fields } }
+  -- Both row shapes carry species/level/nickname, which is all the
+  -- matcher reads -- so one adapter here and the resolvers below stay
+  -- shared. Capability detection (is .teams a table?), not a version
+  -- check, per the house rule.
+  local function hofEntries(save)
     local hof = save.hallOfFame
-    if type(hof) ~= "table" or #hof == 0 then return end
+    if type(hof) ~= "table" then return {} end
+    if type(hof.teams) == "table" then
+      local out = {}
+      for _, team in ipairs(hof.teams) do
+        if type(team) == "table" and type(team.mons) == "table" then
+          out[#out + 1] = team.mons
+        end
+      end
+      return out
+    end
+    return hof
+  end
+
+  local function syncHallOfFame(save)
+    local hof = hofEntries(save)
+    if #hof == 0 then return end
     local mons = eachMon(save)
     for _, entry in ipairs(hof) do
       for _, rec in ipairs(entry) do
@@ -392,8 +476,10 @@ return function(mod)
   end)
 
   local function syncLegend(save)
-    local hof = save.hallOfFame
-    if type(hof) ~= "table" then return end
+    -- through the same both-shapes adapter as syncHallOfFame, so a Gold
+    -- induction (hof.teams) is seen here too instead of reading as an
+    -- eternally-empty list
+    local hof = hofEntries(save)
     -- "how many HoF entries this save has already been checked against"
     -- lives on the save itself, not a module-level counter -- a shared
     -- counter would leak state between separate saves (or, as caught in
@@ -599,6 +685,26 @@ return function(mod)
     { id = "GORGEOUS_ROYAL", price = 999999 },
   }
 
+  -- Money moved in Gen 2: save.money on Gen 1, save.player.money on Gold
+  -- (src/core/gen2/Save.lua:345). Reading save.money on a Gold save gets
+  -- nil, `or 0` turns that into "broke", and a write would land on a field
+  -- nothing reads -- the price check silently misbehaves in BOTH
+  -- directions. Try the Gen 2 home first, by capability not by version.
+  local function getMoney(save)
+    if save.player and type(save.player.money) == "number" then
+      return save.player.money
+    end
+    return save.money or 0
+  end
+
+  local function spendMoney(save, amount)
+    if save.player and type(save.player.money) == "number" then
+      save.player.money = math.max(0, save.player.money - amount)
+    else
+      save.money = math.max(0, (save.money or 0) - amount)
+    end
+  end
+
   -- one command checks+deducts+awards atomically; the script branches on
   -- ctx.lastCheck and the KR_SHOP_LINE token reads the message it left
   mod.content.commands:register("kanto_ribbons:buy_next", {
@@ -620,12 +726,12 @@ return function(mod)
         say("That one wears\nall three already.\nMagnificent, meow!")
         return
       end
-      if (save.money or 0) < tier.price then
+      if getMoney(save) < tier.price then
         say(("%s?\nThat's $%d.\nMeow-t of range?"):format(
           ribbonName(tier.id), tier.price))
         return
       end
-      save.money = save.money - tier.price
+      spendMoney(save, tier.price)
       awardRibbon(lead, tier.id, ("bought for $%d"):format(tier.price))
       say(("Sold! %s\nfor %s.\nMeow-velous!"):format(
         ribbonName(tier.id), lead.nickname or lead.species or "your friend"))
@@ -637,24 +743,52 @@ return function(mod)
     return game.krShopLine or "Meow?"
   end)
 
-  mod.content.map_scripts:register("CELADON_MANSION_1F", {
-    priority = 500,
-    talk = {
-      TEXT_CELADONMANSION1F_MEOWTH = {
-        { "face_player" },
-        { "show_text", "Meowth: Meow!\nRibbons for the\ndiscerning owner!\f"
-          .. "$10000, $100000,\n$999999. Each needs\nthe one before.\f"
-          .. "For the POKeMON at\nthe front of your\nparty. Interested?" },
-        { "choice", { "BUY", "NO THANKS" } },
-        { "jump_if_false", "bye" },
-        { "kanto_ribbons:buy_next" },
-        { "show_text", "{KR_SHOP_LINE}" },
-        { "jump", "end" },
-        { "label", "bye" },
-        { "show_text", "Meow. The finer\nthings wait for\nno one." },
+  -- The Meowth shop is Gen 1 content and stays Gen 1 content: `map_scripts`
+  -- has no Gen 2 home at all, and Gold's Celadon has no
+  -- TEXT_CELADONMANSION1F_MEOWTH to take over even if it did. The Gold
+  -- equivalent is a vendor of this mod's own in Goldenrod (see NOTES.md).
+  --
+  -- Registering it anyway is explicitly BLESSED by the engine -- Loader
+  -- .lua:733-737 says a dual-generation mod "registers its content
+  -- unconditionally and should still load the half that does apply" and
+  -- the drop is deliberately not fatal. It is skipped here anyway for one
+  -- reason: the drop is reported into `loader.errors`, which is the mod
+  -- manager's [ERRS] screen, and that is THE visible channel on iOS. A
+  -- red line under a mod that is working perfectly reads as a failure to
+  -- every Gold player. Nothing is lost by not writing a registration that
+  -- would have been discarded.
+  --
+  -- This asks which generation is booting rather than probing a
+  -- capability, and that is the right question here: the subject is which
+  -- REGISTRIES exist, not which mechanic a Pokemon has. Defaults to Gen 1
+  -- so an engine without GameVersion still gets the shop.
+  local okGV, GameVersion = pcall(require, "src.core.GameVersion")
+  local generation = 1
+  if okGV and GameVersion and GameVersion.generation then
+    local okGen, g = pcall(GameVersion.generation)
+    if okGen and type(g) == "number" then generation = g end
+  end
+
+  if generation == 1 then
+    mod.content.map_scripts:register("CELADON_MANSION_1F", {
+      priority = 500,
+      talk = {
+        TEXT_CELADONMANSION1F_MEOWTH = {
+          { "face_player" },
+          { "show_text", "Meowth: Meow!\nRibbons for the\ndiscerning owner!\f"
+            .. "$10000, $100000,\n$999999. Each needs\nthe one before.\f"
+            .. "For the POKeMON at\nthe front of your\nparty. Interested?" },
+          { "choice", { "BUY", "NO THANKS" } },
+          { "jump_if_false", "bye" },
+          { "kanto_ribbons:buy_next" },
+          { "show_text", "{KR_SHOP_LINE}" },
+          { "jump", "end" },
+          { "label", "bye" },
+          { "show_text", "Meow. The finer\nthings wait for\nno one." },
+        },
       },
-    },
-  })
+    })
+  end
 
   -- ------- sync entry points
   -- game.ready: { game = <Game> } -- fires with save already attached.
@@ -843,7 +977,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.20.3"
+  mod.exports.version = "0.21.3"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1036,7 +1170,30 @@ return function(mod)
       local y = topY + shown * ROW_H
       local quad = ribbonQuads and ribbonQuads[entry.cell]
       if img and quad then
-        love.graphics.setColor(1, 1, 1, 1)
+        -- Gen 2 only: tint the icon with the ribbon's own colour.
+        --
+        -- Gold is a CGB game "whose colour is already IN the picture"
+        -- (Game2.lua's own words) -- a screen draws in real colour and
+        -- nothing remaps it afterwards, so the mod chooses and the choice
+        -- sticks. Without this the icons render as their raw greyscale
+        -- and every ribbon is the same flat grey, which is what the
+        -- device showed.
+        --
+        -- Multiply against three-value art: outline 16 stays a near-black
+        -- edge, shade 96 becomes a mid tone, fill 176 becomes the body.
+        -- One hue, three tones, silhouette untouched.
+        --
+        -- Gen 1 deliberately keeps setColor(1,1,1,1). Its colour comes
+        -- from SGB zones this screen inherits, and PaletteFX buckets
+        -- pixels into four shades BY RED CHANNEL -- a tint would move
+        -- pixels between buckets and corrupt the shading rather than
+        -- colour it. That was tried once and three of six icons collided.
+        local tint = generation == 2 and entry.def.color or nil
+        if type(tint) == "table" and #tint == 3 then
+          love.graphics.setColor(tint[1] / 255, tint[2] / 255, tint[3] / 255, 1)
+        else
+          love.graphics.setColor(1, 1, 1, 1)
+        end
         love.graphics.draw(img, quad, MARGIN, y)
       end
       love.graphics.setColor(0, 0, 0, 1)
@@ -1070,7 +1227,15 @@ return function(mod)
           self.scroll = math.max(0, self.scroll - 1)
         elseif input:wasPressed("down") then
           self.scroll = math.min(maxScroll, self.scroll + 1)
-        elseif input:wasPressed("a") or input:wasPressed("b") then
+        elseif input:wasPressed("a") or input:wasPressed("b")
+            or input:wasPressed("left") or input:wasPressed("right") then
+          -- left/right close too, so the page cycle has no dead end.
+          -- On Gold this screen is reached BY left/right off the summary's
+          -- edges, and a player who keeps travelling in that direction
+          -- would otherwise press into a screen that ignores them. Closing
+          -- puts them back on the summary, which is where the cycle
+          -- continues. Harmless on Gen 1: nothing there uses left/right on
+          -- this screen either, so it just joins A and B as a way out.
           game.stack:pop()
         end
       end
@@ -1205,19 +1370,95 @@ return function(mod)
   -- declared for exactly this; Snag Quest's BattleState.throwBall patch
   -- is the precedent. `self.pageCount or 2` keeps it correct on a stock
   -- two-page screen and on any engine where other mods add pages.
-  local SummaryClass = require("src.ui.SummaryMenu")
-  local vanillaSummaryUpdate = SummaryClass.update
-  SummaryClass.update = function(self, dt)
-    local input = self.game and self.game.input
-    local last = self.pageCount or 2
-    if input and (self.page or 1) >= last
-        and (input:wasPressed("a") or input:wasPressed("b")) then
-      local game, mon = self.game, self.mon
-      game.stack:pop()
-      mod.ui.push(game, "KantoRibbonsDetail", mon)
-      return
+  --
+  -- BOTH generations are patched, and deliberately without asking which
+  -- game is booting. Gold runs a parallel engine: it never instantiates
+  -- src.ui.SummaryMenu, and Gen 1 never instantiates
+  -- src.ui.gen2.SummaryMenu, so installing both wrappers is safe and each
+  -- is dead code on the other side. That is capability detection applied
+  -- to modules -- patch what exists, let the generation pick.
+  --
+  -- pcall'd: on any build where a module is absent, the mod carries on
+  -- with the one it did find rather than failing to load.
+  local okGen1, SummaryClass = pcall(require, "src.ui.SummaryMenu")
+  if okGen1 and type(SummaryClass) == "table" and SummaryClass.update then
+    SummaryClass._krOriginals = SummaryClass._krOriginals or {}
+    local g1O = SummaryClass._krOriginals
+    g1O.update = g1O.update or SummaryClass.update
+    SummaryClass.update = function(self, dt)
+      local input = self.game and self.game.input
+      local last = self.pageCount or 2
+      if input and (self.page or 1) >= last
+          and (input:wasPressed("a") or input:wasPressed("b")) then
+        local game, mon = self.game, self.mon
+        game.stack:pop()
+        mod.ui.push(game, "KantoRibbonsDetail", mon)
+        return
+      end
+      return g1O.update(self, dt)
     end
-    return vanillaSummaryUpdate(self, dt)
+  end
+
+  -- Gold's summary screen, chained at the equivalent beat.
+  --
+  -- The page model is genuinely different, so this is not the Gen 1 patch
+  -- with a different require. Gold has exactly three pages -- PINK(1),
+  -- GREEN(2), BLUE(3) -- and its own update (src/ui/gen2/SummaryMenu.lua)
+  -- reads: B closes from anywhere, left/right turn pages, up/down walk the
+  -- party, and A "quits on the last page and otherwise FALLS THROUGH into
+  -- .d_right". So A-on-BLUE is Gold's own "past the last page" moment, and
+  -- that is the beat worth taking.
+  --
+  -- Two arms of Gold's update must NOT be intercepted:
+  --   * the move-detail sub-screen (self.moveDetail), where A picks up and
+  --     places a move -- stealing A there would break move reordering;
+  --   * an EGG, which has no pages, no ribbons, and whose own arm exits on
+  --     either A or B (Breeding marks the slot mon.isEgg rather than
+  --     overwriting the species).
+  --
+  -- Gold PUSHES rather than replacing: Gen 1 pops the summary first
+  -- because its page cycle ends there, but Gold's close() runs a caller's
+  -- onClose callback whose cleanup this mod does not own. Pushing on top
+  -- leaves that contract alone and makes B walk back to the summary
+  -- instead of out to the party list. Worth knowing when comparing the
+  -- two generations side by side -- it is a deliberate difference, not
+  -- drift.
+  local okGen2, Gen2Summary = pcall(require, "src.ui.gen2.SummaryMenu")
+  if okGen2 and type(Gen2Summary) == "table" and Gen2Summary.update then
+    Gen2Summary._krOriginals = Gen2Summary._krOriginals or {}
+    local g2O = Gen2Summary._krOriginals
+    g2O.update = g2O.update or Gen2Summary.update
+    local LAST_PAGE = Gen2Summary.BLUE_PAGE or 3
+    local FIRST_PAGE = Gen2Summary.PINK_PAGE or 1
+    Gen2Summary.update = function(self, dt)
+      local input = self.game and self.game.input
+      local mon = self.mon
+      if input and not self.moveDetail
+          and not (type(mon) == "table" and mon.isEgg == true) then
+        -- Ribbons behaves as a FOURTH page, so every way Gold moves
+        -- between pages reaches it. Gold's turnPage WRAPS in both
+        -- directions (right past BLUE lands on PINK, left from PINK lands
+        -- on BLUE), so intercepting only A left the d-pad cycling round
+        -- three pages and skipping ribbons entirely -- reported from
+        -- device, and the reason this is not just the A arm.
+        --
+        -- Right from the last page and left from the first are the two
+        -- edges the wrap would have crossed; taking both puts ribbons
+        -- exactly where the wrap used to go, in the direction the player
+        -- was already travelling. A on the last page stays as it was,
+        -- since that is Gold's own "quit" beat and Gen 1's equivalent.
+        local page = self.page
+        local opens =
+          (page == LAST_PAGE
+            and (input:wasPressed("a") or input:wasPressed("right")))
+          or (page == FIRST_PAGE and input:wasPressed("left"))
+        if opens then
+          mod.ui.push(self.game, "KantoRibbonsDetail", mon)
+          return
+        end
+      end
+      return g2O.update(self, dt)
+    end
   end
 
   -- and a whole-party overview, for checking everyone without backing
