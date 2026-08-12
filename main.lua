@@ -977,7 +977,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.21.0"
+  mod.exports.version = "0.21.1"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1204,7 +1204,15 @@ return function(mod)
           self.scroll = math.max(0, self.scroll - 1)
         elseif input:wasPressed("down") then
           self.scroll = math.min(maxScroll, self.scroll + 1)
-        elseif input:wasPressed("a") or input:wasPressed("b") then
+        elseif input:wasPressed("a") or input:wasPressed("b")
+            or input:wasPressed("left") or input:wasPressed("right") then
+          -- left/right close too, so the page cycle has no dead end.
+          -- On Gold this screen is reached BY left/right off the summary's
+          -- edges, and a player who keeps travelling in that direction
+          -- would otherwise press into a screen that ignores them. Closing
+          -- puts them back on the summary, which is where the cycle
+          -- continues. Harmless on Gen 1: nothing there uses left/right on
+          -- this screen either, so it just joins A and B as a way out.
           game.stack:pop()
         end
       end
@@ -1398,15 +1406,33 @@ return function(mod)
     local g2O = Gen2Summary._krOriginals
     g2O.update = g2O.update or Gen2Summary.update
     local LAST_PAGE = Gen2Summary.BLUE_PAGE or 3
+    local FIRST_PAGE = Gen2Summary.PINK_PAGE or 1
     Gen2Summary.update = function(self, dt)
       local input = self.game and self.game.input
       local mon = self.mon
       if input and not self.moveDetail
-          and not (type(mon) == "table" and mon.isEgg == true)
-          and self.page == LAST_PAGE
-          and input:wasPressed("a") then
-        mod.ui.push(self.game, "KantoRibbonsDetail", mon)
-        return
+          and not (type(mon) == "table" and mon.isEgg == true) then
+        -- Ribbons behaves as a FOURTH page, so every way Gold moves
+        -- between pages reaches it. Gold's turnPage WRAPS in both
+        -- directions (right past BLUE lands on PINK, left from PINK lands
+        -- on BLUE), so intercepting only A left the d-pad cycling round
+        -- three pages and skipping ribbons entirely -- reported from
+        -- device, and the reason this is not just the A arm.
+        --
+        -- Right from the last page and left from the first are the two
+        -- edges the wrap would have crossed; taking both puts ribbons
+        -- exactly where the wrap used to go, in the direction the player
+        -- was already travelling. A on the last page stays as it was,
+        -- since that is Gold's own "quit" beat and Gen 1's equivalent.
+        local page = self.page
+        local opens =
+          (page == LAST_PAGE
+            and (input:wasPressed("a") or input:wasPressed("right")))
+          or (page == FIRST_PAGE and input:wasPressed("left"))
+        if opens then
+          mod.ui.push(self.game, "KantoRibbonsDetail", mon)
+          return
+        end
       end
       return g2O.update(self, dt)
     end

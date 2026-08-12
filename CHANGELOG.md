@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.21.1
+
+- On Gold, ribbons now behave as a fourth page of the summary screen.
+  Gold's pages wrap around, so pressing **right** past the last page or
+  **left** before the first one both land on ribbons — the direction you
+  were already travelling. A on the last page still opens them too.
+- Left and right also close the ribbons page, so scrolling through the
+  pages carries on rather than stopping dead once ribbons is open.
+
 ## 0.21.0
 
 **Pokémon Gold support.** Ribbons now work on Gold as well as Red, Blue

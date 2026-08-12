@@ -1,7 +1,7 @@
 {
   "id": "kanto_ribbons",
   "name": "Kanto Ribbons",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "games": [
     "gen1",
     "gen2"
