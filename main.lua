@@ -926,8 +926,45 @@ return function(mod)
 
   local STREAK_RIBBONS = { { at = 10, id = "WINNING" }, { at = 25, id = "VICTORY" } }
 
-  local function onBattleEnded(result, save)
+  -- ------- SUMMIT: Red at the top of Mt Silver (Gold only), whole party
+  --
+  -- Live-only, and it has to be. The obvious retroactive route is the event
+  -- flag, and it is a trap: EVENT_RED_IN_MT_SILVER (1890) is SET on a
+  -- brand-new save, because a set object flag on Gen 2 means the object is
+  -- HIDDEN. Reading it as "beaten" would award this to every new game,
+  -- permanently. initial_events.lua is the proof; don't re-derive it.
+  --
+  -- Two gates, both needed. The class alone is not enough: another mod can
+  -- field a trainer of class RED anywhere -- Indigo Conference stages a
+  -- tournament -- and beating him there is not climbing Mt Silver. So the
+  -- battle must also END on a Silver Cave map. The map is tracked rather
+  -- than read at battle time because the overworld is torn down by then.
+  local lastMapId
+
+  mod.events:on("map.entered", function(ev)
+    lastMapId = ev and ev.mapId or lastMapId
+  end)
+
+  -- Gold map ids are the map-name strings ("SILVER_CAVE_ROOM_3"); Red is in
+  -- room 3, but any Silver Cave room counts so a mod that moves him up or
+  -- down the mountain still reads as the same fight.
+  local function onMtSilver()
+    return type(lastMapId) == "string"
+      and lastMapId:sub(1, 12) == "SILVER_CAVE_"
+  end
+
+  local function isRedBattle(battle)
+    local trainer = battle and battle.trainer
+    return type(trainer) == "table" and trainer.class == "RED"
+  end
+
+  local function onBattleEnded(result, save, battle)
     if not save then return end
+    if result == "win" and isRedBattle(battle) and onMtSilver() then
+      for _, mon in ipairs(save.party or {}) do
+        awardRibbon(mon, "SUMMIT", "defeated Red on Mt Silver")
+      end
+    end
     if result == "win" then
       creditEarthWin(save)
       local streak = mod.save:get("win_streak", 0) + 1
@@ -964,7 +1001,7 @@ return function(mod)
   -- pass on battle.ended keeps all of those near-live
   mod.events:on("battle.ended", function(ev)
     local save = activeGame and activeGame.save
-    onBattleEnded(ev and ev.result, save)
+    onBattleEnded(ev and ev.result, save, ev and ev.battle)
     syncAll(save)
   end)
 
@@ -977,7 +1014,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.21.4"
+  mod.exports.version = "0.22.0"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1026,7 +1063,7 @@ return function(mod)
 
   -- lazy: mod.assets:image needs a graphics context, which a headless
   -- load (tests, validate) doesn't have. Loaded once, on first draw.
-  -- One 288x16 sheet, eighteen 16x16 cells in catalog order -- a single
+  -- One 304x16 sheet, nineteen 16x16 cells in catalog order -- a single
   -- image load and one quad table no matter how many ribbons get added,
   -- rather than one newImage call per ribbon.
   local ICON_SIZE = 16

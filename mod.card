@@ -1,5 +1,5 @@
 return {
-  summary = "Eighteen permanent per-Pokemon ribbons for Red/Blue/Yellow and Gold, awarded automatically and shown on the Pokemon's own status screen.",
+  summary = "Nineteen permanent per-Pokemon ribbons for Red/Blue/Yellow and Gold, awarded automatically and shown on the Pokemon's own status screen.",
   author  = "mistermiracle3036",
 
   tags = { "mechanic", "collection", "ui" },
@@ -15,6 +15,7 @@ return {
       "retroactive sync -- an existing save gets the Starter Ribbon on the correct Pokemon at load, with no player intervention",
       "Cool Ribbon: awarded to the Pokemon that wins the COOL Contest in the Kanto Contests mod (v0.7.3+), read back from the win recorded on the mon itself so it applies retroactively and outlives that mod being removed; contest ribbons are one per category, the rest arrive as that mod adds those contests",
       "Best Friends Ribbon now reads mon.happiness from the Happiness mod (thorkdev/gen1recomp-happiness) when installed, so any Pokemon at maximum happiness qualifies, not only Yellow's lab Pikachu; the two happiness sources are independent and do not double-count the same Pokemon",
+      "Summit Ribbon (Gold only): awarded to the whole party for beating Red at the top of Mt Silver, gated on both the trainer class and a Silver Cave map so another mod's Red battle elsewhere does not qualify; live-only, because EVENT_RED_IN_MT_SILVER is set on a new save (a set object flag means hidden on Gen 2) and cannot be read back as a win",
       "Wide ribbons screen option: on a wide display the screen can use the same 304px canvas the wide battle layout uses instead of 160px, lifting the 16-character text budget that has shaped several ribbon names and descriptions; off by default since the engine grants any width regardless of the real display",
     },
     known = {

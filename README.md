@@ -22,7 +22,7 @@ so you only reveal what you want.
 
 ## Features
 
-- **Eighteen ribbons**, earned several ways: story milestones, hard
+- **Nineteen ribbons**, earned several ways: story milestones, hard
   training, flawless battles, lucky DVs, a Contest win, and one very
   expensive shop.
 - **Awarded automatically.** Nothing to toggle or claim. If a Pokémon
@@ -63,6 +63,7 @@ so you only reveal what you want.
 | Royal | Same Meowth — ₽100,000, needs Gorgeous first† | — |
 | Gorgeous Royal | Same Meowth — ₽999,999, needs Royal first† | — |
 | Cool | Won the COOL Contest at the Celadon Contest Hall‡ | Yes‡ |
+| Summit | Beat Red at the top of Mt Silver — **Gold only** | No |
 
 \* Snag syncs retroactively for Pokémon snagged with **Pokemon Snag 0.7.4 or
 newer**, which marks them permanently. Older snags are still awarded live

@@ -147,6 +147,22 @@ system rather than tracking it too, so nothing double-counts.
 </details>
 
 <details>
+<summary>Summit Ribbon — how do I get one?</summary>
+
+**Gold only.** Climb Mt Silver and beat Red at the top. Every Pokémon in
+your party at that moment gets the ribbon — not just the ones that
+fought, the same way the Hall of Fame Ribbon works.
+
+It is **not retroactive**, and that one is not laziness. Gold records
+Red with a flag that is already switched on when you start a new game
+(it is the flag that keeps him hidden until you have earned the right to
+meet him), so there is no honest way to look at an old save and tell
+whether you beat him. Awarding it from that flag would hand the ribbon
+to every brand-new save instead. So the mod has to be installed and
+running when you win.
+</details>
+
+<details>
 <summary>Cool Ribbon — how do I win one?</summary>
 
 Win a Contest at the Celadon Contest Hall, which needs the **Kanto

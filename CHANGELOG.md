@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.22.0
+
+**A nineteenth ribbon, for the hardest fight in Gold.**
+
+- **Summit Ribbon** — beat Red at the top of Mt Silver and **every
+  Pokémon in your party** gets it, the same way the Hall of Fame Ribbon
+  works. Gold only; Red isn't in Red, Blue or Yellow.
+- It has to be **earned while the mod is running** — it can't be given
+  out retroactively. Gold marks Red with a flag that's already switched
+  on the moment you start a new game, so an old save simply doesn't say
+  whether you beat him; awarding from that flag would hand the ribbon to
+  every fresh save instead. The FAQ explains it in full.
+- Beating a trainer called Red **somewhere other than Mt Silver** — a
+  tournament staged by another mod, say — doesn't count. The climb is
+  the point.
+
+**Already beaten the Johto Elite Four?** There's no separate ribbon for
+it, and you aren't missing one: on Gold that victory is what puts you in
+the Hall of Fame, so the **Hall of Fame Ribbon** already covers it, and
+that one *is* retroactive.
+
 ## 0.21.4
 
 - The repository is now called **Ribbons** too, matching the mod. GitHub

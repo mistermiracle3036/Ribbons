@@ -166,4 +166,15 @@ return {
     description = "A COOL contest.",
     color = { 215, 85, 85 }, -- Gen III's COOL is red
   },
+  -- Gold only: Red at the top of Mt Silver. There is no save flag to read
+  -- this back from -- EVENT_RED_IN_MT_SILVER is SET on a brand-new save,
+  -- because on Gold a set object flag means HIDDEN -- so the award is live
+  -- only, off battle.ended, and cannot be retroactive. See NOTES.md.
+  {
+    id = "SUMMIT",
+    name = "Summit Ribbon",
+    short = "Summit",
+    description = "Defeated Red.",
+    color = { 170, 195, 220 }, -- snow on Silver's peak
+  },
 }
