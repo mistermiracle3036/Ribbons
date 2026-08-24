@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.22.1 - Starter Ribbon for modded starters
+
+- The Starter Ribbon now also goes to a starter granted by another mod that
+  marks it with `mon.journeyStarter` -- most notably Trainer Journey's "trash
+  starter", which hands you a non-vanilla species (MANKEY, ODDISH, and so on)
+  that no starter-choice flag or starter family would ever match. It applies
+  retroactively on an existing save, and nothing changes for a normal starter.
+
 ## 0.22.0
 
 **A nineteenth ribbon, for the hardest fight in Gold.**

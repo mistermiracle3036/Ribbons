@@ -247,6 +247,19 @@ return function(mod)
 
   local function syncStarter(save)
     if not save then return end
+    -- Cross-mod (ungated reader): a starter-granting mod marks its gift with
+    -- mon.journeyStarter (Trainer Journey's trash starter -- a non-vanilla
+    -- species like MANKEY that no EVENT_CHOSE_* flag or starter family would
+    -- ever match). Trust the mark: that mon IS the player's starter. Reads the
+    -- field only if present, so nothing changes for a vanilla starter.
+    for _, mon in ipairs(eachMon(save)) do
+      if mon.journeyStarter == true then
+        if not hasRibbon(mon, "STARTER") then
+          awardRibbon(mon, "STARTER", "mon.journeyStarter set by a starter-granting mod")
+        end
+        return
+      end
+    end
     local family, flag = starterFamily(save)
     if not family then
       -- Gold records the choice as numeric cart bits instead
@@ -1014,7 +1027,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.22.0"
+  mod.exports.version = "0.22.1"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
