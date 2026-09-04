@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.23.0
+
+**Contest ribbons, the Generation III way — one per category per rank.**
+
+- **Twenty contest ribbons** replace the single Cool Ribbon: Cool,
+  Beauty, Cute, Smart and Tough, each at Normal, Super, Hyper and
+  Master rank. The icon's **shape** is the category — an octagon for
+  Cool, a teardrop for Beauty, a bow for Cute, a book for Smart, a
+  shield for Tough — and on Gold its **colour** is the rank: bronze,
+  silver, gold, then iridescent for Master.
+- **A Cool Ribbon you already have is kept.** It is the same ribbon,
+  now labelled as the Normal-rank one.
+- **Ten of the twenty cannot be won yet**, and that is worth saying
+  plainly so you don't go hunting. Kanto Contests has two halls today —
+  Goldenrod runs Normal and Ecruteak runs Super — so Hyper and Master
+  have nowhere to be held. Those ten are drawn and ready and will start
+  appearing by themselves once more towns get halls.
+- **Rank ribbons need a Contests update too.** Which rank a win happened
+  at isn't written down in your save yet, and this mod won't guess: a
+  Pokémon can reach Master rank without having won Super or Hyper, so
+  counting wins would hand out ribbons nobody earned. Until Contests
+  records it, a past win still earns its category's Normal ribbon —
+  that much your save does prove.
+- Nothing to do on your side either way. Everything here is awarded
+  from your save, so it catches up on its own.
+
 ## 0.22.2
 
 - **Fixes the Summit Ribbon, which could never be awarded in 0.22.0 or

@@ -163,12 +163,23 @@ running when you win.
 </details>
 
 <details>
-<summary>Cool Ribbon — how do I win one?</summary>
+<summary>Contest ribbons — how do I win them?</summary>
 
-Win a Contest at the Celadon Contest Hall, which needs the **Kanto
-Contests** mod (v0.7.3 or newer). Appeal to the judge with moves that
-match the contest's category until his appeal meter is full — the
-Pokémon that performed gets the ribbon.
+Win a Contest, which needs the **Kanto Contests** mod. Appeal to the
+judge with moves that match the contest's category until his appeal
+meter is full — the Pokémon that performed gets the ribbon.
+
+There are **twenty** of them: one for each of the five categories (Cool,
+Beauty, Cute, Smart and Tough), at each of the four ranks (Normal,
+Super, Hyper and Master). The icon's shape tells you the category and
+its colour tells you the rank — bronze, silver, gold, then iridescent
+for Master.
+
+**Ten of them cannot be won yet.** Kanto Contests currently has two
+halls: Goldenrod runs Normal rank and Ecruteak runs Super. Hyper and
+Master have nowhere to be held until more towns get contest halls, so
+those ribbons are listed here but unreachable for now. They will start
+appearing on their own when the halls exist — nothing to reinstall.
 
 The win is recorded on that Pokémon, not in a list somewhere, so the
 ribbon is retroactive: if you won a Contest before installing this

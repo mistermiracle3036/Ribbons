@@ -887,16 +887,52 @@ return function(mod)
     SMART = "SMART", TOUGH = "TOUGH",
   }
 
+  -- Gen III gave a category a ribbon PER RANK. The rank a win happened at
+  -- is read from mon.contestRanks[CATEGORY][RANK] = true (contract
+  -- contest-ranks, briefs/RIBBONS_CONTEST_RANKS.md) -- a SET of the ranks
+  -- actually won.
+  --
+  -- Rank is NOT derived from mon.contestWins, and that is the whole reason
+  -- the contract exists. contestWins is a COUNT, and Kanto Contests'
+  -- eligibleRanks is min(4, wins + 1) counting wins at ANY rank, so three
+  -- NORMAL wins unlock MASTER entry: a mon can hold a MASTER win having
+  -- never won SUPER or HYPER, and four NORMAL wins are indistinguishable
+  -- from a full climb. Deriving would award ribbons never earned.
+  local CONTEST_RANK_SUFFIX = {
+    NORMAL = "", SUPER = "_SUPER", HYPER = "_HYPER", MASTER = "_MASTER",
+  }
+
   local function syncContest(save)
     if not save then return end
     for _, mon in ipairs(eachMon(save)) do
+      -- precise path: exactly the ranks this mon won
+      local ranks = mon.contestRanks
+      if type(ranks) == "table" then
+        for category, won in pairs(ranks) do
+          local base = CONTEST_RIBBONS[category]
+          if base and type(won) == "table" then
+            for rank, flag in pairs(won) do
+              local suffix = CONTEST_RANK_SUFFIX[rank]
+              -- fail safe on BOTH halves: an unknown rank string and an
+              -- uncatalogued id each award nothing rather than writing a
+              -- flag for a ribbon that cannot be drawn
+              if flag and suffix and inCatalog(base .. suffix) then
+                awardRibbon(mon, base .. suffix,
+                  ("won a %s contest at %s rank"):format(category, rank))
+              end
+            end
+          end
+        end
+      end
+      -- legacy path: a save written before contest-ranks existed carries
+      -- only the count. At wins = 0 nothing but NORMAL is enterable, so a
+      -- count >= 1 proves a NORMAL win and NOTHING MORE -- award the base
+      -- ribbon and no rank ribbon. Kept permanently, not a migration: the
+      -- two fields coexist and a mon may have either or both.
       local wins = mon.contestWins
       if type(wins) == "table" then
         for category, count in pairs(wins) do
           local id = CONTEST_RIBBONS[category]
-          -- only award an id the catalog actually defines: a category
-          -- whose ribbon has not been drawn yet must write nothing to the
-          -- save rather than a flag for a ribbon that cannot be shown
           if id and inCatalog(id) and type(count) == "number" and count > 0 then
             awardRibbon(mon, id, ("won a %s contest"):format(category))
           end
@@ -1045,7 +1081,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.22.2"
+  mod.exports.version = "0.23.0"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1094,7 +1130,7 @@ return function(mod)
 
   -- lazy: mod.assets:image needs a graphics context, which a headless
   -- load (tests, validate) doesn't have. Loaded once, on first draw.
-  -- One 304x16 sheet, nineteen 16x16 cells in catalog order -- a single
+  -- One 608x16 sheet, thirty-eight 16x16 cells in catalog order -- a single
   -- image load and one quad table no matter how many ribbons get added,
   -- rather than one newImage call per ribbon.
   local ICON_SIZE = 16
