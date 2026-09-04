@@ -966,16 +966,34 @@ return function(mod)
       and lastMapId:sub(1, 12) == "SILVER_CAVE_"
   end
 
+  -- The string constant "RED" is on trainer.classId, NOT trainer.class.
+  -- Gen 2 carries both and they are different types: Trainers.lookup
+  -- (src/world/gen2/Trainers.lua:40-47) returns `class` = the NUMERIC class
+  -- index it was looked up by, and `classId` = the class's name key, and
+  -- World.lua:6483-6486 hands both to the battle. The engine's own readers
+  -- use classId -- World.lua:6477 tests `record.classId == "RIVAL1"`, and
+  -- battleMusicContext passes `class = trainer.classId` into BattleMusic's
+  -- `class == "RED"`. Comparing trainer.class to a string is a number-vs-
+  -- string test that is ALWAYS false, which is exactly what 0.22.0 shipped.
+  --
+  -- `class` is still accepted because a mod that hand-builds a trainer for
+  -- startBattle may fill only the readable name; the map gate is what keeps
+  -- another mod's Red battle from qualifying, not this test.
   local function isRedBattle(battle)
     local trainer = battle and battle.trainer
-    return type(trainer) == "table" and trainer.class == "RED"
+    if type(trainer) ~= "table" then return false end
+    return trainer.classId == "RED" or trainer.class == "RED"
   end
 
   local function onBattleEnded(result, save, battle)
     if not save then return end
     if result == "win" and isRedBattle(battle) and onMtSilver() then
       for _, mon in ipairs(save.party or {}) do
-        awardRibbon(mon, "SUMMIT", "defeated Red on Mt Silver")
+        -- an egg did not fight, and this mod's own summary arm says an EGG
+        -- has no ribbons; award one anyway and it surfaces on the hatchling
+        if not (type(mon) == "table" and mon.isEgg == true) then
+          awardRibbon(mon, "SUMMIT", "defeated Red on Mt Silver")
+        end
       end
     end
     if result == "win" then
@@ -1027,7 +1045,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.22.1"
+  mod.exports.version = "0.22.2"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 

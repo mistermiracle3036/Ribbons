@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.22.2
+
+- **Fixes the Summit Ribbon, which could never be awarded in 0.22.0 or
+  0.22.1.** The check for "is this Red?" was reading the wrong field, so
+  beating Red on Mt Silver did nothing at all. It works now.
+- An **egg** in your party no longer receives the Summit Ribbon. Eggs
+  don't have a ribbon page, so the ribbon was invisible until the egg
+  hatched and the hatchling turned up wearing a ribbon it never earned.
+
 ## 0.22.1 - Starter Ribbon for modded starters
 
 - The Starter Ribbon now also goes to a starter granted by another mod that
