@@ -169,7 +169,7 @@ return {
   -- ------- CONTEST RIBBONS: one per category per rank, Gen III's shape.
   --
   -- SHAPE carries the category and COLOUR carries the rank, because the
-  -- four ranks of a category share one medallion: octagon COOL, teardrop
+  -- four ranks of a category share one medallion: octagon COOL, scallop shell
   -- BEAUTY, bow CUTE, book SMART, shield TOUGH, all on COOL's original
   -- tails so they read as one family. Bronze / silver / gold /
   -- iridescent across the ranks. A heart and a gem were deliberately not

@@ -20,6 +20,12 @@ Want the exact award conditions, prices and locations? Open the
 **[FAQ and spoiler guide](FAQ.md)** — every detailed answer is collapsed
 so you only reveal what you want.
 
+## Icon selection in 0.24.1
+
+New art is used for Starter, Shiny, Fossil, Best Friends, Victory,
+Gorgeous, and all contest categories at every rank. Other ribbons use
+their original art. The original four-row ribbons interface is restored.
+
 ## Features
 
 - **Thirty-eight ribbons**, earned several ways: story milestones, hard

@@ -1,6 +1,6 @@
 return {
   summary = "Thirty-eight permanent per-Pokemon ribbons for Red/Blue/Yellow and Gold, awarded automatically and shown on the Pokemon's own status screen.",
-  author  = "mistermiracle3036",
+  author  = "Mister Miracle",
 
   tags = { "mechanic", "collection", "ui" },
 

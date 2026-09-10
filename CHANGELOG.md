@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.24.1 - Selected icons and original ribbons UI
+
+- Restores the original four-row ribbons screen and its original controls.
+  The case/list toggle and redesigned window layout are removed.
+- Keeps the new Starter, Shiny, Fossil, Best Friends, Victory and Gorgeous
+  icons, plus Cool, Beauty, Smart, Tough and Cute at all four contest ranks.
+- Restores the original Hall of Fame, Snag, Rare, Traveler, Effort, Legend,
+  Earth, Warrior, Winning, Royal, Gorgeous Royal and Summit icons.
+- Retains the 38-ribbon catalog, contest-rank recognition, Summit fix and
+  Trainer Journey starter support. Award logic and stored ribbons are unchanged.
+
+Updating from the earlier phone build 0.22.1 also includes the newer
+0.23.0 catalog and award fixes. This is a device-test build.
+
+## 0.24.0 - Ribbon case and full icon redesign
+
+Updating from the 0.22.1 phone build? This includes the newer twenty
+contest-rank ribbons (38 ribbons total), exact saved-rank recognition,
+and the Summit award fix from 0.22.2/0.23.0. Existing ribbons and the
+Trainer Journey starter support are retained.
+
+Upgrading from an earlier public build also brings the Summit Ribbon for
+beating Red on Mt Silver and support for starters marked by Trainer Journey.
+
+- A framed twelve-icon case opens first, with the selected ribbon's name
+  and description below. Up/Down visits icons in reading order.
+- A switches to a four-row list and back without losing selection.
+  B returns. Left/Right continues the Gen 2 summary cycle in that direction.
+- Warm paper and restrained blue-grey accents use the native Gen 2 window
+  frame, inspired by Trainer Journey. Gen 1 keeps untinted icons and its
+  inherited palette; selection remains readable in monochrome.
+- The full ribbon icon set is redrawn with clearer outlines and restrained
+  shading. Beauty receives a scallop-shell medallion. Shared contest tails,
+  rank colors, catalog order, and the exact three-grey palette are retained.
+- Owned total, selection position, and an encouraging empty state fit
+  the standard 160x144 screen. The optional Gen 1 wide layout still works.
+
+Phone test build: UI behavior and pixel layout checked offline; actual
+Crystal/Gold/Gen 1 device appearance and input still need a play test.
+
 ## 0.23.0
 
 **Contest ribbons, the Generation III way — one per category per rank.**

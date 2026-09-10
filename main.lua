@@ -1081,7 +1081,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.23.0"
+  mod.exports.version = "0.24.1"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
