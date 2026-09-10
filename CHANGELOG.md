@@ -20,8 +20,9 @@ applies to the Pokemon you already have -- there is nothing to turn on.
   category's Normal ribbon and no more. The mod would rather give you a
   ribbon late than one you didn't earn.
 - **Summit Ribbon** -- climb Mt Silver, beat Red, and **every Pokemon in
-  your party** gets it, the same way the Hall of Fame Ribbon works. Gold
-  only; there is no Red to fight in Red, Blue or Yellow. This one has to
+  your party** gets it, the same way the Hall of Fame Ribbon works. Gold,
+  Silver and Crystal only; there is no Red to fight in Red, Blue or
+  Yellow. This one has to
   be earned with the mod installed -- an old save simply doesn't record
   whether you beat him, and guessing would hand it to everybody.
 - **The Starter Ribbon now recognises a starter another mod gave you**,
@@ -29,7 +30,7 @@ applies to the Pokemon you already have -- there is nothing to turn on.
   and nothing changes for an ordinary starter.
 - **Most of the ribbon icons have been redrawn** -- 26 of the 38 -- with
   cleaner outlines and clearer shapes. Same ribbons, same colours, same
-  meanings; they simply look better. On Gold each contest ribbon's
+  meanings; they simply look better. On the Gen 2 games each ribbon's
   colour still tells you its rank: bronze, silver, gold, then iridescent
   for Master.
 
