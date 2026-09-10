@@ -11,8 +11,8 @@ applies to the Pokemon you already have -- there is nothing to turn on.
   ribbons to thirty-eight. **A Cool Ribbon you already earned is kept**,
   and now reads as the Normal-rank one.
 - **All twenty are winnable.** Each contest hall runs one rank and you
-  climb by travelling, the way Generation III did it: Goldenrod runs
-  Normal, Ecruteak Super, Cianwood Hyper, Blackthorn Master. They are
+  climb by travelling: Goldenrod runs Normal, Ecruteak Super, Cianwood
+  Hyper, Blackthorn Master. They are
   retroactive too -- a Pokemon that won before you installed this picks
   its ribbons up on the next save load, for any win Kanto Contests
   recorded from 0.34.44 onward. Older wins kept only a count and no
@@ -20,25 +20,20 @@ applies to the Pokemon you already have -- there is nothing to turn on.
   Pokemon can reach Master without ever winning Super, and this mod
   would rather give you a ribbon late than one you didn't earn.
 - **Summit Ribbon** -- climb Mt Silver, beat Red, and **every Pokemon in
-  your party** gets it, the same way the Hall of Fame Ribbon works. Gold,
-  Silver and Crystal only; there is no Red to fight in Red, Blue or
-  Yellow. This one has to
-  be earned with the mod installed -- an old save simply doesn't record
-  whether you beat him, and guessing would hand it to everybody.
+  your party** gets it, the same way the Hall of Fame Ribbon works.
+  Gold, Silver and Crystal only; there is no Red to fight in Red, Blue
+  or Yellow. It has to be earned with the mod installed -- an old save
+  simply doesn't record whether you beat him, and guessing would hand
+  it to everybody.
 - **The Starter Ribbon now recognises a starter another mod gave you**,
   such as Trainer Journey's "trash starter". It applies retroactively,
   and nothing changes for an ordinary starter.
-- **Most of the ribbon icons have been redrawn** -- 26 of the 38 -- with
-  cleaner outlines and clearer shapes. Same ribbons, same colours, same
-  meanings; they simply look better. On the Gen 2 games each ribbon's
-  colour still tells you its rank: bronze, silver, gold, then iridescent
-  for Master.
-
-New in 0.24.1 itself: the redrawn icon set was trimmed to the twelve
-that were better left alone, so Hall of Fame, Snag, Rare, Traveler,
-Effort, Legend, Earth, Warrior, Winning, Royal, Gorgeous Royal and
-Summit keep their original art. The ribbons screen is unchanged --
-same four-row list, same controls.
+- **Some ribbon icons have been redrawn** with cleaner outlines and
+  clearer shapes: **Starter, Shiny, Fossil, Best Friends, Victory and
+  Gorgeous**, plus **all twenty contest ribbons**. Same ribbons, same
+  meanings -- they simply look better. Every other ribbon keeps the art
+  you already know. On the Gen 2 games a contest ribbon's colour still
+  tells you its rank: bronze, silver, gold, then iridescent for Master.
 
 ## 0.24.0 - Ribbon case and full icon redesign
 
