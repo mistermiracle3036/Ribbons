@@ -10,15 +10,15 @@ applies to the Pokemon you already have -- there is nothing to turn on.
   Normal, Super, Hyper and Master. That takes the mod from eighteen
   ribbons to thirty-eight. **A Cool Ribbon you already earned is kept**,
   and now reads as the Normal-rank one.
-- **Ten of those twenty cannot be won yet**, and it is worth saying so
-  plainly rather than letting you hunt for them. Kanto Contests has two
-  halls today -- Goldenrod runs Normal rank, Ecruteak runs Super -- so
-  Hyper and Master have nowhere to be held. Those ribbons are drawn and
-  waiting, and will start appearing on their own once more towns get
-  halls. Which rank a past win happened at also isn't written into your
-  save yet, so until Contests records it, an old win earns its
-  category's Normal ribbon and no more. The mod would rather give you a
-  ribbon late than one you didn't earn.
+- **All twenty are winnable.** Each contest hall runs one rank and you
+  climb by travelling, the way Generation III did it: Goldenrod runs
+  Normal, Ecruteak Super, Cianwood Hyper, Blackthorn Master. They are
+  retroactive too -- a Pokemon that won before you installed this picks
+  its ribbons up on the next save load, for any win Kanto Contests
+  recorded from 0.34.44 onward. Older wins kept only a count and no
+  rank, so those earn the category's Normal ribbon and no more: a
+  Pokemon can reach Master without ever winning Super, and this mod
+  would rather give you a ribbon late than one you didn't earn.
 - **Summit Ribbon** -- climb Mt Silver, beat Red, and **every Pokemon in
   your party** gets it, the same way the Hall of Fame Ribbon works. Gold,
   Silver and Crystal only; there is no Red to fight in Red, Blue or

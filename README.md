@@ -76,25 +76,25 @@ per category per rank, Generation III style:
 | Ribbon | How you get it | Retroactive? |
 | ------ | -------------- | ------------ |
 | Cool | Won a COOL contest at Normal rank‡ | Yes‡ |
-| Cool Super | Won a COOL contest at Super rank‡ | Not yet‡ |
-| Cool Hyper | Won a COOL contest at Hyper rank‡ | Not yet‡ |
-| Cool Master | Won a COOL contest at Master rank‡ | Not yet‡ |
+| Cool Super | Won a COOL contest at Super rank‡ | Yes‡ |
+| Cool Hyper | Won a COOL contest at Hyper rank‡ | Yes‡ |
+| Cool Master | Won a COOL contest at Master rank‡ | Yes‡ |
 | Beauty | Won a BEAUTY contest at Normal rank‡ | Yes‡ |
-| Beauty Super | Won a BEAUTY contest at Super rank‡ | Not yet‡ |
-| Beauty Hyper | Won a BEAUTY contest at Hyper rank‡ | Not yet‡ |
-| Beauty Master | Won a BEAUTY contest at Master rank‡ | Not yet‡ |
+| Beauty Super | Won a BEAUTY contest at Super rank‡ | Yes‡ |
+| Beauty Hyper | Won a BEAUTY contest at Hyper rank‡ | Yes‡ |
+| Beauty Master | Won a BEAUTY contest at Master rank‡ | Yes‡ |
 | Cute | Won a CUTE contest at Normal rank‡ | Yes‡ |
-| Cute Super | Won a CUTE contest at Super rank‡ | Not yet‡ |
-| Cute Hyper | Won a CUTE contest at Hyper rank‡ | Not yet‡ |
-| Cute Master | Won a CUTE contest at Master rank‡ | Not yet‡ |
+| Cute Super | Won a CUTE contest at Super rank‡ | Yes‡ |
+| Cute Hyper | Won a CUTE contest at Hyper rank‡ | Yes‡ |
+| Cute Master | Won a CUTE contest at Master rank‡ | Yes‡ |
 | Smart | Won a SMART contest at Normal rank‡ | Yes‡ |
-| Smart Super | Won a SMART contest at Super rank‡ | Not yet‡ |
-| Smart Hyper | Won a SMART contest at Hyper rank‡ | Not yet‡ |
-| Smart Master | Won a SMART contest at Master rank‡ | Not yet‡ |
+| Smart Super | Won a SMART contest at Super rank‡ | Yes‡ |
+| Smart Hyper | Won a SMART contest at Hyper rank‡ | Yes‡ |
+| Smart Master | Won a SMART contest at Master rank‡ | Yes‡ |
 | Tough | Won a TOUGH contest at Normal rank‡ | Yes‡ |
-| Tough Super | Won a TOUGH contest at Super rank‡ | Not yet‡ |
-| Tough Hyper | Won a TOUGH contest at Hyper rank‡ | Not yet‡ |
-| Tough Master | Won a TOUGH contest at Master rank‡ | Not yet‡ |
+| Tough Super | Won a TOUGH contest at Super rank‡ | Yes‡ |
+| Tough Hyper | Won a TOUGH contest at Hyper rank‡ | Yes‡ |
+| Tough Master | Won a TOUGH contest at Master rank‡ | Yes‡ |
 
 \* Snag syncs retroactively for Pokémon snagged with **Pokemon Snag 0.7.4 or
 newer**, which marks them permanently. Older snags are still awarded live
@@ -107,22 +107,21 @@ three are strictly sequential: you can't skip ahead to Royal without
 Gorgeous already on that Pokémon.
 
 ‡ Contest ribbons need the **Kanto Contests** mod, which is what records
-the win. All five categories exist, at all four ranks. Two honest limits:
-
-- **Ten of the twenty cannot be won yet.** Kanto Contests has two halls —
-  Goldenrod runs Normal rank, Ecruteak runs Super — so Hyper and Master
-  have nowhere to be held. Those ribbons are drawn and waiting.
-- **Only the Normal ribbon is retroactive today.** Your save records how
-  many contests a Pokémon won, but not yet at which rank, and this mod
-  won't guess — a Pokémon can reach Master rank without ever winning
-  Super, so counting wins would hand out ribbons nobody earned. A past
-  win therefore earns its category's Normal ribbon. Once Contests records
-  the rank, the others fill in by themselves on an existing save.
+the win. All five categories at all four ranks are winnable — each hall
+runs one rank, and you climb by travelling: **Goldenrod** Normal,
+**Ecruteak** Super, **Cianwood** Hyper, **Blackthorn** Master.
 
 The ribbon goes to the Pokémon that actually performed, and because the
-record lives on the Pokémon, it survives boxing, evolution, trading and
-removing the Contests mod afterwards. Without that mod nothing is
-awarded — this mod never guesses which Pokémon might have won something.
+record lives on the Pokémon it survives boxing, evolution, trading and
+removing the Contests mod afterwards. It is retroactive for any win
+recorded by **Kanto Contests 0.34.44 or newer**, which is the version
+that began storing which rank a win happened at — so a Pokémon that won
+before you installed this mod still gets its ribbons on the next save
+load. Wins recorded before that version kept only a count, not a rank,
+and earn their category's Normal ribbon alone: a Pokémon can reach
+Master rank without ever winning Super, so counting wins would hand out
+ribbons nobody earned. Without the Contests mod nothing is awarded —
+this mod never guesses which Pokémon might have won something.
 
 § On **Gold, Silver and Crystal** happiness is part of the game, so every
 Pokémon tracks it and no companion mod is needed. On **Red, Blue and

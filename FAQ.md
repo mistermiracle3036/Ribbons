@@ -175,11 +175,9 @@ Super, Hyper and Master). The icon's shape tells you the category and
 its colour tells you the rank — bronze, silver, gold, then iridescent
 for Master.
 
-**Ten of them cannot be won yet.** Kanto Contests currently has two
-halls: Goldenrod runs Normal rank and Ecruteak runs Super. Hyper and
-Master have nowhere to be held until more towns get contest halls, so
-those ribbons are listed here but unreachable for now. They will start
-appearing on their own when the halls exist — nothing to reinstall.
+**All twenty are winnable.** Each contest hall runs one rank and you
+climb by travelling, the way Generation III did it: Goldenrod runs
+Normal, Ecruteak Super, Cianwood Hyper and Blackthorn Master.
 
 The win is recorded on that Pokémon, not in a list somewhere, so the
 ribbon is retroactive: if you won a Contest before installing this
