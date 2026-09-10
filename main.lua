@@ -247,6 +247,19 @@ return function(mod)
 
   local function syncStarter(save)
     if not save then return end
+    -- Cross-mod (ungated reader): a starter-granting mod marks its gift with
+    -- mon.journeyStarter (Trainer Journey's trash starter -- a non-vanilla
+    -- species like MANKEY that no EVENT_CHOSE_* flag or starter family would
+    -- ever match). Trust the mark: that mon IS the player's starter. Reads the
+    -- field only if present, so nothing changes for a vanilla starter.
+    for _, mon in ipairs(eachMon(save)) do
+      if mon.journeyStarter == true then
+        if not hasRibbon(mon, "STARTER") then
+          awardRibbon(mon, "STARTER", "mon.journeyStarter set by a starter-granting mod")
+        end
+        return
+      end
+    end
     local family, flag = starterFamily(save)
     if not family then
       -- Gold records the choice as numeric cart bits instead
@@ -874,16 +887,52 @@ return function(mod)
     SMART = "SMART", TOUGH = "TOUGH",
   }
 
+  -- Gen III gave a category a ribbon PER RANK. The rank a win happened at
+  -- is read from mon.contestRanks[CATEGORY][RANK] = true (contract
+  -- contest-ranks, briefs/RIBBONS_CONTEST_RANKS.md) -- a SET of the ranks
+  -- actually won.
+  --
+  -- Rank is NOT derived from mon.contestWins, and that is the whole reason
+  -- the contract exists. contestWins is a COUNT, and Kanto Contests'
+  -- eligibleRanks is min(4, wins + 1) counting wins at ANY rank, so three
+  -- NORMAL wins unlock MASTER entry: a mon can hold a MASTER win having
+  -- never won SUPER or HYPER, and four NORMAL wins are indistinguishable
+  -- from a full climb. Deriving would award ribbons never earned.
+  local CONTEST_RANK_SUFFIX = {
+    NORMAL = "", SUPER = "_SUPER", HYPER = "_HYPER", MASTER = "_MASTER",
+  }
+
   local function syncContest(save)
     if not save then return end
     for _, mon in ipairs(eachMon(save)) do
+      -- precise path: exactly the ranks this mon won
+      local ranks = mon.contestRanks
+      if type(ranks) == "table" then
+        for category, won in pairs(ranks) do
+          local base = CONTEST_RIBBONS[category]
+          if base and type(won) == "table" then
+            for rank, flag in pairs(won) do
+              local suffix = CONTEST_RANK_SUFFIX[rank]
+              -- fail safe on BOTH halves: an unknown rank string and an
+              -- uncatalogued id each award nothing rather than writing a
+              -- flag for a ribbon that cannot be drawn
+              if flag and suffix and inCatalog(base .. suffix) then
+                awardRibbon(mon, base .. suffix,
+                  ("won a %s contest at %s rank"):format(category, rank))
+              end
+            end
+          end
+        end
+      end
+      -- legacy path: a save written before contest-ranks existed carries
+      -- only the count. At wins = 0 nothing but NORMAL is enterable, so a
+      -- count >= 1 proves a NORMAL win and NOTHING MORE -- award the base
+      -- ribbon and no rank ribbon. Kept permanently, not a migration: the
+      -- two fields coexist and a mon may have either or both.
       local wins = mon.contestWins
       if type(wins) == "table" then
         for category, count in pairs(wins) do
           local id = CONTEST_RIBBONS[category]
-          -- only award an id the catalog actually defines: a category
-          -- whose ribbon has not been drawn yet must write nothing to the
-          -- save rather than a flag for a ribbon that cannot be shown
           if id and inCatalog(id) and type(count) == "number" and count > 0 then
             awardRibbon(mon, id, ("won a %s contest"):format(category))
           end
@@ -926,8 +975,63 @@ return function(mod)
 
   local STREAK_RIBBONS = { { at = 10, id = "WINNING" }, { at = 25, id = "VICTORY" } }
 
-  local function onBattleEnded(result, save)
+  -- ------- SUMMIT: Red at the top of Mt Silver (Gold only), whole party
+  --
+  -- Live-only, and it has to be. The obvious retroactive route is the event
+  -- flag, and it is a trap: EVENT_RED_IN_MT_SILVER (1890) is SET on a
+  -- brand-new save, because a set object flag on Gen 2 means the object is
+  -- HIDDEN. Reading it as "beaten" would award this to every new game,
+  -- permanently. initial_events.lua is the proof; don't re-derive it.
+  --
+  -- Two gates, both needed. The class alone is not enough: another mod can
+  -- field a trainer of class RED anywhere -- Indigo Conference stages a
+  -- tournament -- and beating him there is not climbing Mt Silver. So the
+  -- battle must also END on a Silver Cave map. The map is tracked rather
+  -- than read at battle time because the overworld is torn down by then.
+  local lastMapId
+
+  mod.events:on("map.entered", function(ev)
+    lastMapId = ev and ev.mapId or lastMapId
+  end)
+
+  -- Gold map ids are the map-name strings ("SILVER_CAVE_ROOM_3"); Red is in
+  -- room 3, but any Silver Cave room counts so a mod that moves him up or
+  -- down the mountain still reads as the same fight.
+  local function onMtSilver()
+    return type(lastMapId) == "string"
+      and lastMapId:sub(1, 12) == "SILVER_CAVE_"
+  end
+
+  -- The string constant "RED" is on trainer.classId, NOT trainer.class.
+  -- Gen 2 carries both and they are different types: Trainers.lookup
+  -- (src/world/gen2/Trainers.lua:40-47) returns `class` = the NUMERIC class
+  -- index it was looked up by, and `classId` = the class's name key, and
+  -- World.lua:6483-6486 hands both to the battle. The engine's own readers
+  -- use classId -- World.lua:6477 tests `record.classId == "RIVAL1"`, and
+  -- battleMusicContext passes `class = trainer.classId` into BattleMusic's
+  -- `class == "RED"`. Comparing trainer.class to a string is a number-vs-
+  -- string test that is ALWAYS false, which is exactly what 0.22.0 shipped.
+  --
+  -- `class` is still accepted because a mod that hand-builds a trainer for
+  -- startBattle may fill only the readable name; the map gate is what keeps
+  -- another mod's Red battle from qualifying, not this test.
+  local function isRedBattle(battle)
+    local trainer = battle and battle.trainer
+    if type(trainer) ~= "table" then return false end
+    return trainer.classId == "RED" or trainer.class == "RED"
+  end
+
+  local function onBattleEnded(result, save, battle)
     if not save then return end
+    if result == "win" and isRedBattle(battle) and onMtSilver() then
+      for _, mon in ipairs(save.party or {}) do
+        -- an egg did not fight, and this mod's own summary arm says an EGG
+        -- has no ribbons; award one anyway and it surfaces on the hatchling
+        if not (type(mon) == "table" and mon.isEgg == true) then
+          awardRibbon(mon, "SUMMIT", "defeated Red on Mt Silver")
+        end
+      end
+    end
     if result == "win" then
       creditEarthWin(save)
       local streak = mod.save:get("win_streak", 0) + 1
@@ -964,7 +1068,7 @@ return function(mod)
   -- pass on battle.ended keeps all of those near-live
   mod.events:on("battle.ended", function(ev)
     local save = activeGame and activeGame.save
-    onBattleEnded(ev and ev.result, save)
+    onBattleEnded(ev and ev.result, save, ev and ev.battle)
     syncAll(save)
   end)
 
@@ -977,7 +1081,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.21.4"
+  mod.exports.version = "0.24.1"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1026,7 +1130,7 @@ return function(mod)
 
   -- lazy: mod.assets:image needs a graphics context, which a headless
   -- load (tests, validate) doesn't have. Loaded once, on first draw.
-  -- One 288x16 sheet, eighteen 16x16 cells in catalog order -- a single
+  -- One 608x16 sheet, thirty-eight 16x16 cells in catalog order -- a single
   -- image load and one quad table no matter how many ribbons get added,
   -- rather than one newImage call per ribbon.
   local ICON_SIZE = 16

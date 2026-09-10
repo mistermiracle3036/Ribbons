@@ -3,6 +3,104 @@
 Working notes, not player docs. Facts below were verified against engine
 v0.1.78 source on 2026-08-11 unless dated otherwise.
 
+## Engine v0.1.79 re-check (2026-08-12)
+
+Re-verified against the v0.1.79 tag rather than the release prose. Nothing
+in this mod broke.
+
+- `gen2check` on 0.21.4: **ok, will load, 1 warning** — the same MK403
+  (this file requires `src.ui.SummaryMenu`, which Gold never
+  instantiates). Expected and harmless: the Gen 2 sibling is patched
+  alongside it, and the scanner cannot see that. `validate --strict` and
+  `lint` clean.
+- **The Goldenrod vendor's route still holds.** `map_scripts` is still
+  gated on Gen 2 (`Schemas.gatedFor("map_scripts", 2) == true`), so the
+  Gen 1 talk-script pattern remains dead there; `WorldAPI:spawnNpc`,
+  `WorldAPI:queueScript` and the `world.interacted` emit carrying
+  `mapId/x/y/kind` all survive, so the planned route is intact.
+- **The Hatched ribbon's seam still holds.** `egg.hatched` is still
+  emitted from `Breeding.lua` with the hatchling attached.
+- Nothing in 0.1.79's new APIs applies here: `pokemon.sprite` on Gold
+  (this mod draws no sprites), `battle.caught_marker_visible` (Gen 1
+  only), `mod.datetime`, `reorderParty`. `mod.storage` is deliberately
+  NOT adopted — the only persistent state here is a win-streak counter
+  that should travel with the player's save, which is exactly what
+  `mod.save` is for.
+
+## ENGINE BUG: mod options do not persist on a Gold boot
+
+Found by another mod's device report, 2026-08-12, engine v0.1.78-0.1.79.
+**Not specific to this mod** — it hits every mod with options.
+
+`ManagerState:setOption` writes `save.options.modOptions[...]`, and on
+Gold `save.options` IS Gold's own nested block (stored under the `gold`
+key), while `Loader:_loadState` reads the TOP-LEVEL `modOptions`. The
+write and the read never meet.
+
+Consequences for this mod's three toggles:
+
+- A toggle flipped on a **Gold** boot lasts that session only.
+- A toggle left ON from a **Red** boot is live on Gold and **cannot be
+  turned off from there**.
+
+That second case is the dangerous one here, because nothing in this mod
+ever revokes a ribbon: **`[DEV] Give lead all ribbons` left on from a Red
+session would decorate a Gold lead with all nineteen, permanently.** Both
+dev toggles default to off, so only someone who deliberately enabled them
+is exposed — but that someone is us, during testing.
+
+Workaround: **toggle on a Red boot**, where `save.options` is the
+top-level table the loader actually reads.
+
+Not guarded in code yet, deliberately: gating the dev toggles to Gen 1
+would remove a testing capability to work around an engine bug that may
+be fixed next release. Re-check each engine bump; if it persists, the
+guard becomes worth it.
+
+## 0.22.0 — Summit Ribbon (Red on Mt Silver)
+
+**The flag route is a trap; do not re-derive this.**
+`EVENT_RED_IN_MT_SILVER` is event id **1890**, and `initial_events.lua`
+shows it **SET on a brand-new save** (`1890 … set at new game: true`,
+while `1871 EVENT_OPENED_MT_SILVER` is false). On Gen 2 a set object flag
+means the object is **HIDDEN** — the flag is what keeps Red out of sight
+until you have earned him, not a record that you beat him. A resolver
+reading it as "beaten" awards this ribbon to **every new game**,
+permanently, and nothing in this mod revokes a ribbon.
+
+`markRedCredits` is no good either: it sets `save.spawnAfterChampion =
+SPAWN_RED`, which is cleared on the next load.
+
+So the award is **live-only**, off `battle.ended`, documented as such in
+the FAQ. Two gates, both required:
+
+1. `ev.battle.trainer.class == "RED"`. Verified present in Gold's
+   `trainerClassOrder` (`tools/rom_manifest_gold.json`, 67 classes) and
+   **absent from Gen 1's**, so this arm is dead code on Red/Blue/Yellow
+   with no version check needed. `self.trainer = opts.trainer` at
+   `src/battle/gen2/Battle.lua:241`; `.class` is read there too.
+2. The battle ended on a **Silver Cave map**. Gold map ids are the
+   map-name strings, so the prefix test is `SILVER_CAVE_`
+   (`SILVER_CAVE_ROOM_1/2/3`, `_ITEM_ROOMS`, `_OUTSIDE`; Red is in room
+   3). Any room counts, so a mod that moves him up or down the mountain
+   still reads as the same fight.
+
+Gate 2 exists because **another mod can field a trainer of class RED
+anywhere** — Indigo Conference stages a tournament — and beating him
+there is not climbing Mt Silver. The map is tracked from `map.entered`
+rather than read at battle time, because the overworld is torn down by
+then. Both generations emit `map.entered` with `mapId`
+(`src/world/gen2/World.lua:8532`, `src/world/OverworldController.lua:513`).
+
+**Johto Elite Four: deliberately no ribbon.** On Gold, beating the
+Elite Four *is* the Hall of Fame induction, which the Hall of Fame Ribbon
+has covered since 0.21.0 via the `hofEntries` adapter — and that one is
+retroactive. A second ribbon for the same event would be a duplicate.
+
+**Name:** "Legendary Ribbon" was considered and rejected — too close to
+the existing **Legend Ribbon** (flawless Champion run); the two can sit
+on the same Pokémon.
+
 ## Gen 2 (Gold) roadmap
 
 Standing direction: new work targets Gold first, Red gets backfill.

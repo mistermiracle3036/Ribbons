@@ -1,5 +1,135 @@
 # Changelog
 
+## 0.24.1
+
+**Updating from 0.21.4?** Everything below has arrived since, and it all
+applies to the Pokemon you already have -- there is nothing to turn on.
+
+- **Contest ribbons are now one per category per rank**, the way
+  Generation III did it: Cool, Beauty, Cute, Smart and Tough, each at
+  Normal, Super, Hyper and Master. That takes the mod from eighteen
+  ribbons to thirty-eight. **A Cool Ribbon you already earned is kept**,
+  and now reads as the Normal-rank one.
+- **All twenty are winnable.** Each contest hall runs one rank and you
+  climb by travelling, the way Generation III did it: Goldenrod runs
+  Normal, Ecruteak Super, Cianwood Hyper, Blackthorn Master. They are
+  retroactive too -- a Pokemon that won before you installed this picks
+  its ribbons up on the next save load, for any win Kanto Contests
+  recorded from 0.34.44 onward. Older wins kept only a count and no
+  rank, so those earn the category's Normal ribbon and no more: a
+  Pokemon can reach Master without ever winning Super, and this mod
+  would rather give you a ribbon late than one you didn't earn.
+- **Summit Ribbon** -- climb Mt Silver, beat Red, and **every Pokemon in
+  your party** gets it, the same way the Hall of Fame Ribbon works. Gold,
+  Silver and Crystal only; there is no Red to fight in Red, Blue or
+  Yellow. This one has to
+  be earned with the mod installed -- an old save simply doesn't record
+  whether you beat him, and guessing would hand it to everybody.
+- **The Starter Ribbon now recognises a starter another mod gave you**,
+  such as Trainer Journey's "trash starter". It applies retroactively,
+  and nothing changes for an ordinary starter.
+- **Most of the ribbon icons have been redrawn** -- 26 of the 38 -- with
+  cleaner outlines and clearer shapes. Same ribbons, same colours, same
+  meanings; they simply look better. On the Gen 2 games each ribbon's
+  colour still tells you its rank: bronze, silver, gold, then iridescent
+  for Master.
+
+New in 0.24.1 itself: the redrawn icon set was trimmed to the twelve
+that were better left alone, so Hall of Fame, Snag, Rare, Traveler,
+Effort, Legend, Earth, Warrior, Winning, Royal, Gorgeous Royal and
+Summit keep their original art. The ribbons screen is unchanged --
+same four-row list, same controls.
+
+## 0.24.0 - Ribbon case and full icon redesign
+
+Updating from the 0.22.1 phone build? This includes the newer twenty
+contest-rank ribbons (38 ribbons total), exact saved-rank recognition,
+and the Summit award fix from 0.22.2/0.23.0. Existing ribbons and the
+Trainer Journey starter support are retained.
+
+Upgrading from an earlier public build also brings the Summit Ribbon for
+beating Red on Mt Silver and support for starters marked by Trainer Journey.
+
+- A framed twelve-icon case opens first, with the selected ribbon's name
+  and description below. Up/Down visits icons in reading order.
+- A switches to a four-row list and back without losing selection.
+  B returns. Left/Right continues the Gen 2 summary cycle in that direction.
+- Warm paper and restrained blue-grey accents use the native Gen 2 window
+  frame, inspired by Trainer Journey. Gen 1 keeps untinted icons and its
+  inherited palette; selection remains readable in monochrome.
+- The full ribbon icon set is redrawn with clearer outlines and restrained
+  shading. Beauty receives a scallop-shell medallion. Shared contest tails,
+  rank colors, catalog order, and the exact three-grey palette are retained.
+- Owned total, selection position, and an encouraging empty state fit
+  the standard 160x144 screen. The optional Gen 1 wide layout still works.
+
+Phone test build: UI behavior and pixel layout checked offline; actual
+Crystal/Gold/Gen 1 device appearance and input still need a play test.
+
+## 0.23.0
+
+**Contest ribbons, the Generation III way — one per category per rank.**
+
+- **Twenty contest ribbons** replace the single Cool Ribbon: Cool,
+  Beauty, Cute, Smart and Tough, each at Normal, Super, Hyper and
+  Master rank. The icon's **shape** is the category — an octagon for
+  Cool, a teardrop for Beauty, a bow for Cute, a book for Smart, a
+  shield for Tough — and on Gold its **colour** is the rank: bronze,
+  silver, gold, then iridescent for Master.
+- **A Cool Ribbon you already have is kept.** It is the same ribbon,
+  now labelled as the Normal-rank one.
+- **Ten of the twenty cannot be won yet**, and that is worth saying
+  plainly so you don't go hunting. Kanto Contests has two halls today —
+  Goldenrod runs Normal and Ecruteak runs Super — so Hyper and Master
+  have nowhere to be held. Those ten are drawn and ready and will start
+  appearing by themselves once more towns get halls.
+- **Rank ribbons need a Contests update too.** Which rank a win happened
+  at isn't written down in your save yet, and this mod won't guess: a
+  Pokémon can reach Master rank without having won Super or Hyper, so
+  counting wins would hand out ribbons nobody earned. Until Contests
+  records it, a past win still earns its category's Normal ribbon —
+  that much your save does prove.
+- Nothing to do on your side either way. Everything here is awarded
+  from your save, so it catches up on its own.
+
+## 0.22.2
+
+- **Fixes the Summit Ribbon, which could never be awarded in 0.22.0 or
+  0.22.1.** The check for "is this Red?" was reading the wrong field, so
+  beating Red on Mt Silver did nothing at all. It works now.
+- An **egg** in your party no longer receives the Summit Ribbon. Eggs
+  don't have a ribbon page, so the ribbon was invisible until the egg
+  hatched and the hatchling turned up wearing a ribbon it never earned.
+
+## 0.22.1 - Starter Ribbon for modded starters
+
+- The Starter Ribbon now also goes to a starter granted by another mod that
+  marks it with `mon.journeyStarter` -- most notably Trainer Journey's "trash
+  starter", which hands you a non-vanilla species (MANKEY, ODDISH, and so on)
+  that no starter-choice flag or starter family would ever match. It applies
+  retroactively on an existing save, and nothing changes for a normal starter.
+
+## 0.22.0
+
+**A nineteenth ribbon, for the hardest fight in Gold.**
+
+- **Summit Ribbon** — beat Red at the top of Mt Silver and **every
+  Pokémon in your party** gets it, the same way the Hall of Fame Ribbon
+  works. Gold only; Red isn't in Red, Blue or Yellow.
+- It has to be **earned while the mod is running** — it can't be given
+  out retroactively. Gold marks Red with a flag that's already switched
+  on the moment you start a new game, so an old save simply doesn't say
+  whether you beat him; awarding from that flag would hand the ribbon to
+  every fresh save instead. The FAQ explains it in full.
+- Beating a trainer called Red **somewhere other than Mt Silver** — a
+  tournament staged by another mod, say — doesn't count. The climb is
+  the point.
+
+**Already beaten the Johto Elite Four?** There's no separate ribbon for
+it, and you aren't missing one: on Gold that victory is what puts you in
+the Hall of Fame, so the **Hall of Fame Ribbon** already covers it, and
+that one *is* retroactive.
+
 ## 0.21.4
 
 - The repository is now called **Ribbons** too, matching the mod. GitHub

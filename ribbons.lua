@@ -154,16 +154,181 @@ return {
     description = "Costs 999999.",
     color = { 235, 135, 215 }, -- both at once, louder
   },
-  -- Contest ribbons are one per category, matching the contest you win.
-  -- Only COOL exists in Kanto Contests today; BEAUTY/CUTE/SMART/TOUGH get
-  -- their own entry and their own icon cell as that mod adds them. The
-  -- resolver keys off mon.contestWins[CATEGORY], which is already recorded
-  -- per category, so adding one here needs no save change.
+  -- Red at the top of Mt Silver. Gold only, and live-only: there is no
+  -- save flag to read it back from -- EVENT_RED_IN_MT_SILVER is SET on a
+  -- brand-new save, because on Gold a set object flag means HIDDEN. See
+  -- NOTES.md.
+  {
+    id = "SUMMIT",
+    name = "Summit Ribbon",
+    short = "Summit",
+    description = "Defeated Red.",
+    color = { 170, 195, 220 }, -- snow on Silver's peak
+  },
+
+  -- ------- CONTEST RIBBONS: one per category per rank, Gen III's shape.
+  --
+  -- SHAPE carries the category and COLOUR carries the rank, because the
+  -- four ranks of a category share one medallion: octagon COOL, scallop shell
+  -- BEAUTY, bow CUTE, book SMART, shield TOUGH, all on COOL's original
+  -- tails so they read as one family. Bronze / silver / gold /
+  -- iridescent across the ranks. A heart and a gem were deliberately not
+  -- used -- BEST_FRIENDS and GORGEOUS already own those silhouettes.
+  --
+  -- The four cells of a category are the SAME 16x16 art repeated; only
+  -- `color` differs. That is Gen 2 only, so on Gen 1 the four ranks of a
+  -- category draw identically and the name beside the icon is what tells
+  -- them apart. Deliberate: Gen 1 icons are never tinted (see the header
+  -- above), and Kanto Contests is a Gen 2 mod anyway.
+  --
+  -- The resolver reads mon.contestRanks[CATEGORY][RANK] (contract
+  -- contest-ranks). Rank is NOT derived from mon.contestWins: that is a
+  -- count, and eligibleRanks is min(4, wins+1) counting wins at ANY rank,
+  -- so MASTER can be won without SUPER or HYPER. A count >= 1 proves a
+  -- NORMAL win and nothing more, which is the legacy fallback.
+
   {
     id = "COOL",
     name = "Cool Ribbon",
     short = "Cool",
-    description = "A COOL contest.",
-    color = { 215, 85, 85 }, -- Gen III's COOL is red
+    description = "Normal rank win.",
+    color = { 190, 120, 70 }, -- bronze
+  },
+  {
+    id = "COOL_SUPER",
+    name = "Cool Ribbon Super",
+    short = "Cool Super",
+    description = "Super rank win.",
+    color = { 185, 195, 205 }, -- silver
+  },
+  {
+    id = "COOL_HYPER",
+    name = "Cool Ribbon Hyper",
+    short = "Cool Hyper",
+    description = "Hyper rank win.",
+    color = { 235, 190, 70 }, -- gold
+  },
+  {
+    id = "COOL_MASTER",
+    name = "Cool Ribbon Master",
+    short = "Cool Master",
+    description = "Master rank win.",
+    color = { 205, 145, 240 }, -- iridescent
+  },
+
+  {
+    id = "BEAUTY",
+    name = "Beauty Ribbon",
+    short = "Beauty",
+    description = "Normal rank win.",
+    color = { 190, 120, 70 }, -- bronze
+  },
+  {
+    id = "BEAUTY_SUPER",
+    name = "Beauty Ribbon Super",
+    short = "Beauty Super",
+    description = "Super rank win.",
+    color = { 185, 195, 205 }, -- silver
+  },
+  {
+    id = "BEAUTY_HYPER",
+    name = "Beauty Ribbon Hyper",
+    short = "Beauty Hyper",
+    description = "Hyper rank win.",
+    color = { 235, 190, 70 }, -- gold
+  },
+  {
+    id = "BEAUTY_MASTER",
+    name = "Beauty Ribbon Master",
+    short = "Beauty Master",
+    description = "Master rank win.",
+    color = { 205, 145, 240 }, -- iridescent
+  },
+
+  {
+    id = "CUTE",
+    name = "Cute Ribbon",
+    short = "Cute",
+    description = "Normal rank win.",
+    color = { 190, 120, 70 }, -- bronze
+  },
+  {
+    id = "CUTE_SUPER",
+    name = "Cute Ribbon Super",
+    short = "Cute Super",
+    description = "Super rank win.",
+    color = { 185, 195, 205 }, -- silver
+  },
+  {
+    id = "CUTE_HYPER",
+    name = "Cute Ribbon Hyper",
+    short = "Cute Hyper",
+    description = "Hyper rank win.",
+    color = { 235, 190, 70 }, -- gold
+  },
+  {
+    id = "CUTE_MASTER",
+    name = "Cute Ribbon Master",
+    short = "Cute Master",
+    description = "Master rank win.",
+    color = { 205, 145, 240 }, -- iridescent
+  },
+
+  {
+    id = "SMART",
+    name = "Smart Ribbon",
+    short = "Smart",
+    description = "Normal rank win.",
+    color = { 190, 120, 70 }, -- bronze
+  },
+  {
+    id = "SMART_SUPER",
+    name = "Smart Ribbon Super",
+    short = "Smart Super",
+    description = "Super rank win.",
+    color = { 185, 195, 205 }, -- silver
+  },
+  {
+    id = "SMART_HYPER",
+    name = "Smart Ribbon Hyper",
+    short = "Smart Hyper",
+    description = "Hyper rank win.",
+    color = { 235, 190, 70 }, -- gold
+  },
+  {
+    id = "SMART_MASTER",
+    name = "Smart Ribbon Master",
+    short = "Smart Master",
+    description = "Master rank win.",
+    color = { 205, 145, 240 }, -- iridescent
+  },
+
+  {
+    id = "TOUGH",
+    name = "Tough Ribbon",
+    short = "Tough",
+    description = "Normal rank win.",
+    color = { 190, 120, 70 }, -- bronze
+  },
+  {
+    id = "TOUGH_SUPER",
+    name = "Tough Ribbon Super",
+    short = "Tough Super",
+    description = "Super rank win.",
+    color = { 185, 195, 205 }, -- silver
+  },
+  {
+    id = "TOUGH_HYPER",
+    name = "Tough Ribbon Hyper",
+    short = "Tough Hyper",
+    description = "Hyper rank win.",
+    color = { 235, 190, 70 }, -- gold
+  },
+  {
+    id = "TOUGH_MASTER",
+    name = "Tough Ribbon Master",
+    short = "Tough Master",
+    description = "Master rank win.",
+    color = { 205, 145, 240 }, -- iridescent
   },
 }

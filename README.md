@@ -1,12 +1,12 @@
 # Ribbons
 
 Permanent, per-Pokémon **ribbons** for **gen1recomp** — Red, Blue, Yellow
-and **Gold** — reimagined from the Generation III–IX ribbon system for
+and **Gold, Silver and Crystal** — reimagined from the Generation III–IX ribbon system for
 things these games actually simulate. Ribbons live on the Pokémon itself,
 so they survive boxing, evolution and trades, and they open straight from
 the status screen: press A past the last page.
 
-*(Formerly "Kanto Ribbons" — renamed with Gold support, since the ribbons
+*(Formerly "Kanto Ribbons" — renamed with Gen 2 support, since the ribbons
 are no longer a Kanto-only affair. Same mod, same saves, nothing to
 reinstall.)*
 
@@ -20,9 +20,15 @@ Want the exact award conditions, prices and locations? Open the
 **[FAQ and spoiler guide](FAQ.md)** — every detailed answer is collapsed
 so you only reveal what you want.
 
+## Icon selection in 0.24.1
+
+New art is used for Starter, Shiny, Fossil, Best Friends, Victory,
+Gorgeous, and all contest categories at every rank. Other ribbons use
+their original art. The original four-row ribbons interface is restored.
+
 ## Features
 
-- **Eighteen ribbons**, earned several ways: story milestones, hard
+- **Thirty-eight ribbons**, earned several ways: story milestones, hard
   training, flawless battles, lucky DVs, a Contest win, and one very
   expensive shop.
 - **Awarded automatically.** Nothing to toggle or claim. If a Pokémon
@@ -45,7 +51,7 @@ so you only reveal what you want.
 
 | Ribbon | How you get it | Retroactive? |
 | ------ | -------------- | ------------ |
-| Starter | The Pokémon you chose in Oak's lab | Yes |
+| Starter | The Pokémon you were given — Oak's lab, Elm's lab, or a starter another mod handed you | Yes |
 | Hall of Fame | Was in the party that entered the Hall of Fame | Yes |
 | Snag | Taken from a trainer with a Snag Ball | Yes* |
 | Rare | Flawless DVs in every stat | Yes |
@@ -56,13 +62,39 @@ so you only reveal what you want.
 | Warrior | One Pokémon wins 250 battles in the active slot | No |
 | Shiny | Born with the rare "virtual shiny" DV spread | Yes |
 | Fossil | A fossil Pokémon revived by you | Yes |
-| Best Friends | Max happiness — Yellow's lab Pikachu, or any Pokémon with [Happiness](https://github.com/thorkdev/gen1recomp-happiness)§ | Yes |
+| Best Friends | Max happiness — native on Gen 2; on Gen 1 it needs [Happiness](https://github.com/thorkdev/gen1recomp-happiness)§ | Yes |
 | Winning | In the party for a 10-battle win streak | No |
 | Victory | In the party for a 25-battle win streak | No |
 | Gorgeous | Bought from the Meowth, Celadon Mansion 1F — ₽10,000† | — |
 | Royal | Same Meowth — ₽100,000, needs Gorgeous first† | — |
 | Gorgeous Royal | Same Meowth — ₽999,999, needs Royal first† | — |
-| Cool | Won the COOL Contest at the Celadon Contest Hall‡ | Yes‡ |
+| Summit | Beat Red at the top of Mt Silver — **Gen 2 only** | No |
+
+**Contest ribbons** — twenty more, with **Kanto Contests** installed‡. One
+per category per rank, Generation III style:
+
+| Ribbon | How you get it | Retroactive? |
+| ------ | -------------- | ------------ |
+| Cool | Won a COOL contest at Normal rank‡ | Yes‡ |
+| Cool Super | Won a COOL contest at Super rank‡ | Yes‡ |
+| Cool Hyper | Won a COOL contest at Hyper rank‡ | Yes‡ |
+| Cool Master | Won a COOL contest at Master rank‡ | Yes‡ |
+| Beauty | Won a BEAUTY contest at Normal rank‡ | Yes‡ |
+| Beauty Super | Won a BEAUTY contest at Super rank‡ | Yes‡ |
+| Beauty Hyper | Won a BEAUTY contest at Hyper rank‡ | Yes‡ |
+| Beauty Master | Won a BEAUTY contest at Master rank‡ | Yes‡ |
+| Cute | Won a CUTE contest at Normal rank‡ | Yes‡ |
+| Cute Super | Won a CUTE contest at Super rank‡ | Yes‡ |
+| Cute Hyper | Won a CUTE contest at Hyper rank‡ | Yes‡ |
+| Cute Master | Won a CUTE contest at Master rank‡ | Yes‡ |
+| Smart | Won a SMART contest at Normal rank‡ | Yes‡ |
+| Smart Super | Won a SMART contest at Super rank‡ | Yes‡ |
+| Smart Hyper | Won a SMART contest at Hyper rank‡ | Yes‡ |
+| Smart Master | Won a SMART contest at Master rank‡ | Yes‡ |
+| Tough | Won a TOUGH contest at Normal rank‡ | Yes‡ |
+| Tough Super | Won a TOUGH contest at Super rank‡ | Yes‡ |
+| Tough Hyper | Won a TOUGH contest at Hyper rank‡ | Yes‡ |
+| Tough Master | Won a TOUGH contest at Master rank‡ | Yes‡ |
 
 \* Snag syncs retroactively for Pokémon snagged with **Pokemon Snag 0.7.4 or
 newer**, which marks them permanently. Older snags are still awarded live
@@ -74,23 +106,31 @@ Rearrange your party first if you want a specific one decorated. The
 three are strictly sequential: you can't skip ahead to Royal without
 Gorgeous already on that Pokémon.
 
-‡ Contest ribbons need the **Kanto Contests** mod (v0.7.3 or newer),
-which is what records the win. There's one ribbon per contest category,
-the way Gen III did it — Beauty, Cute, Smart and Tough arrive as that mod
-adds those contests. It goes to the Pokémon that actually performed, and
-because the record is stored on the Pokémon itself, it is retroactive: a
-Pokémon that won a Contest before you installed this version still gets
-the ribbon the next time your save syncs, and keeps it if you later
-remove the Contests mod. Without that mod nothing is awarded — this mod
-never guesses which Pokémon might have won something.
+‡ Contest ribbons need the **Kanto Contests** mod, which is what records
+the win. All five categories at all four ranks are winnable — each hall
+runs one rank, and you climb by travelling: **Goldenrod** Normal,
+**Ecruteak** Super, **Cianwood** Hyper, **Blackthorn** Master.
 
-§ Without **Happiness** installed, the ribbon works exactly as before:
-Yellow only, and only your lab Pikachu, using Yellow's own native
-happiness system. With it installed, every Pokémon tracks happiness (not
-just Pikachu), and reaching the cap earns the ribbon whatever species it
-is — retroactively, and no matter how the Pokémon came to you, since
-happiness travels with a Pokémon rather than proving where it came from.
-More than one Pokémon can hold this ribbon.
+The ribbon goes to the Pokémon that actually performed, and because the
+record lives on the Pokémon it survives boxing, evolution, trading and
+removing the Contests mod afterwards. It is retroactive for any win
+recorded by **Kanto Contests 0.34.44 or newer**, which is the version
+that began storing which rank a win happened at — so a Pokémon that won
+before you installed this mod still gets its ribbons on the next save
+load. Wins recorded before that version kept only a count, not a rank,
+and earn their category's Normal ribbon alone: a Pokémon can reach
+Master rank without ever winning Super, so counting wins would hand out
+ribbons nobody earned. Without the Contests mod nothing is awarded —
+this mod never guesses which Pokémon might have won something.
+
+§ On **Gold, Silver and Crystal** happiness is part of the game, so every
+Pokémon tracks it and no companion mod is needed. On **Red, Blue and
+Yellow** it is not: without **Happiness** installed the ribbon is Yellow
+only, and only your lab Pikachu, using Yellow's own native system. With
+it installed, every Pokémon tracks happiness and reaching the cap earns
+the ribbon whatever species it is — retroactively, and no matter how the
+Pokémon came to you, since happiness travels with a Pokémon rather than
+proving where it came from. More than one Pokémon can hold this ribbon.
 
 Win streaks are counted from the moment you install the mod — a streak you
 were already on doesn't count, because the save doesn't record which
@@ -144,17 +184,17 @@ load log prints the running version so you can confirm what's live.
   (A past the last summary page); Modern UI users see the mod's own
   screen styling rather than Modern UI's, since Modern UI's API doesn't
   accept external pages.
-- Works in **Red, Blue, Yellow and Gold**. A few ribbons differ by game,
+- Works in **Red, Blue, Yellow, Gold, Silver and Crystal**. A few ribbons differ by game,
   and all of it is automatic — nothing to configure:
-  - **Best Friends** needs no extra mod on Gold, where happiness is
+  - **Best Friends** needs no extra mod on the Gen 2 games, where happiness is
     built in. On Red/Blue/Yellow it needs Happiness (above), and without
     that it is Yellow's lab Pikachu only.
   - **Starter** uses each game's own record of the Pokémon you were
     given, so it is exact on both and follows the whole evolution line.
-  - The three **shop ribbons** are Kanto-only for now; Gold has no
+  - The three **shop ribbons** are Kanto-only for now; Gen 2 has no
     Meowth selling them. A vendor in Goldenrod is planned.
   - **Snag** and **Cool** need mods that are themselves Gen 1 only.
-  - The **Wide ribbons screen** option does nothing on Gold, which draws
+  - The **Wide ribbons screen** option does nothing on Gen 2, which draws
     its screens a different way.
 
 ## A note on how it hooks in
