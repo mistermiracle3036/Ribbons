@@ -1,18 +1,43 @@
 # Changelog
 
-## 0.24.1 - Selected icons and original ribbons UI
+## 0.24.1
 
-- Restores the original four-row ribbons screen and its original controls.
-  The case/list toggle and redesigned window layout are removed.
-- Keeps the new Starter, Shiny, Fossil, Best Friends, Victory and Gorgeous
-  icons, plus Cool, Beauty, Smart, Tough and Cute at all four contest ranks.
-- Restores the original Hall of Fame, Snag, Rare, Traveler, Effort, Legend,
-  Earth, Warrior, Winning, Royal, Gorgeous Royal and Summit icons.
-- Retains the 38-ribbon catalog, contest-rank recognition, Summit fix and
-  Trainer Journey starter support. Award logic and stored ribbons are unchanged.
+**Updating from 0.21.4?** Everything below has arrived since, and it all
+applies to the Pokemon you already have -- there is nothing to turn on.
 
-Updating from the earlier phone build 0.22.1 also includes the newer
-0.23.0 catalog and award fixes. This is a device-test build.
+- **Contest ribbons are now one per category per rank**, the way
+  Generation III did it: Cool, Beauty, Cute, Smart and Tough, each at
+  Normal, Super, Hyper and Master. That takes the mod from eighteen
+  ribbons to thirty-eight. **A Cool Ribbon you already earned is kept**,
+  and now reads as the Normal-rank one.
+- **Ten of those twenty cannot be won yet**, and it is worth saying so
+  plainly rather than letting you hunt for them. Kanto Contests has two
+  halls today -- Goldenrod runs Normal rank, Ecruteak runs Super -- so
+  Hyper and Master have nowhere to be held. Those ribbons are drawn and
+  waiting, and will start appearing on their own once more towns get
+  halls. Which rank a past win happened at also isn't written into your
+  save yet, so until Contests records it, an old win earns its
+  category's Normal ribbon and no more. The mod would rather give you a
+  ribbon late than one you didn't earn.
+- **Summit Ribbon** -- climb Mt Silver, beat Red, and **every Pokemon in
+  your party** gets it, the same way the Hall of Fame Ribbon works. Gold
+  only; there is no Red to fight in Red, Blue or Yellow. This one has to
+  be earned with the mod installed -- an old save simply doesn't record
+  whether you beat him, and guessing would hand it to everybody.
+- **The Starter Ribbon now recognises a starter another mod gave you**,
+  such as Trainer Journey's "trash starter". It applies retroactively,
+  and nothing changes for an ordinary starter.
+- **Most of the ribbon icons have been redrawn** -- 26 of the 38 -- with
+  cleaner outlines and clearer shapes. Same ribbons, same colours, same
+  meanings; they simply look better. On Gold each contest ribbon's
+  colour still tells you its rank: bronze, silver, gold, then iridescent
+  for Master.
+
+New in 0.24.1 itself: the redrawn icon set was trimmed to the twelve
+that were better left alone, so Hall of Fame, Snag, Rare, Traveler,
+Effort, Legend, Earth, Warrior, Winning, Royal, Gorgeous Royal and
+Summit keep their original art. The ribbons screen is unchanged --
+same four-row list, same controls.
 
 ## 0.24.0 - Ribbon case and full icon redesign
 
