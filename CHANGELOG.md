@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.24.2
+
+**Updating from 0.24.1? Nothing in play changes.** This is a
+housekeeping release: the wording in the mod's own description and
+release notes was corrected after 0.24.1 had already been built, so two
+slightly different downloads were both calling themselves 0.24.1. This
+version exists so the number means one thing again.
+
+No ribbon, award rule, icon or screen is touched, and your Pokemon keep
+every ribbon they have.
+
 ## 0.24.1
 
 **Updating from 0.21.4?** Everything below has arrived since, and it all
