@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.25.0
+
+**The ribbons list is laid out properly now — on Gold, Silver and Crystal.**
+
+- **One ribbon per row**, with the cursor beside the one you are looking
+  at, and the count in the corner telling you where you are.
+- **What a ribbon was won for now has room.** It used to be squeezed onto
+  a second line under every row, which is why they read like
+  "Normal rank win." It now appears in the game's own text box, where it
+  can say "Won a Normal rank COOL CONTEST." Every one of the
+  thirty-eight has been rewritten to suit.
+- Red, Blue and Yellow are unchanged. Their version of this screen takes
+  its colours from the game rather than choosing them, so the new
+  black-on-white layout is not this mod's to impose there.
+
 ## 0.24.2
 
 **Updating from 0.24.1? Nothing in play changes.** This is a

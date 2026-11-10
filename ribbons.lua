@@ -40,6 +40,7 @@ return {
     name = "Starter Ribbon",
     short = "Starter",
     description = "First partner.",
+    detail = "The first POKeMON\nyou were given.",
     color = { 120, 200, 120 }, -- green, the first partner
   },
   {
@@ -47,6 +48,7 @@ return {
     name = "Hall of Fame Ribbon",
     short = "Hall of Fame",
     description = "Champion team.",
+    detail = "In the party that\nentered the Hall.",
     color = { 235, 190, 70 }, -- gold crown
   },
   {
@@ -54,6 +56,7 @@ return {
     name = "Snag Ribbon",
     short = "Snag",
     description = "Taken in battle.",
+    detail = "Taken from a\ntrainer in battle.",
     color = { 170, 110, 210 }, -- Rocket purple
   },
   {
@@ -61,6 +64,7 @@ return {
     name = "Rare Ribbon",
     short = "Rare",
     description = "Flawless DVs.",
+    detail = "Born with flawless\nstats.",
     color = { 95, 195, 235 }, -- bright star
   },
   {
@@ -68,6 +72,7 @@ return {
     name = "Traveler Ribbon",
     short = "Traveler",
     description = "Came by trade.",
+    detail = "Arrived here in a\ntrade.",
     color = { 235, 150, 70 }, -- trade arrows
   },
   {
@@ -75,6 +80,7 @@ return {
     name = "Effort Ribbon",
     short = "Effort",
     description = "Stat Exp maxed.",
+    detail = "Trained until all\nstats maxed out.",
     color = { 215, 90, 90 }, -- hard training red
   },
   {
@@ -82,6 +88,7 @@ return {
     name = "Legend Ribbon",
     short = "Legend",
     description = "A flawless run.",
+    detail = "Beat the Champion\nwithout a faint.",
     color = { 225, 200, 105 }, -- lucky horseshoe gold
   },
   {
@@ -89,6 +96,7 @@ return {
     name = "Earth Ribbon",
     short = "Earth",
     description = "100 solo wins.",
+    detail = "Won 100 battles in\nthe lead slot.",
     color = { 95, 180, 130 }, -- globe green
   },
   {
@@ -96,6 +104,7 @@ return {
     name = "Warrior Ribbon",
     short = "Warrior",
     description = "250 solo wins.",
+    detail = "Won 250 battles in\nthe lead slot.",
     color = { 205, 75, 75 }, -- crossed swords
   },
   {
@@ -103,6 +112,7 @@ return {
     name = "Shiny Ribbon",
     short = "Shiny",
     description = "Rare shiny hues.",
+    detail = "Born with the rare\nshiny colours.",
     color = { 240, 225, 120 }, -- sparkle yellow
   },
   {
@@ -110,6 +120,7 @@ return {
     name = "Fossil Ribbon",
     short = "Fossil",
     description = "Revived fossil.",
+    detail = "Brought back from\na fossil.",
     color = { 195, 165, 120 }, -- bone
   },
   {
@@ -117,6 +128,7 @@ return {
     name = "Best Friends Ribbon",
     short = "Best Friends",
     description = "A happy bond.",
+    detail = "As happy as a\nPOKeMON can be.",
     color = { 240, 140, 175 }, -- heart pink
   },
   {
@@ -124,6 +136,7 @@ return {
     name = "Winning Ribbon",
     short = "Winning",
     description = "A 10 win streak.",
+    detail = "In the party for a\n10 win streak.",
     color = { 235, 165, 80 }, -- pennant
   },
   {
@@ -131,6 +144,7 @@ return {
     name = "Victory Ribbon",
     short = "Victory",
     description = "A 25 win streak.",
+    detail = "In the party for a\n25 win streak.",
     color = { 235, 190, 70 }, -- trophy gold
   },
   {
@@ -138,6 +152,7 @@ return {
     name = "Gorgeous Ribbon",
     short = "Gorgeous",
     description = "Costs 10000.",
+    detail = "Bought from the\nMeowth: $10000.",
     color = { 225, 120, 185 }, -- the cheapest luxury
   },
   {
@@ -145,6 +160,7 @@ return {
     name = "Royal Ribbon",
     short = "Royal",
     description = "Costs 100000.",
+    detail = "Bought from the\nMeowth: $100000.",
     color = { 150, 115, 210 }, -- royal purple
   },
   {
@@ -152,6 +168,7 @@ return {
     name = "Gorgeous Royal Ribbon",
     short = "Gorgeous Royal",
     description = "Costs 999999.",
+    detail = "The Meowth's most\nabsurd ribbon.",
     color = { 235, 135, 215 }, -- both at once, louder
   },
   -- Red at the top of Mt Silver. Gold only, and live-only: there is no
@@ -163,6 +180,7 @@ return {
     name = "Summit Ribbon",
     short = "Summit",
     description = "Defeated Red.",
+    detail = "Beat Red atop\nMt Silver.",
     color = { 170, 195, 220 }, -- snow on Silver's peak
   },
 
@@ -192,6 +210,7 @@ return {
     name = "Cool Ribbon",
     short = "Cool",
     description = "Normal rank win.",
+    detail = "Won a Normal rank\nCOOL CONTEST.",
     color = { 190, 120, 70 }, -- bronze
   },
   {
@@ -199,6 +218,7 @@ return {
     name = "Cool Ribbon Super",
     short = "Cool Super",
     description = "Super rank win.",
+    detail = "Won a Super rank\nCOOL CONTEST.",
     color = { 185, 195, 205 }, -- silver
   },
   {
@@ -206,6 +226,7 @@ return {
     name = "Cool Ribbon Hyper",
     short = "Cool Hyper",
     description = "Hyper rank win.",
+    detail = "Won a Hyper rank\nCOOL CONTEST.",
     color = { 235, 190, 70 }, -- gold
   },
   {
@@ -213,6 +234,7 @@ return {
     name = "Cool Ribbon Master",
     short = "Cool Master",
     description = "Master rank win.",
+    detail = "Won a Master rank\nCOOL CONTEST.",
     color = { 205, 145, 240 }, -- iridescent
   },
 
@@ -221,6 +243,7 @@ return {
     name = "Beauty Ribbon",
     short = "Beauty",
     description = "Normal rank win.",
+    detail = "Won a Normal rank\nBEAUTY CONTEST.",
     color = { 190, 120, 70 }, -- bronze
   },
   {
@@ -228,6 +251,7 @@ return {
     name = "Beauty Ribbon Super",
     short = "Beauty Super",
     description = "Super rank win.",
+    detail = "Won a Super rank\nBEAUTY CONTEST.",
     color = { 185, 195, 205 }, -- silver
   },
   {
@@ -235,6 +259,7 @@ return {
     name = "Beauty Ribbon Hyper",
     short = "Beauty Hyper",
     description = "Hyper rank win.",
+    detail = "Won a Hyper rank\nBEAUTY CONTEST.",
     color = { 235, 190, 70 }, -- gold
   },
   {
@@ -242,6 +267,7 @@ return {
     name = "Beauty Ribbon Master",
     short = "Beauty Master",
     description = "Master rank win.",
+    detail = "Won a Master rank\nBEAUTY CONTEST.",
     color = { 205, 145, 240 }, -- iridescent
   },
 
@@ -250,6 +276,7 @@ return {
     name = "Cute Ribbon",
     short = "Cute",
     description = "Normal rank win.",
+    detail = "Won a Normal rank\nCUTE CONTEST.",
     color = { 190, 120, 70 }, -- bronze
   },
   {
@@ -257,6 +284,7 @@ return {
     name = "Cute Ribbon Super",
     short = "Cute Super",
     description = "Super rank win.",
+    detail = "Won a Super rank\nCUTE CONTEST.",
     color = { 185, 195, 205 }, -- silver
   },
   {
@@ -264,6 +292,7 @@ return {
     name = "Cute Ribbon Hyper",
     short = "Cute Hyper",
     description = "Hyper rank win.",
+    detail = "Won a Hyper rank\nCUTE CONTEST.",
     color = { 235, 190, 70 }, -- gold
   },
   {
@@ -271,6 +300,7 @@ return {
     name = "Cute Ribbon Master",
     short = "Cute Master",
     description = "Master rank win.",
+    detail = "Won a Master rank\nCUTE CONTEST.",
     color = { 205, 145, 240 }, -- iridescent
   },
 
@@ -279,6 +309,7 @@ return {
     name = "Smart Ribbon",
     short = "Smart",
     description = "Normal rank win.",
+    detail = "Won a Normal rank\nSMART CONTEST.",
     color = { 190, 120, 70 }, -- bronze
   },
   {
@@ -286,6 +317,7 @@ return {
     name = "Smart Ribbon Super",
     short = "Smart Super",
     description = "Super rank win.",
+    detail = "Won a Super rank\nSMART CONTEST.",
     color = { 185, 195, 205 }, -- silver
   },
   {
@@ -293,6 +325,7 @@ return {
     name = "Smart Ribbon Hyper",
     short = "Smart Hyper",
     description = "Hyper rank win.",
+    detail = "Won a Hyper rank\nSMART CONTEST.",
     color = { 235, 190, 70 }, -- gold
   },
   {
@@ -300,6 +333,7 @@ return {
     name = "Smart Ribbon Master",
     short = "Smart Master",
     description = "Master rank win.",
+    detail = "Won a Master rank\nSMART CONTEST.",
     color = { 205, 145, 240 }, -- iridescent
   },
 
@@ -308,6 +342,7 @@ return {
     name = "Tough Ribbon",
     short = "Tough",
     description = "Normal rank win.",
+    detail = "Won a Normal rank\nTOUGH CONTEST.",
     color = { 190, 120, 70 }, -- bronze
   },
   {
@@ -315,6 +350,7 @@ return {
     name = "Tough Ribbon Super",
     short = "Tough Super",
     description = "Super rank win.",
+    detail = "Won a Super rank\nTOUGH CONTEST.",
     color = { 185, 195, 205 }, -- silver
   },
   {
@@ -322,6 +358,7 @@ return {
     name = "Tough Ribbon Hyper",
     short = "Tough Hyper",
     description = "Hyper rank win.",
+    detail = "Won a Hyper rank\nTOUGH CONTEST.",
     color = { 235, 190, 70 }, -- gold
   },
   {
@@ -329,6 +366,7 @@ return {
     name = "Tough Ribbon Master",
     short = "Tough Master",
     description = "Master rank win.",
+    detail = "Won a Master rank\nTOUGH CONTEST.",
     color = { 205, 145, 240 }, -- iridescent
   },
 }

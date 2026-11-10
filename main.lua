@@ -1081,7 +1081,7 @@ return function(mod)
 
   -- kept in lockstep with manifest.json's version (release checklist
   -- item 1); other mods and the load log read this
-  mod.exports.version = "0.24.2"
+  mod.exports.version = "0.25.0"
   mod.exports.hasRibbon = hasRibbon
   mod.exports.catalog = catalog
 
@@ -1315,22 +1315,141 @@ return function(mod)
     return shown, #owned
   end
 
+  -- ------- GEN 2: the list-plus-text-box layout (REQUESTS 678)
+  --
+  -- Developer, 2026-11-10 ("ribbon use new way"), against the mock at
+  -- exchange/outbox/ui-theme/vanilla-review/kanto-contests-options-2.png,
+  -- bottom row second panel. Worked geometry: UI Theme's
+  -- M.crystalJourneyList (UI-Theme/lib/look.lua) -- COPIED, not called.
+  -- Calling it would make UI Theme a hard dependency, and a reader side
+  -- never depends on another mod.
+  --
+  -- What changes: one ribbon per row two rows apart from row 3, four
+  -- visible, with the cursor beside the lit one; what that ribbon was won
+  -- for moves OUT of a cramped second line under every row and into the
+  -- game's own text box, where it gets two lines of 18 instead of one of
+  -- 16. The page count becomes "<lit>/<total>" rather than a window range,
+  -- because there is now a cursor for it to count.
+  --
+  -- GEN 1 IS DELIBERATELY UNCHANGED. Chrome is src/ui/gen2/Chrome and has
+  -- no Gen 1 counterpart; more to the point, this screen on Gen 1 inherits
+  -- its colour zones from the state underneath, so "black on white" is not
+  -- this mod's to choose there. Gen 1 keeps drawRibbonWindow.
+  local okChrome, Chrome = pcall(require, "src.ui.gen2.Chrome")
+  if not okChrome then Chrome = nil end
+
+  local CRYSTAL_ROWS = 4
+
+  -- the window follows the cursor rather than the player scrolling it
+  local function firstFor(cur, rows, total)
+    if total <= rows then return 1 end
+    local first = cur - math.floor((rows - 1) / 2)
+    if first < 1 then first = 1 end
+    if first + rows - 1 > total then first = total - rows + 1 end
+    return first
+  end
+
+  -- `detail` is the text-box line, up to two rows of 18. Falls back to the
+  -- old 16-character `description` so a catalog entry without one still
+  -- says something rather than nothing.
+  local function detailFor(def)
+    local d = def and (def.detail or def.description)
+    return type(d) == "string" and d or ""
+  end
+
+  -- Chrome works in TILE columns, not pixels, so fitName/clipToWidth (which
+  -- measure against screenW) are the wrong tools here. Same degrade order as
+  -- fitName though: "<short> Ribbon", then "<short>", then cut -- which is
+  -- what makes the mock read "Cool Ribbon" on the first row and "Cool Super"
+  -- below it, rather than clipping every row to the same stub.
+  local function fitCols(text, cols)
+    text = tostring(text or "")
+    if #text <= cols then return text end
+    return text:sub(1, math.max(1, cols))
+  end
+
+  local function fitNameCols(def, cols)
+    local base = def.short or def.name or ""
+    local full = base .. " Ribbon"
+    if #full <= cols then return full end
+    if #base <= cols then return base end
+    return fitCols(base, cols)
+  end
+
+  local function drawCrystalList(mon, cur)
+    local owned = ownedRibbons(mon)
+    local total = #owned
+    -- 11 columns of name, then the widest count ("38/38") right-aligned
+    Chrome.print(fitCols(monLabel(mon), 11), 1, 1)
+    if total > 0 then
+      Chrome.printRight(("%d/%d"):format(cur, total), 18, 1)
+    end
+    if total == 0 then
+      Chrome.print("No ribbons yet.", 1, 3)
+      return 0
+    end
+    local img = sheet()
+    local first = firstFor(cur, CRYSTAL_ROWS, total)
+    for n = 0, CRYSTAL_ROWS - 1 do
+      local entry = owned[first + n]
+      if not entry then break end
+      local ty = 3 + n * 2
+      local quad = ribbonQuads and ribbonQuads[entry.cell]
+      if img and quad then
+        -- untinted here on purpose: the mock is black on white, and the
+        -- per-ribbon colour is the SUMMARY page's language, not this one
+        love.graphics.setColor(0, 0, 0, 1)
+        love.graphics.draw(img, quad, 2, ty * 8)
+      end
+      if first + n == cur then Chrome.cursor(2, ty) end
+      Chrome.print(fitNameCols(entry.def, 16), 3, ty)
+    end
+    if first + CRYSTAL_ROWS - 1 < total then
+      Chrome.print("▼", 18, 10)
+    end
+    -- the lit ribbon's reason, in the game's own box. No button hints:
+    -- the developer asked for none, and B-to-close is the summary's own
+    -- convention anyway.
+    Chrome.box(0, 12, 20, 6)
+    local lit = owned[cur]
+    if lit then
+      local line1, line2 = detailFor(lit.def):match("^([^\n]*)\n?(.*)$")
+      Chrome.print((line1 or ""):sub(1, 18), 1, 14)
+      if line2 and line2 ~= "" then
+        Chrome.print(line2:sub(1, 18), 1, 15)
+      end
+    end
+    return total
+  end
+
   -- The standalone screen (Modern UI path, and the party overview's
   -- drill-down). Self-drawn rather than a ListMenu so it renders the
   -- same icons and descriptions as the nested page.
   mod.content.screens:register("KantoRibbonsDetail", {
     new = function(game, mon)
-      local state = { game = game, isOpaque = true, scroll = 0 }
+      local state = { game = game, isOpaque = true, scroll = 0, cur = 1 }
       local total = #ownedRibbons(mon)
       local maxScroll = math.max(0, total - WINDOW_SIZE)
+      -- Gen 2 moves a CURSOR and lets the window follow it; Gen 1 keeps
+      -- scrolling a window with no cursor, because its layout has no
+      -- text box to fill and so nothing to light up.
+      local crystal = (generation == 2) and Chrome ~= nil
 
       function state:update()
         local input = game.input
         if not input then return end
         if input:wasPressed("up") then
-          self.scroll = math.max(0, self.scroll - 1)
+          if crystal then
+            self.cur = math.max(1, self.cur - 1)
+          else
+            self.scroll = math.max(0, self.scroll - 1)
+          end
         elseif input:wasPressed("down") then
-          self.scroll = math.min(maxScroll, self.scroll + 1)
+          if crystal then
+            self.cur = math.min(math.max(1, total), self.cur + 1)
+          else
+            self.scroll = math.min(maxScroll, self.scroll + 1)
+          end
         elseif input:wasPressed("a") or input:wasPressed("b")
             or input:wasPressed("left") or input:wasPressed("right") then
           -- left/right close too, so the page cycle has no dead end.
@@ -1422,6 +1541,11 @@ return function(mod)
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.rectangle("fill", 0, 0, screenW, screenH)
         love.graphics.setColor(0, 0, 0, 1)
+
+        if crystal then
+          drawCrystalList(mon, self.cur)
+          return
+        end
         -- The indicator is measured FIRST so the title can be clipped
         -- against the space it actually leaves. A 10-character nickname
         -- (80px) and the widest indicator ("14-17/17", 64px) come to
